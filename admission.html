@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Admission - MUEFI</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Spinner Start -->
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+
+
+    <!-- Navbar Start -->
+    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
+        <a href="index.html" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
+            <h2 class="m-0 text-primary">
+                <span><img src="img/muefi_logo-bg.png" alt="" srcset="" style="width: 65px;"></span>
+                <span>MUEFI</span>
+            </h2>
+        </a>
+        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto p-4 p-lg-0">
+                <a href="index.html" class="nav-item nav-link">Home</a>
+                <a href="about.html" class="nav-item nav-link">About</a>
+                <a href="courses.html" class="nav-item nav-link">Event</a>
+                <a href="admission.html" class="nav-item nav-link active">Admission</a>
+                <a href="contact.html" class="nav-item nav-link">Contact</a>
+            </div>
+        </div>
+    </nav>
+    <!-- Navbar End -->
+
+
+    <!-- Header Start -->
+    <div class="container-fluid bg-primary py-5 mb-5 page-header">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 text-center">
+                    <h1 class="display-3 text-white animated slideInDown">Admission</h1>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Header End -->
+
+
+    <!-- Admission Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <!-- Section Header -->
+            <div class="text-center mb-5">
+                <h6 class="section-title bg-white text-primary px-3">Admissions</h6>
+                <h1>Join Our School · 入学申请</h1>
+                <p class="mb-4">
+                    Explore our easy-to-follow admission process for students from Preschool to Grade 12.
+                </p>
+            </div>
+
+            <!-- Tabs Navigation with Icons -->
+            <ul class="nav nav-tabs justify-content-center mb-4" id="admissionTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="requirements-tab" data-bs-toggle="tab" data-bs-target="#requirements" type="button" role="tab" aria-controls="requirements" aria-selected="true">
+                        <i class="fa fa-file-alt me-2"></i>Admission Requirements
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="policy-tab" data-bs-toggle="tab" data-bs-target="#policy" type="button" role="tab" aria-controls="policy" aria-selected="false">
+                        <i class="fa fa-gavel me-2"></i>Admission Policy
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="enrollment-tab" data-bs-toggle="tab" data-bs-target="#enrollment" type="button" role="tab" aria-controls="enrollment" aria-selected="false">
+                        <i class="fa fa-book-open me-2"></i>Enrollment Guide
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="payment-tab" data-bs-toggle="tab" data-bs-target="#payment" type="button" role="tab" aria-controls="payment" aria-selected="false">
+                        <i class="fa fa-credit-card me-2"></i>Payment Methods
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pre-registration-tab" data-bs-toggle="tab" data-bs-target="#pre-registration" type="button" role="tab" aria-controls="pre-registration" aria-selected="false">
+                        <i class="fa fa-calendar-check me-2"></i>Pre-Registration
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tabs Content -->
+            <div class="tab-content" id="admissionTabsContent">
+                <!-- Admission Requirements -->
+                <div class="tab-pane fade show active" id="requirements" role="tabpanel" aria-labelledby="requirements-tab">
+                    <div class="card p-4 mb-4 shadow-sm">
+                        <h5 class="mb-3"><i class="fa fa-file-alt text-primary me-2"></i>Admission Requirements</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Completed Admission Form</li>
+                            <li class="list-group-item">Birth Certificate</li>
+                            <li class="list-group-item">Report Card or School Records</li>
+                            <li class="list-group-item">Recent Photo of the Student</li>
+                            <li class="list-group-item">Medical Records (Preschool – Optional)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Admission Policy -->
+                <div class="tab-pane fade" id="policy" role="tabpanel" aria-labelledby="policy-tab">
+                    <div class="card p-4 mb-4 shadow-sm">
+                        <h5 class="mb-3"><i class="fa fa-gavel text-primary me-2"></i>Admission Policy</h5>
+                        <p>
+                            Our school follows a non-discriminatory policy, welcoming students from all backgrounds.
+                            Admission is based on age eligibility, assessment results, and readiness for the appropriate grade level.
+                            We prioritize holistic development and maintain a safe, inclusive environment for all learners.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Enrollment Guide -->
+                <div class="tab-pane fade" id="enrollment" role="tabpanel" aria-labelledby="enrollment-tab">
+                    <div class="card p-4 mb-4 shadow-sm">
+                        <h5 class="mb-3"><i class="fa fa-book-open text-primary me-2"></i>Enrollment Guide</h5>
+                        <ol>
+                            <li>Submit the completed application form and required documents.</li>
+                            <li>Attend the student assessment or interview (if required).</li>
+                            <li>Receive admission confirmation from the school.</li>
+                            <li>Complete enrollment by submitting remaining documents and paying tuition fees.</li>
+                            <li>Attend orientation day before classes start.</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Payment Methods -->
+                <div class="tab-pane fade" id="payment" role="tabpanel" aria-labelledby="payment-tab">
+                    <div class="card p-4 mb-4 shadow-sm">
+                        <h5 class="mb-3"><i class="fa fa-credit-card text-primary me-2"></i>Payment Methods</h5>
+                        <ul>
+                            <li>Bank Transfer (Online or Branch)</li>
+                            <li>Credit/Debit Card Payment</li>
+                            <li>Cash Payment at the School Office</li>
+                            <li>Installment plans available for selected programs</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Pre-Registration -->
+                <div class="tab-pane fade" id="pre-registration" role="tabpanel" aria-labelledby="pre-registration-tab">
+                    <div class="card p-4 mb-4 shadow-sm">
+                        <h5 class="mb-3"><i class="fa fa-calendar-check text-primary me-2"></i>Pre-Registration</h5>
+                        <p>
+                            Parents may pre-register their child online or at the school office.
+                            Pre-registration allows early placement and priority scheduling for assessment and orientation.
+                            Spaces are limited, so early application is recommended.
+                        </p>
+                        <a href="#" class="btn btn-primary mt-2">Pre-Register Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- Admission End -->
+
+
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
+        <div class="container py-5">
+            <div class="row g-5">
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Quick Link</h4>
+                    <a class="btn btn-link" href="">About Us</a>
+                    <a class="btn btn-link" href="">Contact Us</a>
+                    <a class="btn btn-link" href="">Privacy Policy</a>
+                    <a class="btn btn-link" href="">Terms & Condition</a>
+                    <a class="btn btn-link" href="">FAQs & Help</a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Contact</h4>
+                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>123 Street, New York, USA</p>
+                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+012 345 67890</p>
+                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@example.com</p>
+                    <div class="d-flex pt-2">
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Gallery</h4>
+                    <div class="row g-2 pt-2">
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="img/course-1.jpg" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="img/course-2.jpg" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="img/course-3.jpg" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="img/course-2.jpg" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="img/course-3.jpg" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="img/course-1.jpg" alt="">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Newsletter</h4>
+                    <p>Dolor amet sit justo amet elitr clita ipsum elitr est.</p>
+                    <div class="position-relative mx-auto" style="max-width: 400px;">
+                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
+                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="copyright">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                        &copy; <a class="border-bottom" href="#">MUEFI</a>, All Right Reserved.
+                        Designed By <a class="border-bottom" href="https://kodewrk.com" target="_blank">Kodewrk</a>
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <div class="footer-menu">
+                            <a href="">Home</a>
+                            <a href="">Cookies</a>
+                            <a href="">Help</a>
+                            <a href="">FQAs</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+    <script>
+        const counters = document.querySelectorAll('.count');
+        const speed = 150;
+
+        function formatNumber(num) {
+            if (num >= 1000) {
+            const value = (num / 1000).toFixed(num % 1000 === 0 ? 0 : 1);
+            return value + 'k+';
+            }
+            return num;
+        }
+
+        function animateCounter(counter) {
+            const target = +counter.dataset.target;
+            let current = 0;
+
+            const update = () => {
+            const increment = Math.ceil(target / speed);
+            current += increment;
+
+            if (current < target) {
+                counter.innerText = formatNumber(current);
+                requestAnimationFrame(update);
+            } else {
+                counter.innerText = formatNumber(target);
+            }
+            };
+
+            update();
+        }
+
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+            if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
+                entry.target.classList.add('animated');
+                animateCounter(entry.target);
+            }
+            });
+        }, { threshold: 0.6 });
+
+        counters.forEach(counter => observer.observe(counter));
+    </script>
+    <script>
+        const collapseElement = document.getElementById('historyCollapse');
+        const readMoreBtn = collapseElement.nextElementSibling.querySelector('a');
+
+        collapseElement.addEventListener('shown.bs.collapse', () => {
+            readMoreBtn.textContent = 'Read Less';
+        });
+        collapseElement.addEventListener('hidden.bs.collapse', () => {
+            readMoreBtn.textContent = 'Read More';
+        });
+    </script>
+
+    <script>
+  document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
+      new bootstrap.Popover(el, {
+          trigger: 'hover focus',
+          container: 'body'
+      });
+  });
+</script>
+
+
+</body>
+
+</html>
