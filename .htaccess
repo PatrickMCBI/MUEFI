@@ -1,0 +1,24 @@
+# Enable rewrite engine
+RewriteEngine On
+
+# Set the base folder (adjust if your site is in a subfolder)
+RewriteBase /
+
+# Redirect root / to index.html or index.php
+RewriteRule ^$ index.html [L]
+
+# Rewrite clean URLs to their corresponding files
+# Example: /about -> about.html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^about$ about.html [L]
+RewriteRule ^courses$ courses.html [L]
+RewriteRule ^admission$ admission.html [L]
+RewriteRule ^contact$ contact.html [L]
+
+# Optional: Redirect /some-page/ to /some-page (remove trailing slash)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)/$ /$1 [L,R=301]
+
+# Optional: Handle 404 errors
+ErrorDocument 404 /404.html
