@@ -466,7 +466,7 @@
     display: inline-block;
     padding: 15px 10px;
     background: #f8f9fa;
-    border: 2px solid #0d6efd;
+    border: 2px solid #e3af3b;
     border-radius: 10px;
     cursor: pointer;
     transition: transform 0.2s;
@@ -485,7 +485,7 @@
     transform: translateX(-50%);
     width: 2px;
     height: 50px;
-    background: #0d6efd;
+    background: #e3af3b;
     z-index: -1;
 }
 
@@ -501,6 +501,15 @@
     left: 10%;
     width: 80%;
     height: 2px;
-    background: #0d6efd;
+    background: #e3af3b;
     z-index: -1;
+}
+.btn-link-more{
+    color: #fd0a04;
+}
+.btn-link-more:hover{
+    color: #e3af3b;
+}
+.header-carousel .owl-nav {
+    display: none !important;
 }
