@@ -161,7 +161,7 @@
             <div class="row g-5">
                 <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s" style="min-height: 400px;">
                     <div class="position-relative h-100">
-                        <img class="img-fluid position-absolute w-100 h-100" src="img/2025/about-2025-thumbnail.jpg" alt="" style="object-fit: contain;">
+                        <img class="img-fluid position-absolute w-100 h-100" src="img/2025/about-2025-thumbnail-new.jpg" alt="" style="object-fit: contain;">
                     </div>
                 </div>
                 <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
@@ -245,185 +245,143 @@
     <!-- Team Start -->
     <div class="container-xxl py-5">
         <div class="container">
-            <div class="container my-5">
-                <div class="container my-5">
-                    <!-- Section Header -->
-                    <div class="text-center mb-5">
-                        <h6 class="section-title bg-white text-primary px-3">School Organization Chart</h6>
-                        <!-- <h1 class="mb-5">Our Dedicated </h1> -->
-                    </div>
+           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 950 700" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: auto; max-width: 100%;">
+                <style>
+                    /* Global Styles */
+                    .box { stroke: #333; stroke-width: 1.5; }
+                    .text { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; text-anchor: middle; font-weight: bold; fill: #000; }
+                    .title-text { font-family: 'Times New Roman', serif; font-size: 22px; text-anchor: middle; font-weight: bold; }
+                    .line { stroke: #333; stroke-width: 1.5; fill: none; }
 
-                    <div class="org-chart">
+                    /* Responsive scaling for text - keeps it readable on smaller screens */
+                    @media (max-width: 600px) {
+                    .text { font-size: 14px; }
+                    .title-text { font-size: 24px; }
+                    }
 
-                        <!-- Principal -->
-                        <div class="row justify-content-center mb-5">
-                            <div class="col-md-3 text-center org-node-wrapper">
-                                <div class="org-node-card" data-bs-toggle="popover" data-bs-html="true" data-bs-placement="top"
-                                    data-bs-content="
-                                    <div class='text-center'>
-                                        <img src='img/team-1.jpg' class='rounded-circle mb-2' width='120'>
-                                    </div>
-                                    ">
-                                    <h5 class="mb-0">Juan Dela Cruz</h5>
-                                    <small>School Principal · 校长</small>
-                                </div>
-                            </div>
-                        </div>
+                    /* Group Colors for Easy Tracing */
+                    .bg-header    { fill: #f8f9fa; }
+                    .bg-top-mgmt  { fill: #e3f2fd; }
+                    .bg-admin     { fill: #f3e5f5; }
+                    .bg-finance   { fill: #e8f5e9; }
+                    .bg-general   { fill: #fffde7; }
+                    .bg-discipline { fill: #fff3e0; }
+                    .bg-registrar { fill: #e0f7fa; }
+                    .bg-academic-cn { fill: #ffebee; }
+                    .bg-academic-en { fill: #e1f5fe; }
+                </style>
 
-                        <!-- Vice Principals -->
-                        <div class="row justify-content-center mb-5 g-4 connector-level">
-                            <div class="col-md-3 text-center org-node-wrapper">
-                                <div class="org-node-card" data-bs-toggle="popover" data-bs-html="true" data-bs-placement="top" 
-                                    data-bs-content="
-                                    <div class='text-center'>
-                                        <img src='img/vice-acad.jpg' class='rounded-circle mb-2' width='120'>
-                                    </div>
-                                    ">
-                                    <h5 class="mb-0">Maria Santos</h5>
-                                    <small>Academic VP · 教务副校长</small>
-                                </div>
-                            </div>
+                <g id="main-structure">
+                    <line x1="475" y1="150" x2="475" y2="340" class="line" />
+                    <line x1="100" y1="340" x2="850" y2="340" class="line" />
+                </g>
 
-                            <div class="col-md-3 text-center org-node-wrapper">
-                                <div class="org-node-card" data-bs-toggle="popover" data-bs-html="true" data-bs-placement="top"
-                                    data-bs-content="
-                                    <div class='text-center'>
-                                        <img src='img/vice-admin.jpg' class='rounded-circle mb-2' width='120'>
-                                    </div>
-                                    ">
-                                    <h5 class="mb-0">Li Wei</h5>
-                                    <small>Administrative VP · 行政副校长</small>
-                                </div>
-                            </div>
-                        </div>
+                <g id="header">
+                    <rect x="225" y="10" width="500" height="70" class="box bg-header" />
+                    <text x="475" y="40" class="title-text">MISAMIS UNION HIGH SCHOOL</text>
+                    <text x="475" y="65" class="title-text">ORGANIZATIONAL CHART</text>
+                </g>
 
-                        <!-- Department Heads -->
-                        <div class="row justify-content-center mb-5 g-4 connector-level">
-                            <div class="col-md-3 text-center org-node-wrapper">
-                                <div class="org-node-card" data-bs-toggle="popover" data-bs-html="true" data-bs-placement="top"
-                                    data-bs-content="
-                                    <div class='text-center'>
-                                        <img src='img/math.jpg' class='rounded-circle mb-2' width='120'>
-                                    </div>
-                                    ">
-                                    <h5 class="mb-0">Anna Lim</h5>
-                                    <small>Math Dept Head · 数学主任</small>
-                                </div>
-                            </div>
+                <g id="board-of-trustees">
+                    <rect x="350" y="110" width="250" height="40" class="box bg-top-mgmt" />
+                    <text x="475" y="135" class="text" font-size="16px">BOARD OF TRUSTEES</text>
+                </g>
 
-                            <div class="col-md-3 text-center org-node-wrapper">
-                                <div class="org-node-card" data-bs-toggle="popover" data-bs-html="true" data-bs-placement="top"
-                                    data-bs-content="
-                                    <div class='text-center'>
-                                        <img src='img/science.jpg' class='rounded-circle mb-2' width='120'>
-                                    </div>
-                                    ">
-                                    <h5 class="mb-0">Robert Tan</h5>
-                                    <small>Science Dept Head · 科学主任</small>
-                                </div>
-                            </div>
-                        </div>
+                <g id="principal">
+                    <rect x="375" y="180" width="200" height="35" class="box bg-top-mgmt" />
+                    <text x="475" y="202" class="text">PRINCIPAL</text>
+                </g>
 
-                        <!-- Teachers -->
-                        <div class="row justify-content-center mb-5 g-4 connector-level">
-                            <div class="col-md-2 text-center org-node-wrapper">
-                                <div class="org-node-card" data-bs-toggle="popover" data-bs-html="true" data-bs-placement="top"
-                                    data-bs-content="
-                                    <div class='text-center'>
-                                        <img src='img/teacher1.jpg' class='rounded-circle mb-2' width='120'>
-                                    </div>
-                                    ">
-                                    <h5 class="mb-0">Grace Yu</h5>
-                                    <small>English Teacher · 英语老师</small>
-                                </div>
-                            </div>
-                        </div>
+                <g id="admin-assistant">
+                    <path d="M 475 240 H 260 V 255" class="line" />
+                    <rect x="185" y="255" width="150" height="45" class="box bg-admin" />
+                    <text x="260" y="275" class="text">ADMINISTRATIVE</text>
+                    <text x="260" y="290" class="text">ASSISTANT</text>
+                </g>
 
-                        <!-- Administrative / Guards / Utilities can be added similarly -->
+                <g id="branch-treasurer">
+                    <line x1="100" y1="340" x2="100" y2="380" class="line" />
+                    <rect x="50" y="380" width="100" height="45" class="box bg-finance" />
+                    <text x="100" y="400" class="text">SCHOOL</text>
+                    <text x="100" y="415" class="text">TREASURER</text>
+                </g>
 
-                    </div>
-                </div>
-            </div>
-            <!-- <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <h6 class="section-title bg-white text-center text-primary px-3">Organizational Chart</h6>
-                <h1 class="mb-5">Expert Teachers · 资深老师</h1>
-            </div>
-            <div class="row g-4">
-                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="team-item bg-light">
-                        <div class="overflow-hidden">
-                            <img class="img-fluid" src="img/team-1.jpg" alt="">
-                        </div>
-                        <div class="position-relative d-flex justify-content-center" style="margin-top: -23px;">
-                            <div class="bg-light d-flex justify-content-center pt-2 px-1">
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
-                            </div>
-                        </div>
-                        <div class="text-center p-4">
-                            <h5 class="mb-0">Instructor Name</h5>
-                            <small>Designation</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <div class="team-item bg-light">
-                        <div class="overflow-hidden">
-                            <img class="img-fluid" src="img/team-2.jpg" alt="">
-                        </div>
-                        <div class="position-relative d-flex justify-content-center" style="margin-top: -23px;">
-                            <div class="bg-light d-flex justify-content-center pt-2 px-1">
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
-                            </div>
-                        </div>
-                        <div class="text-center p-4">
-                            <h5 class="mb-0">Instructor Name</h5>
-                            <small>Designation</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
-                    <div class="team-item bg-light">
-                        <div class="overflow-hidden">
-                            <img class="img-fluid" src="img/team-3.jpg" alt="">
-                        </div>
-                        <div class="position-relative d-flex justify-content-center" style="margin-top: -23px;">
-                            <div class="bg-light d-flex justify-content-center pt-2 px-1">
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
-                            </div>
-                        </div>
-                        <div class="text-center p-4">
-                            <h5 class="mb-0">Instructor Name</h5>
-                            <small>Designation</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
-                    <div class="team-item bg-light">
-                        <div class="overflow-hidden">
-                            <img class="img-fluid" src="img/team-4.jpg" alt="">
-                        </div>
-                        <div class="position-relative d-flex justify-content-center" style="margin-top: -23px;">
-                            <div class="bg-light d-flex justify-content-center pt-2 px-1">
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
-                            </div>
-                        </div>
-                        <div class="text-center p-4">
-                            <h5 class="mb-0">Instructor Name</h5>
-                            <small>Designation</small>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
+                <g id="branch-general-affairs">
+                    <line x1="240" y1="340" x2="240" y2="380" class="line" />
+                    <rect x="195" y="380" width="90" height="45" class="box bg-general" />
+                    <text x="240" y="400" class="text">GENERAL</text>
+                    <text x="240" y="415" class="text">AFFAIRS</text>
+                    
+                    <g id="sub-property">
+                    <line x1="240" y1="425" x2="240" y2="455" class="line" />
+                    <rect x="180" y="455" width="120" height="45" class="box bg-general" />
+                    <text x="240" y="475" class="text">PROPERTY</text>
+                    <text x="240" y="490" class="text">CUSTODIAN</text>
+                    </g>
+
+                    <g id="sub-security">
+                    <line x1="240" y1="500" x2="240" y2="530" class="line" />
+                    <rect x="165" y="530" width="150" height="65" class="box bg-general" />
+                    <text x="240" y="550" class="text">SECURITY AND</text>
+                    <text x="240" y="565" class="text">MAINTENANCE</text>
+                    <text x="240" y="580" class="text">PERSONNEL</text>
+                    </g>
+                </g>
+
+                <g id="branch-disciplinarian">
+                    <line x1="400" y1="340" x2="400" y2="380" class="line" />
+                    <rect x="330" y="380" width="140" height="35" class="box bg-discipline" />
+                    <text x="400" y="402" class="text">DISCIPLINARIAN</text>
+                </g>
+
+                <g id="branch-registrar">
+                    <line x1="550" y1="340" x2="550" y2="380" class="line" />
+                    <rect x="505" y="380" width="90" height="35" class="box bg-registrar" />
+                    <text x="550" y="402" class="text">REGISTRAR</text>
+                </g>
+
+                <g id="branch-chinese">
+                    <line x1="700" y1="340" x2="700" y2="380" class="line" />
+                    <rect x="650" y="380" width="100" height="65" class="box bg-academic-cn" />
+                    <text x="700" y="400" class="text">CHINESE</text>
+                    <text x="700" y="415" class="text">ACADEMIC</text>
+                    <text x="700" y="430" class="text">HEAD</text>
+                    
+                    <g id="sub-chinese-teachers">
+                    <line x1="700" y1="445" x2="700" y2="475" class="line" />
+                    <rect x="630" y="475" width="140" height="45" class="box bg-academic-cn" />
+                    <text x="700" y="495" class="text">CHINESE</text>
+                    <text x="700" y="510" class="text">TEACHERS</text>
+                    </g>
+                </g>
+
+                <g id="branch-english">
+                    <line x1="850" y1="340" x2="850" y2="380" class="line" />
+                    <rect x="800" y="380" width="100" height="65" class="box bg-academic-en" />
+                    <text x="850" y="400" class="text">ENGLISH</text>
+                    <text x="850" y="415" class="text">ACADEMIC</text>
+                    <text x="850" y="430" class="text">HEAD</text>
+                    
+                    <g id="sub-coordinators">
+                    <line x1="850" y1="445" x2="850" y2="475" class="line" />
+                    <rect x="775" y="475" width="150" height="45" class="box bg-academic-en" />
+                    <text x="850" y="495" class="text">DEPARTMENT</text>
+                    <text x="850" y="510" class="text">COORDINATORS</text>
+                    </g>
+                    
+                    <g id="sub-english-teachers">
+                    <line x1="850" y1="520" x2="850" y2="550" class="line" />
+                    <rect x="790" y="550" width="120" height="45" class="box bg-academic-en" />
+                    <text x="850" y="570" class="text">ENGLISH</text>
+                    <text x="850" y="585" class="text">TEACHERS</text>
+                    </g>
+                </g>
+            </svg>
         </div>
     </div>
+
+    
+
     <!-- Team End -->
         
 
@@ -445,7 +403,7 @@
                     <p class="mb-2"><i class="fa fa-envelope me-3"></i>muhsofficial@gmail.com</p>
                     <div class="d-flex pt-2">
                         <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-outline-light btn-social" href="https://www.facebook.com/profile.php?id=100063919275905" target="_blank"><i class="fab fa-facebook-f"></i></a>
                         <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
                         <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
                     </div>

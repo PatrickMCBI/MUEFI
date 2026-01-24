@@ -461,49 +461,7 @@
   /* color: #555; */
 }
 
-/* Node card */
-.org-node-card {
-    display: inline-block;
-    padding: 15px 10px;
-    background: #f8f9fa;
-    border: 2px solid #e3af3b;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
 
-.org-node-card:hover {
-    transform: scale(1.05);
-}
-
-/* Vertical line to parent */
-.org-node-wrapper::before {
-    content: '';
-    position: absolute;
-    top: -50px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 2px;
-    height: 50px;
-    background: #e3af3b;
-    z-index: -1;
-}
-
-/* Horizontal connector between siblings */
-.connector-level {
-    position: relative;
-}
-
-.connector-level::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 10%;
-    width: 80%;
-    height: 2px;
-    background: #e3af3b;
-    z-index: -1;
-}
 .btn-link-more{
     color: #fd0a04;
 }
