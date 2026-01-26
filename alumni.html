@@ -48,6 +48,31 @@
 
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+    <style>
+        .org-card {
+      border: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .org-card img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .org-title {
+      font-size: 0.9rem;
+      color: #6c757d;
+    }
+
+    @media print {
+      body { background: #fff !important; }
+      .no-print { display: none !important; }
+      .org-card { box-shadow: none !important; border: 1px solid #ccc; }
+    }
+    </style>
 </head>
 
 
@@ -78,6 +103,7 @@
                 <a href="about" class="nav-item nav-link">About</a>
                 <a href="event" class="nav-item nav-link">Event</a>
                 <a href="admission" class="nav-item nav-link">Admission</a>
+                <a href="ssg" class="nav-item nav-link">SSG</a>
                 <a href="alumni" class="nav-item nav-link active">Alumni</a>
                 <a href="contact" class="nav-item nav-link">Contact</a>
             </div>
@@ -102,7 +128,7 @@
 
     <div class="container-xxl py-5 text-center">
         <div class="mb-5">
-            <h3 class="fw-bold mb-4 text-uppercase small tracking-widest">Alumni Spotlights</h3>
+            <!-- <h3 class="fw-bold mb-4 text-uppercase small tracking-widest">Alumni Spotlights</h3>
             <div class="row g-4">
                 <div class="col-md-4">
                     <div class="card h-100 p-4 shadow-sm border">
@@ -131,7 +157,7 @@
                         <a href="#" class="text-dark fw-bold small">Read Story</a>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
 
         <div class="bg-light p-4 rounded-3 border mb-5 text-start">
@@ -238,7 +264,178 @@
 
     </div>
 
+    <!-- Team Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h6 class="section-title bg-white text-center text-primary px-3">2025-2026</h6>
+                <h1 class="mb-5">Alumni Officers</h1>
+            </div>
+            <h4 class="mb-3">Executive Officers</h4>
+            <div class="row g-4">
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card org-card" data-bs-toggle="modal" data-bs-target="#modalRizalde">
+                        <img src="img/officers/1-President-Rizalde-Lim.png" alt="Rizalde Lim">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Rizalde Lim</h5>
+                            <div class="org-title">President Elect</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card org-card" data-bs-toggle="modal" data-bs-target="#modalSee">
+                        <img src="img/officers/2-1st-Vice-President-Kian-Hiong-See.png" alt="See Kian Hiong">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">See Kian Hiong</h5>
+                            <div class="org-title">1st Vice President</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card org-card" data-bs-toggle="modal" data-bs-target="#modalGeralde">
+                        <img src="img/officers/2nd-Vice-President-Geralde-Tio.png" alt="Geralde Tio">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Geralde Tio</h5>
+                            <div class="org-title">2nd Vice President</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+            <!-- SECRETARIES & TREASURERS -->
+            <h4 class="mt-5 mb-3">Secretaries & Finance</h4>
+            <div class="row g-4">
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="card org-card" data-bs-toggle="modal" data-bs-target="#modalJennifer">
+                        <img src="img/officers/Secretary-(Chinese)-JENNIFER-SALUD.png" alt="Jennifer Salud">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Jennifer Salud</h5>
+                            <div class="org-title">Secretary (Chinese)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="card org-card" data-bs-toggle="modal" data-bs-target="#modalJeremy">
+                        <img src="img/officers/Secretary-(English)-Jeremy-Lagura.png" alt="Jeremy Lagura">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Jeremy Lagura</h5>
+                            <div class="org-title">Secretary (English)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="card org-card" data-bs-toggle="modal" data-bs-target="#modalHeide">
+                        <img src="img/officers/Treasurer-Heide-Lagura.png" alt="Heide Lagura">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Heide Lagura</h5>
+                            <div class="org-title">Treasurer 1</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="card org-card" data-bs-toggle="modal" data-bs-target="#modalChairein">
+                        <img src="img/officers/Tresurer-2-Chairein-Lim.png" alt="Chairein Lim">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Chairein Lim</h5>
+                            <div class="org-title">Treasurer 2</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOARD OF DIRECTORS -->
+            <h4 class="mt-5 mb-3">Board of Directors</h4>
+            <div class="row g-4">
+                <div class="col-12 col-md-4 col-lg-3">
+                    <div class="card org-card">
+                        <img src="img/officers/Board-of-Director-Eduardo-Go.png" alt="Eduardo Go">
+                        <div class="card-body text-center">
+                            <h5>Eduardo Go</h5>
+                            <div class="org-title">Director</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4 col-lg-3">
+                    <div class="card org-card">
+                        <img src="img/officers/default-image.webp" alt="Annabelle Lim">
+                        <div class="card-body text-center">
+                            <h5>Annabelle Lim</h5>
+                            <div class="org-title">Director</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4 col-lg-3">
+                    <div class="card org-card">
+                        <img src="img/officers/Board-of-Directors-ELIZABETH-K-SEE.png" alt="Elizabeth See">
+                        <div class="card-body text-center">
+                            <h5>Elizabeth See</h5>
+                            <div class="org-title">Director</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4 col-lg-3">
+                    <div class="card org-card">
+                        <img src="img/officers/Board-of-Director-Juvy-Lim.png" alt="Juvy Lim">
+                        <div class="card-body text-center">
+                            <h5>Juvy Lim</h5>
+                            <div class="org-title">Director</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4 col-lg-3">
+                    <div class="card org-card">
+                        <img src="img/officers/Board-of-Director-Belen-Galarita.png" alt="Belan Galarita">
+                        <div class="card-body text-center">
+                            <h5>Belan Galarita</h5>
+                            <div class="org-title">Director</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4 col-lg-3">
+                    <div class="card org-card">
+                        <img src="img/officers//Board-of-Director-Jean-Lee.png" alt="Jean Lee">
+                        <div class="card-body text-center">
+                            <h5>Jean Lee</h5>
+                            <div class="org-title">Director</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AREA COORDINATORS -->
+            <h4 class="mt-5 mb-3">Area Coordinators</h4>
+            <div class="row g-4">
+                <div class="col-12 col-md-4 col-lg-3">
+                    <div class="card org-card">
+                        <img src="img/officers/default-image.webp" alt="Atty Alvin Go">
+                        <div class="card-body text-center">
+                            <h5>Atty Alvin Go</h5>
+                            <div class="org-title">Luzon</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4 col-lg-3">
+                    <div class="card org-card">
+                        <img src="img/officers/default-image.webp" alt="Johnston Yuteekiong">
+                        <div class="card-body text-center">
+                            <h5>Johnston Yuteekiong</h5>
+                            <div class="org-title">Visayas</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4 col-lg-3">
+                    <div class="card org-card">
+                        <img src="img/officers/Area-Coordinator-(Mindanao)-Cosme-Go.png" alt="Cosme Go">
+                        <div class="card-body text-center">
+                            <h5>Cosme Go</h5>
+                            <div class="org-title">Mindanao</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Team End -->
 
  
 
@@ -248,21 +445,21 @@
             <div class="row g-5">
                 <div class="col-lg-4 col-md-4">
                     <h4 class="text-yellow mb-3">Quick Link</h4>
-                    <a class="btn btn-link" href="">About Us</a>
-                    <a class="btn btn-link" href="">Contact Us</a>
-                    <a class="btn btn-link" href="">Privacy Policy</a>
-                    <a class="btn btn-link" href="">Terms & Condition</a>
-                    <a class="btn btn-link" href="">FAQs & Help</a>
+                    <a class="btn btn-link" href="about">About Us</a>
+                    <a class="btn btn-link" href="contact">Contact Us</a>
+                    <a class="btn btn-link" href="#">Privacy Policy</a>
+                    <a class="btn btn-link" href="#">Terms & Condition</a>
+                    <a class="btn btn-link" href="#">FAQs & Help</a>
                 </div>
                 <div class="col-lg-4 col-md-4">
                     <h4 class="text-yellow mb-3">Contact</h4>
                     <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>(088) 521 0042</p>
                     <p class="mb-2"><i class="fa fa-envelope me-3"></i>muhsofficial@gmail.com</p>
                     <div class="d-flex pt-2">
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-instagram"></i></a>
                         <a class="btn btn-outline-light btn-social" href="https://www.facebook.com/profile.php?id=100063919275905" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
+                        <!-- <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a> -->
                     </div>
                 </div>
                
@@ -270,8 +467,8 @@
                     <h4 class="text-yellow mb-3">Newsletter</h4>
                     <p>Subscribe to get the latest updates, events, and announcements from MUEFI.</p>
                     <div class="position-relative mx-auto" style="max-width: 400px;">
-                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
+                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="comming soon..." disabled>
+                        <!-- <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button> -->
                     </div>
                 </div>
             </div>
