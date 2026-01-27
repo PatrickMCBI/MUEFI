@@ -107,7 +107,56 @@
         <div class="row g-4">
             <div class="col-lg-8">
                 <h3 class="mb-4 border-bottom pb-2">Top News</h3>
-                
+                <div class="card mb-4 border-0 shadow-sm">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="img/2026/jan-30-event.jfif" class="img-fluid rounded-start h-100" style="object-fit: cover;" alt="News Image" decoding="async" loading="lazy">
+                        </div>
+                        <div class="col-md-8" style="background-color: #d9d9d9;">
+                            <div class="card-body"  role="button"
+                                data-bs-toggle="modal"
+                                data-bs-target="#chineseContestModal">
+                                <span class="badge bg-primary mb-2">Announcement</span>
+                                <h5 class="card-title">High School & Elementary Contest</h5>
+                                <p class="card-text text-muted">Chinese Storytelling Contest and Chinese Songs</p>
+                                <p class="card-text"><small class="text-muted">Posted: January 27, 2026</small></p>
+                            </div>
+                        </div>
+
+                        <!-- MODAL -->
+                            <div class="modal fade" id="chineseContestModal" tabindex="-1" aria-labelledby="chineseContestModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                                    <div class="modal-content">
+
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="chineseContestModal">
+                                            High School & Elementary Contest
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            <span class="badge bg-primary mb-2">Announcement</span>
+                                            <p class="text-muted mb-3"><small>Posted: January 27, 2026</small></p>
+                                            <div class="mb-4 text-center">
+                                                <img src="img/2026/jan-30-event.jfif"
+                                                    class="img-fluid rounded"
+                                                    alt="Muefi chinese new year 2026"
+                                                    style="max-height: 300px; object-fit: contain;" decoding="async" loading="lazy">
+                                            </div>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"> Close</button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- END MODAL -->
+
+                    </div>
+                </div>
                 <div class="card mb-4 border-0 shadow-sm">
                     <div class="row g-0">
                         <div class="col-md-4">
@@ -190,27 +239,14 @@
                         </div>
                     </div>
                 </div>
-                <!-- <div class="card mb-4 border-0 shadow-sm">
-                    <div class="row g-0">
-                        <div class="col-md-4">
-                            <img src="https://via.placeholder.com/300x200" class="img-fluid rounded-start h-100" style="object-fit: cover;" alt="News Image">
-                        </div>
-                        <div class="col-md-8">
-                            <div class="card-body">
-                                <span class="badge bg-success mb-2">Success Story</span>
-                                <h5 class="card-title">Local Tech Fair Breaks Attendance Records</h5>
-                                <p class="card-text text-muted">The annual tech fair saw a 40% increase in participation this year, showcasing local talent...</p>
-                                <p class="card-text"><small class="text-muted">Yesterday</small></p>
-                            </div>
-                        </div>
-                    </div>
-                </div> -->
+                
             </div>
 
             <div class="col-lg-4">
                 <h3 class="mb-4 border-bottom pb-2">Upcoming Events</h3>
                 
                 <div class="list-group shadow-sm">
+
                     <a href="#" class="list-group-item list-group-item-action py-3"  data-bs-toggle="modal" data-bs-target="#chineseNewYearModal">
                         <div class="d-flex w-100 justify-content-between">
                             <h6 class="mb-1 fw-bold">Chinese New Year 2026</h6>
