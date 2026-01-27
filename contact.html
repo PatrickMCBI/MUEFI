@@ -156,45 +156,46 @@
                         <div class="row g-3">
 
                             <div class="col-md-6">
-                            <div class="form-floating">
-                                <input type="text" class="form-control" id="name" name="name" required>
-                                <label for="name">Your Name</label>
-                            </div>
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                    <label for="name">Your Name</label>
+                                </div>
                             </div>
 
                             <div class="col-md-6">
-                            <div class="form-floating">
-                                <input type="email" class="form-control" id="email" name="email" required>
-                                <label for="email">Your Email</label>
-                            </div>
-                            </div>
-
-                            <div class="col-12">
-                            <div class="form-floating">
-                                <input type="text" class="form-control" id="subject" name="subject" required>
-                                <label for="subject">Subject</label>
-                            </div>
+                                <div class="form-floating">
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                    <label for="email">Your Email</label>
+                                </div>
                             </div>
 
                             <div class="col-12">
-                            <div class="form-floating">
-                                <textarea class="form-control" id="message" name="message" style="height:150px" required></textarea>
-                                <label for="message">Message</label>
-                            </div>
-                            </div>
-
-                            <!-- Google reCAPTCHA -->
-                            <div class="col-12">
-                            <div class="g-recaptcha" data-sitekey="YOUR_RECAPTCHA_SITE_KEY"></div>
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="subject" name="subject" required>
+                                    <label for="subject">Subject</label>
+                                </div>
                             </div>
 
                             <div class="col-12">
-                            <button class="btn btn-primary w-100 py-3" type="submit" disabled>
-                                coming soon
-                            </button>
+                                <div class="form-floating">
+                                    <textarea class="form-control" id="message" name="message" style="height:150px" required></textarea>
+                                    <label for="message">Message</label>
+                                </div>
+                            </div>
+
+                            <!-- Google reCAPTCHA v2 -->
+                            <div class="col-12">
+                                <div class="g-recaptcha" data-sitekey="6Lcn_lcsAAAAACqhso1OAyU-Ibff60UoV7OiXGTg"></div>
+                            </div>
+
+                            <div class="col-12">
+                                <button class="btn btn-primary w-100 py-3" type="submit">
+                                    Send Message
+                                </button>
                             </div>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
@@ -265,7 +266,7 @@
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     <script>
-        const scriptURL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
+        const scriptURL = "https://script.google.com/macros/s/AKfycbwnlaNe14I8l8c1cfbMkw4cxrXabKQhHrTIStDsK8_QvHUwa4ByPZnm8zNPtZkBP8NakQ/exec";
 
         function submitForm(e) {
         e.preventDefault();
