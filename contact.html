@@ -274,7 +274,7 @@
 
             // ✅ Explicitly get the reCAPTCHA token
             const recaptchaToken = grecaptcha.getResponse();
-            console.log("reCAPTCHA token:", recaptchaToken);
+            // console.log("reCAPTCHA token:", recaptchaToken);
 
             if (!recaptchaToken) {
                 alert("Please complete the reCAPTCHA checkbox before submitting.");
@@ -291,7 +291,7 @@
             })
             .then(res => res.json())
             .then(data => {
-                console.log("Server response:", data);
+                // console.log("Server response:", data);
 
                 if (data.result === "success") {
                     alert("Thank you! Your message has been sent.");
