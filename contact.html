@@ -155,47 +155,47 @@
 
                         <div class="row g-3">
 
-                            <div class="col-md-6">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" id="name" name="name" required>
-                                    <label for="name">Your Name</label>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-floating">
-                                    <input type="email" class="form-control" id="email" name="email" required>
-                                    <label for="email">Your Email</label>
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" id="subject" name="subject" required>
-                                    <label for="subject">Subject</label>
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="form-floating">
-                                    <textarea class="form-control" id="message" name="message" style="height:150px" required></textarea>
-                                    <label for="message">Message</label>
-                                </div>
-                            </div>
-
-                            <!-- Google reCAPTCHA v2 -->
-                            <div class="col-12">
-                                <div class="g-recaptcha" data-sitekey="6Lcn_lcsAAAAACqhso1OAyU-Ibff60UoV7OiXGTg"></div>
-                            </div>
-
-                            <div class="col-12">
-                                <button class="btn btn-primary w-100 py-3" type="submit">
-                                    Send Message
-                                </button>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                            <input type="text" class="form-control" id="name" name="name" required>
+                            <label for="name">Your Name</label>
                             </div>
                         </div>
-                    </form>
 
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                            <input type="email" class="form-control" id="email" name="email" required>
+                            <label for="email">Your Email</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-floating">
+                            <input type="text" class="form-control" id="subject" name="subject" required>
+                            <label for="subject">Subject</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-floating">
+                            <textarea class="form-control" id="message" name="message" style="height:150px" required></textarea>
+                            <label for="message">Message</label>
+                            </div>
+                        </div>
+
+                        <!-- Google reCAPTCHA v2 -->
+                        <div class="col-12">
+                            <div class="g-recaptcha" data-sitekey="6Lcn_lcsAAAAACqhso1OAyU-Ibff60UoV7OiXGTg"></div>
+                        </div>
+
+                        <div class="col-12">
+                            <button class="btn btn-primary w-100 py-3" type="submit">
+                            Send Message
+                            </button>
+                        </div>
+
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -269,31 +269,47 @@
         const scriptURL = "https://script.google.com/macros/s/AKfycbwnlaNe14I8l8c1cfbMkw4cxrXabKQhHrTIStDsK8_QvHUwa4ByPZnm8zNPtZkBP8NakQ/exec";
 
         function submitForm(e) {
-        e.preventDefault();
+            e.preventDefault();
+            const form = document.getElementById("contactForm");
 
-        const form = document.getElementById("contactForm");
-        const formData = new FormData(form);
+            // ✅ Explicitly get the reCAPTCHA token
+            const recaptchaToken = grecaptcha.getResponse();
+            console.log("reCAPTCHA token:", recaptchaToken); // <-- full debug
 
-        fetch(scriptURL, {
-            method: "POST",
-            body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.result === "success") {
-            alert("Thank you! Your message has been sent.");
-            form.reset();
-            grecaptcha.reset();
-            } else {
-            alert(data.message || "Submission failed. Please try again.");
+            if (!recaptchaToken) {
+                alert("Please complete the reCAPTCHA to continue.");
+                return;
             }
-        })
-        .catch(err => {
-            console.error(err);
-            alert("Server error. Please try again later.");
-        });
+
+            // Create FormData and append token explicitly
+            const formData = new FormData(form);
+            formData.set("g-recaptcha-response", recaptchaToken);
+
+            fetch(scriptURL, {
+                method: "POST",
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log("Server response:", data); // <-- full debug in console
+
+                if (data.result === "success") {
+                    alert("Thank you! Your message has been sent.");
+                    form.reset();
+                    grecaptcha.reset();
+                } else {
+                    const msg = data.message || "Submission failed. Please try again.";
+                    const debug = data.debug ? "\n\nDebug info: " + data.debug : "";
+                    alert(msg + debug);
+                }
+            })
+            .catch(err => {
+                console.error("Fetch error:", err);
+                alert("Server error. Please try again later.");
+            });
         }
     </script>
+
     <script src="//code.tidio.co/ethz6gfhvgyfurnnlucbxwdvtekcobau.js" async></script>
 </body>
 
