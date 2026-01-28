@@ -266,7 +266,7 @@
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     <script>
-        const scriptURL = "https://script.google.com/macros/s/AKfycbwnlaNe14I8l8c1cfbMkw4cxrXabKQhHrTIStDsK8_QvHUwa4ByPZnm8zNPtZkBP8NakQ/exec";
+        const scriptURL = "https://script.google.com/macros/s/AKfycbyJsxHUzHFM4qQAxx02NIGDmCBXrgWw-3oicrPn_1cIleL23g7pfSshed1SO3D5q_4shA/exec";
 
         function submitForm(e) {
             e.preventDefault();
@@ -274,14 +274,14 @@
 
             // ✅ Explicitly get the reCAPTCHA token
             const recaptchaToken = grecaptcha.getResponse();
-            console.log("reCAPTCHA token:", recaptchaToken); // <-- full debug
+            console.log("reCAPTCHA token:", recaptchaToken);
 
             if (!recaptchaToken) {
-                alert("Please complete the reCAPTCHA to continue.");
+                alert("Please complete the reCAPTCHA checkbox before submitting.");
                 return;
             }
 
-            // Create FormData and append token explicitly
+            // Build FormData and explicitly set token
             const formData = new FormData(form);
             formData.set("g-recaptcha-response", recaptchaToken);
 
@@ -291,16 +291,16 @@
             })
             .then(res => res.json())
             .then(data => {
-                console.log("Server response:", data); // <-- full debug in console
+                console.log("Server response:", data);
 
                 if (data.result === "success") {
                     alert("Thank you! Your message has been sent.");
                     form.reset();
                     grecaptcha.reset();
                 } else {
-                    const msg = data.message || "Submission failed. Please try again.";
+                    // Show exact Google debug info
                     const debug = data.debug ? "\n\nDebug info: " + data.debug : "";
-                    alert(msg + debug);
+                    alert(data.message + debug);
                 }
             })
             .catch(err => {
