@@ -277,10 +277,7 @@
         function submitForm(e) {
             e.preventDefault();
             const form = document.getElementById("contactForm");
-
-            // ✅ Explicitly get the reCAPTCHA token
             const recaptchaToken = grecaptcha.getResponse();
-            // console.log("reCAPTCHA token:", recaptchaToken);
 
             if (!recaptchaToken) {
                 alert("Please complete the reCAPTCHA checkbox before submitting.");
