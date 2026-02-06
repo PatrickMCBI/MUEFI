@@ -1,0 +1,45 @@
+{
+  "2026": {
+    "elementary": {
+      "title": "Elementary Council 2026",
+      "description": "Our elementary student leaders.",
+      "officers": [
+        { "name": "Alice Reyes", "position": "President", "photo": "img/ssc/officers/default-image.webp", "bio": "Alice loves organizing events." },
+        { "name": "Juan Dela Cruz", "position": "Vice President", "photo": "img/ssc/officers/default-image.webp", "bio": "Juan is passionate about community service." }
+      ],
+      "programs": [
+        { "name": "Reading Week", "details": "Encouraging literacy across all classes." }
+      ],
+      "announcements": ["Class rep elections coming soon!"],
+      "gallery": ["img/ssc/elem-gallery1.jpg", "img/ssc/elem-gallery2.jpg"]
+    },
+    "juniorhigh": {
+      "title": "Junior High Council 2026",
+      "description": "Building future leaders.",
+      "officers": [
+        { "name": "Maria Santos", "position": "President", "photo": "img/ssc/officers/default-image.webp", "bio": "Maria is an excellent public speaker." }
+      ],
+      "programs": [
+        { "name": "STEM Fair", "details": "Showcasing innovative projects." }
+      ],
+      "announcements": ["Club signups open next week!"],
+      "gallery": ["img/ssc/jhs-gallery1.jpg"]
+    },
+    "seniorhigh": {
+      "title": "Senior High Council 2026",
+      "description": "Guiding and inspiring peers.",
+      "officers": [
+        { "name": "Mark Lim", "position": "President", "photo": "img/ssc/officers/default-image.webp", "bio": "Mark leads with integrity." }
+      ],
+      "programs": [
+        { "name": "Leadership Workshop", "details": "Training student leaders." }
+      ],
+      "announcements": ["Annual leadership retreat announced."],
+      "gallery": ["img/ssc/shs-gallery1.jpg"]
+    },
+    "events": [
+      { "date": "2026-02-20", "title": "Council Election", "details": "Election for class representatives." },
+      { "date": "2026-03-05", "title": "Leadership Camp", "details": "All officers attend leadership training." }
+    ]
+  }
+}
