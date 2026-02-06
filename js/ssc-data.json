@@ -1,45 +1,42 @@
 {
   "2026": {
-    "elementary": {
-      "title": "Elementary Council 2026",
-      "description": "Our elementary student leaders.",
-      "officers": [
-        { "name": "Alice Reyes", "position": "President", "photo": "img/ssc/officers/default-image.webp", "bio": "Alice loves organizing events." },
-        { "name": "Juan Dela Cruz", "position": "Vice President", "photo": "img/ssc/officers/default-image.webp", "bio": "Juan is passionate about community service." }
-      ],
-      "programs": [
-        { "name": "Reading Week", "details": "Encouraging literacy across all classes." }
-      ],
-      "announcements": ["Class rep elections coming soon!"],
-      "gallery": ["img/ssc/elem-gallery1.jpg", "img/ssc/elem-gallery2.jpg"]
-    },
-    "juniorhigh": {
-      "title": "Junior High Council 2026",
-      "description": "Building future leaders.",
-      "officers": [
-        { "name": "Maria Santos", "position": "President", "photo": "img/ssc/officers/default-image.webp", "bio": "Maria is an excellent public speaker." }
-      ],
-      "programs": [
-        { "name": "STEM Fair", "details": "Showcasing innovative projects." }
-      ],
-      "announcements": ["Club signups open next week!"],
-      "gallery": ["img/ssc/jhs-gallery1.jpg"]
-    },
-    "seniorhigh": {
-      "title": "Senior High Council 2026",
-      "description": "Guiding and inspiring peers.",
-      "officers": [
-        { "name": "Mark Lim", "position": "President", "photo": "img/ssc/officers/default-image.webp", "bio": "Mark leads with integrity." }
-      ],
-      "programs": [
-        { "name": "Leadership Workshop", "details": "Training student leaders." }
-      ],
-      "announcements": ["Annual leadership retreat announced."],
-      "gallery": ["img/ssc/shs-gallery1.jpg"]
-    },
+    "announcements": [
+    
+    ],
+
+    "activities": [
+  
+    ],
+
+    "lostfound": [
+      
+      
+    ],
+
     "events": [
-      { "date": "2026-02-20", "title": "Council Election", "details": "Election for class representatives." },
-      { "date": "2026-03-05", "title": "Leadership Camp", "details": "All officers attend leadership training." }
+     
+  
+    ],
+
+    "allOfficers": [
+      { "name": "Merielle Kate L. Ang", "position": "President", "photo": "img/ssc/officers/default-image.webp", "bio": "" },
+      { "name": "Emmanuel Gabriel A. Lim", "position": "Vice President", "photo": "img/ssc/officers/default-image.webp", "bio": "" },
+      { "name": "Juliana Mrich D. Ebillo", "position": "Secretary", "photo": "img/ssc/officers/default-image.webp", "bio": "" },
+      { "name": "Caitlin Joy L. Lim", "position": "Treasurer", "photo": "img/ssc/officers/default-image.webp", "bio": "" },
+      { "name": "Shane Margaret M. Ras", "position": "Auditor", "photo": "img/ssc/officers/default-image.webp", "bio": "" },
+      { "name": "Kester Esmond G. Li", "position": "P. I. O. (Male)", "photo": "img/ssc/officers/default-image.webp", "bio": "" },
+      { "name": "Georgia Isabel F. Lim", "position": "P. I. O. (Female)", "photo": "img/ssc/officers/default-image.webp", "bio": "" },
+      { "name": "Nathan Jacey L. Lim", "position": "Sergeant at Arms (Male)", "photo": "img/ssc/officers/default-image.webp", "bio": "" },
+      { "name": "Ariel Joan L. Ruano", "position": "Sergeant at Arms (Female)", "photo": "img/ssc/officers/default-image.webp", "bio": "" },
+      { "name": "Vaughn Jarelle C. Sollano", "position": "Ambassador", "photo": "img/ssc/officers/default-image.webp", "bio": "" },
+      { "name": "Mica Ella B. Wong", "position": "Ambassadress", "photo": "img/ssc/officers/default-image.webp", "bio": "" },
+      { "name": "Dwight Andrei Y. Chiong", "position": "Grade 10 Representative", "photo": "img/ssc/officers/default-image.webp", "bio": "" },
+      { "name": "Betty Shaine G. See", "position": "Grade 9 Representative", "photo": "img/ssc/officers/default-image.webp", "bio": "" },
+      { "name": "Hannah Caryn C. Lim", "position": "Grade 8 Representative", "photo": "img/ssc/officers/default-image.webp", "bio": "" },
+      { "name": "Merielle Kelsey L. Ang", "position": "Grade 7 Representative", "photo": "img/ssc/officers/default-image.webp", "bio": "" },
+      { "name": "Sharina Bianca Y. See", "position": "Grade 6 Representative", "photo": "img/ssc/officers/default-image.webp", "bio": "" },
+      { "name": "Steffi B. Baguio", "position": "Grade 5 Representative", "photo": "img/ssc/officers/default-image.webp", "bio": "" },
+      { "name": "Leslie Felize Marie A. Lim", "position": "Grade 4 Representative", "photo": "img/ssc/officers/default-image.webp", "bio": "" }
     ]
   }
 }
