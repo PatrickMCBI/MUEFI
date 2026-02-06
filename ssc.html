@@ -212,9 +212,8 @@
 
             <!-- OFFICERS SECTION -->
             <div class="row g-4">
-                <div class="col-12">
+                <div class="col-12 text-center">
                     <h4>Supreme Student Council 2026 Officers</h4>
-                    <input type="text" id="officerSearch" class="form-control my-3" placeholder="Search officer...">
                     <div id="officersSection" class="row g-3"></div>
                 </div>
             </div>
@@ -486,7 +485,7 @@
             sscData.allOfficers.forEach(officer => {
                 container.innerHTML += `
                     <div class="col-md-4">
-                        <div class="card ssc-card shadow-sm border-0 text-center p-3 h-100 officer-card"
+                        <div class="card ssc-card shadow-sm text-center p-3 h-100 officer-card"
                             onclick="openOfficerModal('${officer.name}','${officer.position}','${officer.photo}','${officer.bio}')">
                             <img src="${officer.photo}" class="rounded-circle mx-auto mb-2" width="90">
                             <h6>${officer.name}</h6>
@@ -514,26 +513,7 @@
         }
 
         /* ---------------------------- SEARCH ---------------------------- */
-        document.getElementById("officerSearch").addEventListener("input", function () {
-            const query = this.value.toLowerCase();
-            let anyVisible = false;
-            document.querySelectorAll("#officersSection .officer-card").forEach(card => {
-                const name = card.querySelector("h6").innerText.toLowerCase();
-                const match = name.includes(query);
-                card.style.display = match ? "block" : "none";
-                if (match) anyVisible = true;
-            });
-
-            if (!anyVisible) {
-                if (!document.querySelector("#officersSection .no-officer-message")) {
-                    document.getElementById("officersSection").innerHTML += `<div class="alert alert-warning mt-2 no-officer-message">No officer found.</div>`;
-                }
-            } else {
-                const msg = document.querySelector("#officersSection .no-officer-message");
-                if (msg) msg.remove();
-            }
-        });
-
+  
         document.getElementById("lostFoundSearch").addEventListener("input", function () {
             const query = this.value.toLowerCase();
             let anyVisible = false;
