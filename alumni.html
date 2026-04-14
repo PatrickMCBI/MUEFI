@@ -180,36 +180,60 @@
             </div> -->
         </div>
 
-        <div class="bg-light p-4 rounded-3 border mb-5 text-start">
-            <h3 class="fw-bold text-center ">Find Classmates</h3>
-            <div style="text-align: center;"><small>Coming Soon</small></div>
 
+        <div class="row g-3">
 
-            <div class="row g-2 mb-4 justify-content-center">
-                <div class="col-md-3">
-                    <input type="text" class="form-control form-control-sm" placeholder="Search by Name/Company">
+            <!-- Featured Video -->
+            <div class="col-md-12">
+                <h3 class="mb-3">MUEFI Alumni Grand Homecoming 2026 — Back to Where It All Began: 90 Years of School
+                </h3>
+
+                <div class="ratio ratio-16x9 video-container">
+                    <iframe
+                        src="https://www.facebook.com/plugins/video.php?href=https://www.facebook.com/reel/789850687161132&show_text=false"
+                        style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true"
+                        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
+                    </iframe>
                 </div>
-                <div class="col-md-2">
-                    <select class="form-select form-select-sm">
-                        <option>Filter by Year</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <select class="form-select form-select-sm">
-                        <option>Filter by Industry</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <select class="form-select form-select-sm">
-                        <option>Location</option>
-                    </select>
-                </div>
-                <div class="col-md-1">
-                    <button class="btn btn-dark btn-sm w-100" disabled>Search</button>
+
+                <!-- Description -->
+                <div class="mt-3">
+                    <p>
+                        More than a gathering. A reunion of hearts. A celebration of journeys. Home is where your story
+                        began.<br>
+                        And this <b>coming December 26, 2026. WE COME HOME</b>.
+                    </p>
+
+                    <p class="text-muted">
+                        密三密斯光华中学校友盛大返校盛会：母校九十华诞庆典
+                    </p>
                 </div>
             </div>
 
-            <!-- <div class="row g-3">
+        </div>
+        <div class="bg-light p-4 rounded-3 border mb-5 text-start">
+            <h3 class="fw-bold text-center">Find Classmates</h3>
+
+            <div class="row g-2 mb-4 justify-content-center">
+                <div class="col-md-3">
+                    <input id="searchInput" type="text" class="form-control form-control-sm"
+                        placeholder="Search by Name">
+                </div>
+                <div class="col-md-2">
+                    <select id="yearFilter" class="form-select form-select-sm">
+                        <option value="">All Years</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="results" class="row g-3"></div>
+
+            <div class="d-flex justify-content-center mt-4">
+                <ul id="pagination" class="pagination pagination-sm"></ul>
+            </div>
+        </div>
+
+        <!-- <div class="row g-3">
                 <div class="col-md-4" hide-on-mobile>
                     <div class="card p-2 border shadow-sm">
                         <div class="d-flex align-items-center gap-2">
@@ -228,39 +252,11 @@
                 <div class="col-md-4"><div class="card p-2 border shadow-sm"><div class="d-flex align-items-center gap-2"><div class="bg-secondary opacity-25 rounded" style="width: 50px; height: 50px;"></div><div><h6 class="mb-0 fw-bold small">Harry Marry</h6><p class="mb-0 x-small text-muted" style="font-size: 0.75rem;">Current Industry</p><button class="btn btn-outline-dark btn-sm py-0 px-2 mt-1" style="font-size: 0.65rem;">Contact</button></div></div></div></div>
                 <div class="col-md-4"><div class="card p-2 border shadow-sm"><div class="d-flex align-items-center gap-2"><div class="bg-secondary opacity-25 rounded" style="width: 50px; height: 50px;"></div><div><h6 class="mb-0 fw-bold small">Contamination</h6><p class="mb-0 x-small text-muted" style="font-size: 0.75rem;">Current Role</p><button class="btn btn-outline-dark btn-sm py-0 px-2 mt-1" style="font-size: 0.65rem;">Contact</button></div></div></div></div>
             </div> -->
-        </div>
-        <div class="row g-3">
-
-            <!-- Featured Video -->
-            <div class="col-md-12">
-                <h3 class="mb-3">MUEFI Alumni Grand Homecoming 2026 — Back to Where It All Began: 90 Years of School</h3>
-
-                <div class="ratio ratio-16x9 video-container">
-                    <iframe
-                        src="https://www.facebook.com/plugins/video.php?href=https://www.facebook.com/reel/789850687161132&show_text=false"
-                        style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true"
-                        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
-                    </iframe>
-                </div>
-
-                <!-- Description -->
-                <div class="mt-3">
-                    <p>
-                        More than a gathering. A reunion of hearts. A celebration of journeys. Home is where your story began.<br>
-                        And this <b>coming December 26, 2026. WE COME HOME</b>.
-                    </p>
-
-                    <p class="text-muted">
-                        密三密斯光华中学校友盛大返校盛会：母校九十华诞庆典
-                    </p>
-                </div>
-            </div>
-
-        </div>
-        <div class="mb-5">
-            <h3 class="fw-bold mb-4">Get Involved</h3>
-            <div class="row g-4">
-                <!-- <div class="col-md-4">
+    </div>
+    <div class="mb-5">
+        <h3 class="fw-bold mb-4">Get Involved</h3>
+        <div class="row g-4">
+            <!-- <div class="col-md-4">
                     <div class="card h-100 p-4 border text-center">
                         <div class="mb-3 fs-2">👥</div>
                         <h5 class="fw-bold">Mentorship Program</h5>
@@ -268,26 +264,26 @@
                         <button class="btn btn-outline-dark btn-sm mt-auto">Become a Mentor</button>
                     </div>
                 </div> -->
-                <div class="col-md-6">
-                    <div class="card h-100 p-4 border text-center">
-                        <div class="mb-3 fs-2">💼</div>
-                        <h5 class="fw-bold">Career Services</h5>
-                        <!-- <p class="small text-muted mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</p> -->
-                        <button class="btn btn-outline-dark btn-sm mt-auto">Browse Jobs</button>
-                    </div>
+            <div class="col-md-6">
+                <div class="card h-100 p-4 border text-center">
+                    <div class="mb-3 fs-2">💼</div>
+                    <h5 class="fw-bold">Career Services</h5>
+                    <!-- <p class="small text-muted mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</p> -->
+                    <button class="btn btn-outline-dark btn-sm mt-auto">Browse Jobs</button>
                 </div>
-                <div class="col-md-6">
-                    <div class="card h-100 p-4 border text-center">
-                        <div class="mb-3 fs-2">❤️</div>
-                        <h5 class="fw-bold">Giving Back</h5>
-                        <!-- <p class="small text-muted mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</p> -->
-                        <button class="btn btn-outline-dark btn-sm mt-auto">Donate Now</button>
-                    </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 p-4 border text-center">
+                    <div class="mb-3 fs-2">❤️</div>
+                    <h5 class="fw-bold">Giving Back</h5>
+                    <!-- <p class="small text-muted mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</p> -->
+                    <button class="btn btn-outline-dark btn-sm mt-auto">Donate Now</button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- <div class="mb-5">
+    <!-- <div class="mb-5">
             <h3 class="fw-bold mb-4">Upcoming Reunions</h3>
             <div class="row g-4">
                 <div class="col-md-6">
@@ -559,6 +555,198 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+
+
+    <script>
+        let alumniData = {};
+        let flatData = [];
+        let filteredData = [];
+
+        let currentPage = 1;
+        const perPage = 12;
+
+        // ================= LOAD DATA =================
+        async function loadData() {
+            const res = await fetch('js/muefi_alumni.json'); // adjust path if needed
+            alumniData = await res.json();
+
+            flatData = [];
+
+            Object.keys(alumniData).forEach(year => {
+                alumniData[year].boys.forEach(p => {
+                    flatData.push({ ...p, year, gender: 'Boy' });
+                });
+                alumniData[year].girls.forEach(p => {
+                    flatData.push({ ...p, year, gender: 'Girl' });
+                });
+            });
+
+            populateYearFilter();
+
+            filteredData = flatData;
+            renderPaginated();
+        }
+
+        // ================= FILTER =================
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const year = document.getElementById('yearFilter').value;
+
+            filteredData = flatData;
+
+            if (search) {
+                filteredData = filteredData.filter(p =>
+                    p.name.toLowerCase().includes(search)
+                );
+            }
+
+            if (year) {
+                filteredData = filteredData.filter(p => p.year === year);
+            }
+
+            currentPage = 1;
+            renderPaginated();
+        }
+
+        // ================= RENDER PAGINATED =================
+        function renderPaginated() {
+            const start = (currentPage - 1) * perPage;
+            const end = start + perPage;
+
+            const pageData = filteredData.slice(start, end);
+
+            renderCards(pageData);
+            renderPagination();
+        }
+
+        // ================= CARDS =================
+        function renderCards(data) {
+            const container = document.getElementById('results');
+            container.innerHTML = '';
+
+            if (data.length === 0) {
+                container.innerHTML = '<p class="text-center">No results found</p>';
+                return;
+            }
+
+            data.forEach(person => {
+                container.innerHTML += `
+        <div class="col-md-4">
+            <div class="card p-2 border shadow-sm">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="bg-secondary opacity-25 rounded" style="width: 50px; height: 50px;"></div>
+                    <div>
+                        <h6 class="mb-0 fw-bold small">${person.name}</h6>
+                        <p class="mb-0 text-muted" style="font-size: 0.75rem;">
+                            ${person.year} • ${person.gender}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+            });
+        }
+
+        // ================= SMART PAGINATION =================
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredData.length / perPage);
+            const pagination = document.getElementById('pagination');
+
+            pagination.innerHTML = '';
+            if (totalPages <= 1) return;
+
+            // Prev
+            pagination.innerHTML += `
+        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+            <button class="page-link" onclick="changePage(${currentPage - 1})">Prev</button>
+        </li>
+    `;
+
+            let pages = getSmartPages(currentPage, totalPages);
+
+            pages.forEach(p => {
+                if (p === '...') {
+                    pagination.innerHTML += `
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            `;
+                } else {
+                    pagination.innerHTML += `
+                <li class="page-item ${p === currentPage ? 'active' : ''}">
+                    <button class="page-link" onclick="changePage(${p})">${p}</button>
+                </li>
+            `;
+                }
+            });
+
+            // Next
+            pagination.innerHTML += `
+        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+            <button class="page-link" onclick="changePage(${currentPage + 1})">Next</button>
+        </li>
+    `;
+        }
+
+        // ================= SMART PAGE LOGIC =================
+        function getSmartPages(current, total) {
+            const delta = 2;
+            const pages = [];
+
+            const left = Math.max(2, current - delta);
+            const right = Math.min(total - 1, current + delta);
+
+            pages.push(1);
+
+            if (left > 2) {
+                pages.push('...');
+            }
+
+            for (let i = left; i <= right; i++) {
+                pages.push(i);
+            }
+
+            if (right < total - 1) {
+                pages.push('...');
+            }
+
+            if (total > 1) {
+                pages.push(total);
+            }
+
+            return pages;
+        }
+
+        // ================= CHANGE PAGE =================
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredData.length / perPage);
+
+            if (page < 1 || page > totalPages) return;
+
+            currentPage = page;
+            renderPaginated();
+
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ================= YEAR FILTER =================
+        function populateYearFilter() {
+            const select = document.getElementById('yearFilter');
+            const years = Object.keys(alumniData).sort().reverse();
+
+            years.forEach(y => {
+                const opt = document.createElement('option');
+                opt.value = y;
+                opt.textContent = y;
+                select.appendChild(opt);
+            });
+        }
+
+        // ================= EVENTS =================
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('yearFilter').addEventListener('change', applyFilters);
+
+        // ================= INIT =================
+        loadData();
+    </script>
     <script>
         const counters = document.querySelectorAll('.count');
         const speed = 150;
