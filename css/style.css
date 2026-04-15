@@ -494,3 +494,79 @@
   .youtube-link-btn:hover {
     background: rgba(255, 0, 0, 1);
   }
+
+   /* Hide Google Translate top bar */
+        iframe.goog-te-banner-frame {
+            display: none !important;
+        }
+
+        /* Prevent page from shifting down */
+        body {
+            top: 0px !important;
+        }
+
+        /* Hide Google translate popup */
+        .goog-te-banner-frame.skiptranslate {
+            display: none !important;
+        }
+
+        /* Optional: hide tooltip */
+        #goog-gt-tt {
+            display: none !important;
+        }
+
+        .skiptranslate {
+            display: none !important;
+        }
+
+        .lang-switcher {
+            position: relative;
+            width: 140px;
+            font-family: Arial, sans-serif;
+        }
+
+        .lang-btn {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 6px 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .lang-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            z-index: 999;
+            overflow: hidden;
+        }
+
+        .lang-item {
+            padding: 8px 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .lang-item:hover {
+            background: #f2f2f2;
+        }
+
+        .flag-icon {
+            width: 18px;
+        }
+
+        .notranslate {
+            unicode-bidi: isolate;
+        }
