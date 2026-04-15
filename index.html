@@ -60,6 +60,83 @@
 
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+    <style>
+        /* Hide Google Translate top bar */
+        iframe.goog-te-banner-frame {
+            display: none !important;
+        }
+
+        /* Prevent page from shifting down */
+        body {
+            top: 0px !important;
+        }
+
+        /* Hide Google translate popup */
+        .goog-te-banner-frame.skiptranslate {
+            display: none !important;
+        }
+
+        /* Optional: hide tooltip */
+        #goog-gt-tt {
+            display: none !important;
+        }
+
+        .skiptranslate {
+            display: none !important;
+        }
+
+        .lang-switcher {
+            position: relative;
+            width: 140px;
+            font-family: Arial, sans-serif;
+        }
+
+        .lang-btn {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 6px 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .lang-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            z-index: 999;
+            overflow: hidden;
+        }
+
+        .lang-item {
+            padding: 8px 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .lang-item:hover {
+            background: #f2f2f2;
+        }
+
+        .flag-icon {
+            width: 18px;
+        }
+
+        .notranslate {
+            unicode-bidi: isolate;
+        }
+    </style>
 </head>
 
 
@@ -72,8 +149,7 @@
         </div>
     </div>
     <!-- Spinner End -->
-
-
+    <div id="google_translate_element" style="display:none;"></div>
     <!-- Navbar Start -->
     <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
         <a href="/" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
@@ -96,7 +172,26 @@
                 <a href="alumni" class="nav-item nav-link">Alumni</a>
                 <a href="contact" class="nav-item nav-link">Contact</a>
             </div>
+            <div class="lang-switcher me-3 notranslate p-2">
+                <div class="lang-btn" id="langBtn">
+                    <span id="selectedLang">
+                        <i class="fas fa-globe"></i> English
+                    </span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+
+                <div class="lang-menu" id="langMenu">
+                    <div class="lang-item notranslate" data-lang="en" data-label="English">
+                        <span>en</span> English
+                    </div>
+
+                    <div class="lang-item notranslate" data-lang="zh-CN" data-label="中文">
+                        <span>🇨🇳</span> 中文
+                    </div>
+                </div>
+            </div>
         </div>
+
     </nav>
     <!-- Navbar End -->
 
@@ -228,8 +323,8 @@
         </div>
     </div>
 
-    
-    
+
+
 
     <!-- About Start -->
     <!-- <div class="container-xxl py-5">
@@ -258,7 +353,7 @@
                             <a href="about" class="btn btn-primary py-md-3 px-md-5 me-3">Read More</a>
                         </div>
                     </div> -->
-                    <!-- <div class="row gy-2 gx-4 mb-4">
+    <!-- <div class="row gy-2 gx-4 mb-4">
                         <div class="col-sm-12">
                             <p class="mb-2">
                                 <a class="text-decoration-none" data-bs-toggle="collapse" href="#abmDescription" role="button" aria-expanded="false" aria-controls="abmDescription">
@@ -288,7 +383,7 @@
                             </div>
                         </div>
                     </div> -->
-                <!-- </div>
+    <!-- </div>
             </div>
         </div>
     </div> -->
@@ -322,7 +417,8 @@
                                 <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="muefiEnrollmentModalLabel">Enrollment for S.Y 2026-2027</h5>
+                                            <h5 class="modal-title" id="muefiEnrollmentModalLabel">Enrollment for S.Y
+                                                2026-2027</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>
@@ -337,7 +433,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="col-lg-6 col-md-6 wow zoomIn" data-wow-delay="0.3s">
                             <a class="position-relative d-block overflow-hidden" href="#" data-bs-toggle="modal"
                                 data-bs-target="#summerClassModal">
@@ -689,8 +785,8 @@
             <h6 class="section-title bg-white text-center text-primary px-3">School Hymn</h6>
         </div>
         <div class="row">
-             <div class="col-md-12 wow fadeInUp" data-wow-delay="0.5s">
-                   
+            <div class="col-md-12 wow fadeInUp" data-wow-delay="0.5s">
+
                 <div class="ratio ratio-16x9 video-container">
                     <iframe src="https://www.youtube.com/embed/itKI1PmanYY?rel=0"
                         title="Misamis Union High School School Hymn" allowfullscreen>
@@ -809,6 +905,111 @@
         counters.forEach(counter => observer.observe(counter));
     </script>
     <script src="//code.tidio.co/ethz6gfhvgyfurnnlucbxwdvtekcobau.js" async></script>
+    <script>
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
+
+        let isTranslating = false;
+
+        function setLanguage(lang, label) {
+            const select = document.querySelector(".goog-te-combo");
+            if (!select || isTranslating) return;
+
+            isTranslating = true;
+
+            select.value = lang;
+            select.dispatchEvent(new Event("change"));
+
+            // ✅ Force correct HTML lang (fixes "auto" issue)
+            document.documentElement.setAttribute("lang", lang);
+
+            // Update UI label
+            document.getElementById("selectedLang").innerHTML =
+                `<i class="fas fa-globe"></i> ${label}`;
+
+            // Save preference
+            localStorage.setItem("lang", lang);
+            localStorage.setItem("langLabel", label);
+
+            setTimeout(() => {
+                isTranslating = false;
+            }, 1500);
+        }
+
+        /* Toggle dropdown */
+        document.getElementById("langBtn").addEventListener("click", function (e) {
+            e.stopPropagation();
+            const menu = document.getElementById("langMenu");
+            menu.style.display = menu.style.display === "block" ? "none" : "block";
+        });
+
+        /* Language selection */
+        document.querySelectorAll(".lang-item").forEach(item => {
+            item.addEventListener("click", function () {
+                const lang = this.getAttribute("data-lang");
+                const label = this.getAttribute("data-label");
+
+                setLanguage(lang, label);
+
+                document.getElementById("langMenu").style.display = "none";
+            });
+        });
+
+        /* Load saved language */
+        window.addEventListener("load", () => {
+            const savedLang = localStorage.getItem("lang") || "en";
+            const savedLabel = localStorage.getItem("langLabel") || "English";
+
+            setTimeout(() => {
+                setLanguage(savedLang, savedLabel);
+            }, 1200);
+        });
+
+        /* Close dropdown when clicking outside */
+        document.addEventListener("click", function (e) {
+            const switcher = document.querySelector(".lang-switcher");
+            if (!switcher.contains(e.target)) {
+                document.getElementById("langMenu").style.display = "none";
+            }
+        });
+
+        /* 🔥 FIX: Prevent Google Translate resetting lang="auto" */
+        const langobserver = new MutationObserver(() => {
+            const savedLang = localStorage.getItem("lang") || "en";
+
+            if (document.documentElement.getAttribute("lang") === "auto") {
+                document.documentElement.setAttribute("lang", savedLang);
+            }
+        });
+
+        langobserver.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ["lang"]
+        });
+
+        /* Optional: Ensure Google element is ready before first run */
+        function waitForGoogleTranslate() {
+            const check = setInterval(() => {
+                if (document.querySelector(".goog-te-combo")) {
+                    clearInterval(check);
+
+                    const savedLang = localStorage.getItem("lang") || "en";
+                    const savedLabel = localStorage.getItem("langLabel") || "English";
+
+                    setLanguage(savedLang, savedLabel);
+                }
+            }, 300);
+        }
+
+        window.addEventListener("load", waitForGoogleTranslate);
+    </script>
+
+    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
 </body>
 
 </html>
