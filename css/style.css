@@ -570,10 +570,11 @@
         .notranslate {
             unicode-bidi: isolate;
         }
+/* ==========================================
+   VIDEO BANNER
+========================================== */
 
-        .video-banner {
-    position: relative;
-    width: 100%;
+.video-banner {
     height: 90vh;
     overflow: hidden;
 }
@@ -585,22 +586,95 @@
     object-position: center;
 }
 
-/* Mobile */
-@media (max-width: 768px) {
+
+/* ==========================================
+   ANNIVERSARY MESSAGE
+========================================== */
+
+.anniversary-message {
+    background-color: #930a0a;
+}
+
+.anniversary-text {
+    color: #fff;
+    font-size: 3rem;
+    line-height: 1.35;
+    font-family: -webkit-body;
+    text-align: justify;
+}
+
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (max-width: 991.98px) {
+
     .video-banner {
         height: 70vh;
     }
 
-    .video-banner video {
-        object-position: center;
+    .anniversary-text {
+        font-size: 2.2rem;
+        line-height: 1.4;
     }
+    .video-banner video{
+        object-fit: contain;
+    }
+
 }
 
-/* Small phones */
-@media (max-width: 480px) {
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 767.98px) {
+
     .video-banner {
-        height: 60vh;
+        height: 55vh;
     }
+
+    .anniversary-message {
+        padding-top: 3rem !important;
+        padding-bottom: 3rem !important;
+    }
+
+    .anniversary-text {
+        font-size: 1.5rem;
+        line-height: 1.6;
+        text-align: left;
+    }
+    .video-banner video{
+        object-fit: contain;
+    }
+
+}
+
+
+/* ==========================================
+   SMALL MOBILE
+========================================== */
+
+@media (max-width: 575.98px) {
+
+    .video-banner {
+        height: 45vh;
+    }
+
+    .anniversary-message {
+        padding-top: 2.5rem !important;
+        padding-bottom: 2.5rem !important;
+    }
+
+    .anniversary-text {
+        font-size: 1.3rem;
+        line-height: 1.65;
+    }
+    .video-banner video{
+        object-fit: contain;
+    }
+
 }
 /* Enrollment section */
 .enrollment-section {
