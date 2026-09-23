@@ -660,6 +660,7 @@
 
     .video-banner {
         height: 45vh;
+        background-color: #373737;
     }
 
     .anniversary-message {
@@ -673,7 +674,9 @@
     }
     .video-banner video{
         object-fit: contain;
+
     }
+    
 
 }
 /* Enrollment section */
