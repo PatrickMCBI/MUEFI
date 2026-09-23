@@ -11,6 +11,7 @@ RewriteRule ^$ index.html [L]
 # Example: /about -> about.html
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^home$ home.html [L]
 RewriteRule ^about$ about.html [L]
 RewriteRule ^courses$ courses.html [L]
 RewriteRule ^admission$ admission.html [L]
