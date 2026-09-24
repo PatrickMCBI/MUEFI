@@ -25,5 +25,23 @@
     "date": "On-going",
     "image": "img/2026/muefi-enrollment.webp",
     "content": "Enrollment Period: On-going"
+  },
+  {
+    "id": 4,
+    "title": "90th Anniversary of MUEFI Family Day",
+    "category": "Announcement",
+    "description": "Celebrate our 90 years of excellence!",
+    "date": "September 25, 2027",
+    "image": "img/anniversary/90th-anniversary-family-day.jpg",
+    "content": "Join us for a special celebration of our 90 years of excellence!"
+  },
+  {
+    "id": 5,
+    "title": "90th Anniversary of MUEFI Schedule",
+    "category": "Announcement",
+    "description": "Mark your calendars for our 90th Anniversary events!",
+    "date": "September 15, 2027",
+    "image": "img/anniversary/90th-anniversary-schedule.jpg",
+    "content": "Join us for a night of celebration and reflection on our journey."
   }
 ]

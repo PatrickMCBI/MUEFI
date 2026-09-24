@@ -1,0 +1,1119 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title>Teacher Portal | MUEFI</title>
+
+  <style>
+    :root {
+      --brand: #9b1c1c;
+      --brand-dark: #6f1212;
+      --ink: #1f2933;
+      --muted: #667085;
+      --line: #e4e7ec;
+      --bg: #f6f7f9;
+      --success: #067647;
+      --danger: #b42318;
+      --font:
+        system-ui,
+        -apple-system,
+        "Segoe UI",
+        "Noto Sans SC",
+        sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header,
+    footer {
+      background: #fff;
+    }
+
+    header {
+      border-bottom: 1px solid var(--line);
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 20px;
+      text-align: center;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .bar {
+      max-width: 1200px;
+      margin: auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .logo {
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--brand);
+      margin-right: auto;
+    }
+
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    #login {
+      max-width: 420px;
+      margin: 40px auto;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 1.5rem;
+    }
+
+    h2 {
+      margin: 0 0 6px;
+      font-size: 1.2rem;
+    }
+
+    .sub {
+      color: var(--muted);
+      margin: 0 0 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin: 14px 0 6px;
+      font-size: .9rem;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font: inherit;
+      background: #fff;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .btn {
+      background: var(--brand);
+      color: #fff;
+      border: 0;
+      border-radius: 8px;
+      padding: 12px 18px;
+      font-weight: 600;
+    }
+
+    .btn:hover {
+      background: var(--brand-dark);
+    }
+
+    .btn.full {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .btn.secondary {
+      background: #fff;
+      color: var(--brand);
+      border: 1px solid var(--brand);
+    }
+
+    .err {
+      color: var(--danger);
+      margin: 12px 0 0;
+      min-height: 1.4em;
+    }
+
+    .success {
+      color: var(--success);
+      min-height: 1.4em;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .teacher-info {
+      color: var(--muted);
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns:
+        repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns:
+        300px 1fr;
+      gap: 20px;
+    }
+
+    .students {
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .student {
+      width: 100%;
+      text-align: left;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+    }
+
+    .student:hover,
+    .student.active {
+      border-color: var(--brand);
+      background: #fff7f7;
+    }
+
+    .student strong {
+      display: block;
+    }
+
+    .student small {
+      color: var(--muted);
+    }
+
+    .grade-grid {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: .85rem;
+    }
+
+    td input,
+    td select {
+      min-width: 110px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .empty {
+      padding: 30px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 800px) {
+      main {
+        margin: 16px auto;
+        padding: 0 12px;
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+      .filters {
+        grid-template-columns: 1fr;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .students {
+        max-height: 280px;
+      }
+
+      .top {
+        flex-direction: column;
+      }
+
+      .top .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="bar">
+    <a class="logo" href="/">
+      MUEFI
+    </a>
+
+    <strong>
+      Teacher Portal
+    </strong>
+  </div>
+</header>
+
+<main>
+
+  <!-- LOGIN -->
+
+  <form
+    id="login"
+    class="card"
+  >
+
+    <h1>
+      Teacher Login
+    </h1>
+
+    <p class="sub">
+      Sign in to manage student grades.
+    </p>
+
+    <label for="teacherId">
+      Teacher ID
+    </label>
+
+    <input
+      id="teacherId"
+      autocomplete="username"
+      required
+    >
+
+    <label for="pin">
+      PIN
+    </label>
+
+    <input
+      id="pin"
+      type="password"
+      inputmode="numeric"
+      autocomplete="current-password"
+      required
+    >
+
+    <p
+      id="loginError"
+      class="err"
+      role="alert"
+    ></p>
+
+    <button
+      class="btn full"
+      type="submit"
+    >
+      Login
+    </button>
+
+  </form>
+
+
+  <!-- DASHBOARD -->
+
+  <section
+    id="dashboard"
+    hidden
+  >
+
+    <div class="top">
+
+      <div>
+        <h1>
+          Teacher Dashboard
+        </h1>
+
+        <p
+          id="teacherInfo"
+          class="teacher-info"
+        ></p>
+      </div>
+
+      <button
+        id="logout"
+        class="btn secondary"
+      >
+        Log out
+      </button>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="filters">
+
+        <div>
+          <label>
+            School Year
+          </label>
+
+          <select id="schoolYear">
+            <option value="2026-2027">
+              2026-2027
+            </option>
+            <option value="2027-2028">
+              2027-2028
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label>
+            Quarter
+          </label>
+
+          <select id="quarter">
+            <option value="Q1">Q1</option>
+            <option value="Q2">Q2</option>
+            <option value="Q3">Q3</option>
+            <option value="Q4">Q4</option>
+          </select>
+        </div>
+
+        <div>
+          <label>
+            Grade Level
+          </label>
+
+          <input
+            id="gradeLevel"
+            readonly
+          >
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div
+      class="layout"
+      style="margin-top:20px;"
+    >
+
+      <!-- STUDENTS -->
+
+      <div class="card">
+
+        <h2>
+          Students
+        </h2>
+
+        <p class="sub">
+          Select a student.
+        </p>
+
+        <div
+          id="students"
+          class="students"
+        ></div>
+
+      </div>
+
+
+      <!-- GRADES -->
+
+      <div class="card">
+
+        <h2 id="studentName">
+          Select a student
+        </h2>
+
+        <p
+          id="studentMeta"
+          class="sub"
+        ></p>
+
+        <p
+          id="saveMessage"
+          class="success"
+        ></p>
+
+        <div class="grade-grid">
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>Quarter</th>
+                <th>Subject</th>
+                <th>Grade</th>
+                <th>Remarks</th>
+                <th></th>
+              </tr>
+            </thead>
+
+            <tbody id="gradeBody"></tbody>
+
+          </table>
+
+        </div>
+
+        <div class="actions">
+
+          <button
+            id="addGrade"
+            class="btn secondary"
+            type="button"
+          >
+            + Add Subject
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<footer>
+  © MUEFI, All Rights Reserved.
+  Designed By
+  <a href="https://kodewrk.com">
+    <u>Kodewrk</u>
+  </a>
+</footer>
+
+
+<script>
+  const $ = (id) =>
+    document.getElementById(id);
+
+  let teacher = null;
+  let selectedStudent = null;
+  let grades = [];
+
+  const subjects = [
+    'Chinese',
+    'English',
+    'Filipino',
+    'Mathematics',
+    'Science',
+    'Araling Panlipunan',
+    'MAPEH',
+    'TLE',
+    'ESP',
+  ];
+
+
+  async function api(
+    url,
+    options = {}
+  ) {
+    const response =
+      await fetch(
+        url,
+        options
+      );
+
+    let data = null;
+
+    try {
+      data =
+        await response.json();
+    } catch {
+      data = {};
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+        'Request failed'
+      );
+    }
+
+    return data;
+  }
+
+
+  async function login(
+    event
+  ) {
+    event.preventDefault();
+
+    $('loginError')
+      .textContent = '';
+
+    try {
+      const data =
+        await api(
+          '/api/teacher/login',
+          {
+            method: 'POST',
+
+            headers: {
+              'content-type':
+                'application/json',
+            },
+
+            body: JSON.stringify({
+              teacherId:
+                $('teacherId').value,
+
+              pin:
+                $('pin').value,
+            }),
+          }
+        );
+
+      teacher =
+        data.teacher;
+
+      $('pin').value = '';
+
+      $('login').hidden = true;
+
+      $('dashboard').hidden = false;
+
+      $('teacherInfo')
+        .textContent =
+          `${teacher.name} · ` +
+          `${teacher.gradeLevel}` +
+          (
+            teacher.section
+              ? ` · Section ${teacher.section}`
+              : ''
+          );
+
+      $('gradeLevel').value =
+        teacher.gradeLevel;
+
+      await loadStudents();
+
+    } catch (error) {
+      $('loginError')
+        .textContent =
+          error.message === 'locked'
+            ? 'Too many attempts. Try again later.'
+            : 'Teacher ID or PIN is incorrect.';
+    }
+  }
+
+
+  async function loadStudents() {
+    const data =
+      await api(
+        '/api/teacher/students'
+      );
+
+    const container =
+      $('students');
+
+    container.replaceChildren();
+
+    if (!data.students.length) {
+      container.innerHTML =
+        '<div class="empty">No students found.</div>';
+
+      return;
+    }
+
+    data.students.forEach(
+      (student) => {
+
+        const button =
+          document.createElement(
+            'button'
+          );
+
+        button.className =
+          'student';
+
+        button.type =
+          'button';
+
+        button.dataset.id =
+          student.id;
+
+        const strong =
+          document.createElement(
+            'strong'
+          );
+
+        strong.textContent =
+          student.name;
+
+        const small =
+          document.createElement(
+            'small'
+          );
+
+        small.textContent =
+          `${student.id} · ${student.section}`;
+
+        button.append(
+          strong,
+          small
+        );
+
+        button.onclick =
+          () =>
+            selectStudent(
+              student
+            );
+
+        container.append(
+          button
+        );
+      }
+    );
+  }
+
+
+  async function selectStudent(
+    student
+  ) {
+    selectedStudent =
+      student;
+
+    document
+      .querySelectorAll(
+        '.student'
+      )
+      .forEach(
+        (button) => {
+          button.classList.toggle(
+            'active',
+            button.dataset.id ===
+              student.id
+          );
+        }
+      );
+
+    $('studentName')
+      .textContent =
+        student.name;
+
+    $('studentMeta')
+      .textContent =
+        `${student.id} · ` +
+        `${student.gradeLevel} · ` +
+        `${student.section}`;
+
+    $('saveMessage')
+      .textContent = '';
+
+    await loadGrades();
+  }
+
+
+  async function loadGrades() {
+  if (!selectedStudent || !selectedStudent.id) {
+    console.log('LOAD GRADES: no student selected');
+    $('gradeBody').replaceChildren();
+    return;
+  }
+
+  const studentId = String(selectedStudent.id).trim();
+  const schoolYear = String($('schoolYear').value).trim();
+
+  const params = new URLSearchParams();
+
+  params.set('studentId', studentId);
+  params.set('schoolYear', schoolYear);
+
+  const url = `/api/teacher/grades?${params.toString()}`;
+
+  console.log('LOAD GRADES URL:', url);
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      },
+      credentials: 'same-origin',
+    });
+
+    const raw = await response.text();
+
+    console.log('LOAD GRADES STATUS:', response.status);
+    console.log('LOAD GRADES RAW:', raw);
+
+    let data;
+
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      throw new Error(
+        `Server returned invalid response: ${raw.substring(0, 200)}`
+      );
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || `Failed to load grades (${response.status})`
+      );
+    }
+
+    grades = (data.grades || []).filter(
+      grade =>
+        grade.quarter === $('quarter').value
+    );
+
+    renderGrades();
+
+  } catch (error) {
+    console.error('LOAD GRADES ERROR:', error);
+
+    $('saveMessage').textContent =
+      error.message || 'Failed to load grades.';
+  }
+}
+
+
+  function renderGrades() {
+    const body =
+      $('gradeBody');
+
+    body.replaceChildren();
+
+    if (!selectedStudent) {
+      return;
+    }
+
+    grades.forEach(
+      (grade, index) => {
+
+        const tr =
+          document.createElement(
+            'tr'
+          );
+
+        const quarter =
+          document.createElement(
+            'td'
+          );
+
+        quarter.textContent =
+          grade.quarter;
+
+        const subject =
+          document.createElement(
+            'td'
+          );
+
+        const select =
+          document.createElement(
+            'select'
+          );
+
+        subjects.forEach(
+          (name) => {
+            const option =
+              document.createElement(
+                'option'
+              );
+
+            option.value =
+              name;
+
+            option.textContent =
+              name;
+
+            if (
+              name.toLowerCase() ===
+              String(
+                grade.subject
+              ).toLowerCase()
+            ) {
+              option.selected =
+                true;
+            }
+
+            select.append(
+              option
+            );
+          }
+        );
+
+        subject.append(
+          select
+        );
+
+
+        const gradeCell =
+          document.createElement(
+            'td'
+          );
+
+        const gradeInput =
+          document.createElement(
+            'input'
+          );
+
+        gradeInput.type =
+          'number';
+
+        gradeInput.min = 0;
+        gradeInput.max = 100;
+        gradeInput.step = '0.01';
+
+        gradeInput.value =
+          grade.grade ?? '';
+
+        gradeCell.append(
+          gradeInput
+        );
+
+
+        const remarksCell =
+          document.createElement(
+            'td'
+          );
+
+        const remarksInput =
+          document.createElement(
+            'input'
+          );
+
+        remarksInput.value =
+          grade.remarks ?? '';
+
+        remarksCell.append(
+          remarksInput
+        );
+
+
+        const actionCell =
+          document.createElement(
+            'td'
+          );
+
+        const saveButton =
+          document.createElement(
+            'button'
+          );
+
+        saveButton.type =
+          'button';
+
+        saveButton.className =
+          'btn';
+
+        saveButton.textContent =
+          'Save';
+
+        saveButton.onclick =
+          async () => {
+
+            await saveGrade({
+              subject:
+                select.value,
+
+              grade:
+                gradeInput.value,
+
+              remarks:
+                remarksInput.value,
+            });
+          };
+
+        actionCell.append(
+          saveButton
+        );
+
+        tr.append(
+          quarter,
+          subject,
+          gradeCell,
+          remarksCell,
+          actionCell
+        );
+
+        body.append(
+          tr
+        );
+      }
+    );
+  }
+
+
+  $('addGrade').onclick =
+    () => {
+
+      if (!selectedStudent) {
+        alert(
+          'Please select a student first.'
+        );
+
+        return;
+      }
+
+      const quarter =
+        $('quarter').value;
+
+      grades.push({
+        quarter,
+        subject: subjects[0],
+        grade: '',
+        remarks: '',
+      });
+
+      renderGrades();
+    };
+
+
+  async function saveGrade(grade) {
+  if (!selectedStudent || !selectedStudent.id) {
+    $('saveMessage').textContent = 'Please select a student first.';
+    return;
+  }
+
+  $('saveMessage').textContent = 'Saving...';
+
+  const payload = {
+    studentId: selectedStudent.id,
+    schoolYear: $('schoolYear').value,
+    quarter: $('quarter').value,
+    subject: grade.subject,
+    grade: grade.grade,
+    remarks: grade.remarks,
+  };
+
+  console.log('SAVE PAYLOAD:', payload);
+
+  try {
+    const response = await fetch('/api/teacher/grades', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify(payload),
+    });
+
+    const raw = await response.text();
+
+    console.log('SAVE STATUS:', response.status);
+    console.log('SAVE RAW RESPONSE:', raw);
+
+    let data;
+
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      throw new Error(
+        `Server returned invalid response: ${raw.substring(0, 200)}`
+      );
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || `Save failed (${response.status})`
+      );
+    }
+
+    $('saveMessage').textContent =
+      data.message ||
+      (data.action === 'updated'
+        ? 'Grade updated successfully.'
+        : 'Grade saved successfully.');
+
+    await loadGrades();
+
+  } catch (error) {
+    console.error('SAVE ERROR:', error);
+
+    $('saveMessage').textContent =
+      error.message || 'Failed to save grade.';
+  }
+}
+
+
+  $('quarter').onchange =
+    loadGrades;
+
+  $('schoolYear').onchange =
+    loadGrades;
+
+
+  $('logout').onclick =
+    async () => {
+
+      await fetch(
+        '/api/logout',
+        {
+          method: 'POST',
+        }
+      );
+
+      location.reload();
+    };
+
+
+  $('login').onsubmit =
+    login;
+</script>
+
+</body>
+</html>

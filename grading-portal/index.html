@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parent Portal | MUEFI</title>
+<style>
+:root{ /* TODO: replace these with the real colors and font from the existing muefi-edu.com CSS */
+  --brand:#9b1c1c; --brand-dark:#6f1212; --ink:#1f2933; --muted:#667085; --line:#e4e7ec; --bg:#f6f7f9;
+  --font:system-ui,-apple-system,"Segoe UI","Noto Sans SC",sans-serif; }
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.5;min-height:100vh;display:flex;flex-direction:column}
+a{color:inherit;text-decoration:none}
+header,footer{background:#fff}
+header{border-bottom:1px solid var(--line)}
+footer{border-top:1px solid var(--line);padding:20px;text-align:center;color:var(--muted);font-size:.9rem}
+.bar{max-width:1100px;margin:auto;padding:14px 20px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.logo{font-weight:800;font-size:1.25rem;color:var(--brand);margin-right:auto}
+nav{display:flex;gap:18px;flex-wrap:wrap;font-size:.95rem}
+nav a:hover{color:var(--brand)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+main{flex:1;width:100%;max-width:1100px;margin:32px auto;padding:0 20px}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:28px}
+#login{max-width:420px;margin:40px auto}
+h1{margin:0 0 6px;font-size:1.5rem}
+.sub{color:var(--muted);margin:0 0 20px}
+label{display:block;font-weight:600;margin:14px 0 6px;font-size:.9rem}
+input,select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff}
+button{font:inherit;cursor:pointer}
+.btn{background:var(--brand);color:#fff;border:0;border-radius:8px;padding:12px 18px;font-weight:600;width:100%;margin-top:20px}
+.btn:hover{background:var(--brand-dark)}
+.link{background:none;border:0;color:var(--brand);font-weight:600;padding:4px}
+.err{color:#b42318;margin:12px 0 0;min-height:1.4em}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.tools{display:flex;gap:12px;align-items:center}
+.tools select,#lang{width:auto}
+.wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:480px}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line)}
+th{font-size:.85rem;color:var(--muted);font-weight:600}
+td.g{font-variant-numeric:tabular-nums;font-weight:600}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header><div class="bar">
+  <a class="logo" href="/">MUEFI</a>
+  <nav>
+    <a href="/home">Home</a><a href="/about">About</a><a href="/event">Event</a><a href="/admission">Admission</a><a href="/ssc">SSC</a><a href="/alumni">Alumni</a><a href="/contact">Contact</a>
+  </nav>
+  <select id="lang" aria-label="Language"><option value="en">English</option><option value="zh">🇨🇳 中文</option></select>
+</div></header>
+
+<main>
+  <form id="login" class="card">
+    <h1 data-t="title"></h1>
+    <p class="sub" data-t="sub"></p>
+    <label for="sid" data-t="sid"></label>
+    <input id="sid" autocomplete="username" autocapitalize="characters" required>
+    <label for="pin" data-t="pin"></label>
+    <input id="pin" type="password" inputmode="numeric" autocomplete="current-password" required>
+    <p class="err" id="err" role="alert"></p>
+    <button class="btn" data-t="login"></button>
+  </form>
+
+  <section id="grades" class="card" hidden>
+    <div class="head">
+      <div><h1 id="name"></h1><p class="sub" id="meta"></p></div>
+      <div class="tools"><select id="year" aria-label="School year"></select><button class="link" id="out" data-t="logout"></button></div>
+    </div>
+    <div class="wrap"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+  </section>
+</main>
+
+<footer>
+  (088) 521 0042<br>
+  © MUEFI, All Right Reserved. Designed By <a href="https://kodewrk.com"><u>Kodewrk</u></a>
+</footer>
+
+<script>
+const T = {
+  en:{title:'Parent Portal',sub:"View your child's grades.",sid:'Student ID',pin:'Parent PIN',login:'View grades',logout:'Log out',subject:'Subject',remarks:'Remarks',bad:'Student ID or PIN is incorrect.',locked:'Too many attempts. Try again in 15 minutes.',fail:'Something went wrong. Please try again.',empty:'No grades posted yet.',year:'SY'},
+  zh:{title:'家长专区',sub:'查看孩子的成绩。',sid:'学号',pin:'家长密码',login:'查看成绩',logout:'退出登录',subject:'科目',remarks:'备注',bad:'学号或密码不正确。',locked:'尝试次数过多，请15分钟后再试。',fail:'出现问题，请重试。',empty:'暂无成绩。',year:'学年'}
+};
+const $ = (id) => document.getElementById(id);
+const t = (k) => T[lang][k];
+const cell = (tag, text, cls) => { const c = document.createElement(tag); c.textContent = text; if (cls) c.className = cls; return c; };
+let lang = localStorage.getItem('lang') || 'en', data = null;
+
+function applyLang() {
+  document.documentElement.lang = lang;
+  $('lang').value = lang;
+  document.querySelectorAll('[data-t]').forEach((n) => (n.textContent = t(n.dataset.t)));
+  if (data) render();
+}
+
+function render() {
+  const { student, grades } = data;
+  $('name').textContent = student.name;
+  $('meta').textContent = [student.level, student.section, student.id].filter(Boolean).join(', ');
+  const years = [...new Set(grades.map((g) => g.year))];
+  const sel = $('year'), cur = years.includes(sel.value) ? sel.value : years[years.length - 1];
+  sel.replaceChildren(...years.map((y) => { const o = cell('option', `${t('year')} ${y}`); o.value = y; return o; }));
+  sel.value = cur;
+  const rows = grades.filter((g) => g.year === cur);
+  const quarters = [...new Set(rows.map((r) => r.quarter))];
+  const subjects = [...new Set(rows.map((r) => r.subject))];
+  const head = document.createElement('tr');
+  head.append(cell('th', t('subject')), ...quarters.map((q) => cell('th', q)), cell('th', t('remarks')));
+  $('thead').replaceChildren(head);
+  const body = subjects.map((s) => {
+    const mine = rows.filter((r) => r.subject === s), tr = document.createElement('tr');
+    tr.append(cell('td', s), ...quarters.map((q) => cell('td', mine.find((r) => r.quarter === q)?.grade ?? '-', 'g')),
+      cell('td', mine.map((r) => r.remarks).filter(Boolean).pop() || ''));
+    return tr;
+  });
+  if (!body.length) { const tr = document.createElement('tr'); tr.append(cell('td', t('empty'))); body.push(tr); }
+  $('tbody').replaceChildren(...body);
+}
+
+async function load() {
+  const r = await fetch('/api/grades');
+  if (!r.ok) return false;
+  data = await r.json();
+  $('login').hidden = true; $('grades').hidden = false;
+  render();
+  return true;
+}
+
+$('login').onsubmit = async (e) => {
+  e.preventDefault(); $('err').textContent = '';
+  try {
+    const r = await fetch('/api/login', { method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ studentId: $('sid').value, pin: $('pin').value }) });
+    if (!r.ok) { $('err').textContent = t(r.status === 401 ? 'bad' : r.status === 429 ? 'locked' : 'fail'); return; }
+    $('pin').value = '';
+    if (!(await load())) $('err').textContent = t('fail');
+  } catch { $('err').textContent = t('fail'); }
+};
+$('out').onclick = async () => { await fetch('/api/logout', { method: 'POST' }); data = null; $('grades').hidden = true; $('login').hidden = false; };
+$('year').onchange = render;
+$('lang').onchange = (e) => { lang = e.target.value; localStorage.setItem('lang', lang); applyLang(); };
+applyLang(); load();
+</script>
+</body>
+</html>
