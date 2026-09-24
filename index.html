@@ -298,53 +298,7 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
-    <script>
-        const counters = document.querySelectorAll('.count');
-        const speed = 150;
-
-        function formatNumber(num) {
-           if (num >= 1000) {
-        const value = (num / 1000).toFixed(num % 1000 === 0 ? 0 : 1);
-        return value + 'k+';
-    }
-
-    if (num >= 10) {
-        return Math.floor(num / 10) * 10 + '+';
-    }
-
-    return num + '+';
-        }
-
-        function animateCounter(counter) {
-            const target = +counter.dataset.target;
-            let current = 0;
-
-            const update = () => {
-                const increment = Math.ceil(target / speed);
-                current += increment;
-
-                if (current < target) {
-                    counter.innerText = formatNumber(current);
-                    requestAnimationFrame(update);
-                } else {
-                    counter.innerText = formatNumber(target);
-                }
-            };
-
-            update();
-        }
-
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
-                    entry.target.classList.add('animated');
-                    animateCounter(entry.target);
-                }
-            });
-        }, { threshold: 0.6 });
-
-        counters.forEach(counter => observer.observe(counter));
-    </script>
+   
     <script src="//code.tidio.co/ethz6gfhvgyfurnnlucbxwdvtekcobau.js" async></script>
     <script>
         function googleTranslateElementInit() {
