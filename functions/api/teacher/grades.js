@@ -15,9 +15,15 @@ import {
 } from '../../_lib/sheets.js';
 
 
+// ============================================================
+// TEACHER GRADE LEVELS
+// ============================================================
+
 function getTeacherGradeLevels(session) {
   if (Array.isArray(session.gradeLevels)) {
-    return session.gradeLevels;
+    return session.gradeLevels
+      .map((value) => String(value).trim())
+      .filter(Boolean);
   }
 
   return String(session.gradeLevels ?? '')
@@ -27,36 +33,81 @@ function getTeacherGradeLevels(session) {
 }
 
 
+// ============================================================
+// NORMALIZE GRADE LEVEL
+// ============================================================
+
+function normalizeGrade(value) {
+  return String(value ?? '')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .toLowerCase();
+}
+
+
+// ============================================================
+// CHECK TEACHER ACCESS TO STUDENT
+// ============================================================
+
 function teacherCanAccessStudent(student, session) {
   if (!student) {
     return false;
   }
 
   /*
-    Student sheet:
+    Students sheet:
 
     A = student_id
-    B = school_year
-    C = name
-    D = grade_level
-    E = section
-    F = active
+    B = pin
+    C = full_name
+    D = school_year
+    E = grade_level
+    F = section
+    G = active
   */
 
   const studentGrade =
-    normText(student[3]);
+    normalizeGrade(student[4]);
 
   const studentSection =
-    normText(student[4]);
+    normText(student[5]);
 
   const active =
-    String(student[5] ?? '')
+    String(student[6] ?? '')
       .trim()
       .toUpperCase();
 
-  if (active === 'FALSE') {
+  /*
+  |--------------------------------------------------------------------------
+  | ACTIVE CHECK
+  |--------------------------------------------------------------------------
+  */
+
+  if (
+    active === 'FALSE' ||
+    active === 'NO' ||
+    active === '0'
+  ) {
     return false;
   }
+
+  /*
+  |--------------------------------------------------------------------------
+  | GRADE ACCESS
+  |--------------------------------------------------------------------------
+  |
+  | Example:
+  |
+  | Teacher:
+  | Grade 1,Grade 2,Grade 5,Grade 6
+  |
+  | Student:
+  | Grade 1
+  |
+  | Result:
+  | authorized
+  |
+  */
 
   const assignedGrades =
     getTeacherGradeLevels(session);
@@ -64,13 +115,36 @@ function teacherCanAccessStudent(student, session) {
   const hasGradeAccess =
     assignedGrades.some(
       (grade) =>
-        normText(grade).toLowerCase() ===
-        studentGrade.toLowerCase()
+        normalizeGrade(grade) ===
+        studentGrade
     );
 
   if (!hasGradeAccess) {
+    console.log(
+      'TEACHER GRADE ACCESS DENIED:',
+      {
+        teacherId:
+          session.teacherId,
+
+        assignedGrades,
+
+        studentGrade:
+          student[4],
+      }
+    );
+
     return false;
   }
+
+  /*
+  |--------------------------------------------------------------------------
+  | SECTION ACCESS
+  |--------------------------------------------------------------------------
+  |
+  | If teacher has a section assigned,
+  | student must belong to that section.
+  |
+  */
 
   const teacherSection =
     normText(session.section);
@@ -80,12 +154,28 @@ function teacherCanAccessStudent(student, session) {
     studentSection.toLowerCase() !==
       teacherSection.toLowerCase()
   ) {
+    console.log(
+      'TEACHER SECTION ACCESS DENIED:',
+      {
+        teacherId:
+          session.teacherId,
+
+        teacherSection,
+
+        studentSection,
+      }
+    );
+
     return false;
   }
 
   return true;
 }
 
+
+// ============================================================
+// GET STUDENT
+// ============================================================
 
 async function getStudent(
   env,
@@ -94,22 +184,44 @@ async function getStudent(
   const students =
     await loadStudents(env);
 
-  return students.find(
-    (row) =>
-      normId(row[0]) ===
-      normId(studentId)
+  const student =
+    students.find(
+      (row) =>
+        normId(row[0]) ===
+        normId(studentId)
+    );
+
+  console.log(
+    'GET STUDENT:',
+    {
+      requestedStudentId:
+        studentId,
+
+      found:
+        !!student,
+
+      student,
+    }
   );
+
+  return student;
 }
 
 
-// ==============================
+// ============================================================
 // GET GRADES
-// ==============================
+// ============================================================
 
 export async function onRequestGet({
   request,
   env,
 }) {
+  /*
+  |--------------------------------------------------------------------------
+  | REQUIRE TEACHER
+  |--------------------------------------------------------------------------
+  */
+
   const session =
     await requireRole(
       request,
@@ -119,10 +231,19 @@ export async function onRequestGet({
 
   if (!session) {
     return json(
-      { error: 'unauthorized' },
+      {
+        error:
+          'unauthorized',
+      },
       401
     );
   }
+
+  /*
+  |--------------------------------------------------------------------------
+  | REQUEST PARAMETERS
+  |--------------------------------------------------------------------------
+  */
 
   const url =
     new URL(request.url);
@@ -140,6 +261,12 @@ export async function onRequestGet({
         'schoolYear'
       )
     );
+
+  /*
+  |--------------------------------------------------------------------------
+  | VALIDATION
+  |--------------------------------------------------------------------------
+  */
 
   if (!studentId) {
     return json(
@@ -161,11 +288,61 @@ export async function onRequestGet({
     );
   }
 
+  /*
+  |--------------------------------------------------------------------------
+  | FIND STUDENT
+  |--------------------------------------------------------------------------
+  */
+
   const student =
     await getStudent(
       env,
       studentId
     );
+
+  if (!student) {
+    return json(
+      {
+        error:
+          'Student not found.',
+      },
+      404
+    );
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | VERIFY SCHOOL YEAR
+  |--------------------------------------------------------------------------
+  |
+  | Students sheet:
+  |
+  | D = school_year
+  |
+  */
+
+  const studentSchoolYear =
+    normText(student[3]);
+
+  if (
+    studentSchoolYear &&
+    studentSchoolYear !==
+      schoolYear
+  ) {
+    return json(
+      {
+        error:
+          'Student does not belong to the selected school year.',
+      },
+      403
+    );
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | VERIFY TEACHER ACCESS
+  |--------------------------------------------------------------------------
+  */
 
   if (
     !teacherCanAccessStudent(
@@ -183,22 +360,37 @@ export async function onRequestGet({
   }
 
   /*
-    IMPORTANT:
-
-    Use the student's actual grade level,
-    NOT session.gradeLevel.
-
-    This allows:
-
-    Teacher One
-      Grade 1
-      Grade 2
-      Grade 5
-      Grade 6
+  |--------------------------------------------------------------------------
+  | STUDENT'S ACTUAL GRADE
+  |--------------------------------------------------------------------------
+  |
+  | Students sheet:
+  |
+  | E = grade_level
+  |
+  | IMPORTANT:
+  | Never use session.gradeLevel here.
+  |
   */
 
   const gradeLevel =
-    normText(student[3]);
+    normText(student[4]);
+
+  if (!gradeLevel) {
+    return json(
+      {
+        error:
+          'Student grade level is missing.',
+      },
+      400
+    );
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | LOAD GRADE SHEET
+  |--------------------------------------------------------------------------
+  */
 
   const rows =
     await loadGradeSheet(
@@ -206,31 +398,84 @@ export async function onRequestGet({
       gradeLevel
     );
 
+  /*
+  |--------------------------------------------------------------------------
+  | FILTER STUDENT GRADES
+  |--------------------------------------------------------------------------
+  */
+
   const grades =
     rows
       .filter(
         (row) =>
           normId(row[0]) ===
             studentId &&
+
           normText(row[1]) ===
             schoolYear
       )
       .map((row) => ({
-        studentId: row[0],
-        schoolYear: row[1],
-        quarter: row[2],
-        subject: row[3],
-        grade: row[4],
-        remarks: row[5],
-        teacherId: row[6],
+        studentId:
+          row[0] ?? '',
+
+        schoolYear:
+          row[1] ?? '',
+
+        quarter:
+          row[2] ?? '',
+
+        subject:
+          row[3] ?? '',
+
+        grade:
+          row[4] ?? '',
+
+        remarks:
+          row[5] ?? '',
+
+        teacherId:
+          row[6] ?? '',
       }));
+
+  console.log(
+    'GET GRADES:',
+    {
+      teacherId:
+        session.teacherId,
+
+      studentId,
+
+      schoolYear,
+
+      gradeLevel,
+
+      gradeCount:
+        grades.length,
+    }
+  );
+
+  /*
+  |--------------------------------------------------------------------------
+  | RESPONSE
+  |--------------------------------------------------------------------------
+  */
 
   return json({
     student: {
-      id: student[0],
-      name: student[2],
-      gradeLevel: student[3],
-      section: student[4],
+      id:
+        student[0] ?? '',
+
+      name:
+        student[2] ?? '',
+
+      schoolYear:
+        student[3] ?? '',
+
+      gradeLevel:
+        student[4] ?? '',
+
+      section:
+        student[5] ?? '',
     },
 
     grades,
@@ -238,14 +483,20 @@ export async function onRequestGet({
 }
 
 
-// ==============================
+// ============================================================
 // SAVE GRADE
-// ==============================
+// ============================================================
 
 export async function onRequestPost({
   request,
   env,
 }) {
+  /*
+  |--------------------------------------------------------------------------
+  | REQUIRE TEACHER
+  |--------------------------------------------------------------------------
+  */
+
   const session =
     await requireRole(
       request,
@@ -255,26 +506,44 @@ export async function onRequestPost({
 
   if (!session) {
     return json(
-      { error: 'unauthorized' },
+      {
+        error:
+          'unauthorized',
+      },
       401
     );
   }
 
+  /*
+  |--------------------------------------------------------------------------
+  | READ REQUEST BODY
+  |--------------------------------------------------------------------------
+  */
+
   const body =
-    await request.json()
+    await request
+      .json()
       .catch(() => ({}));
 
   const studentId =
-    normId(body.studentId);
+    normId(
+      body.studentId
+    );
 
   const schoolYear =
-    normText(body.schoolYear);
+    normText(
+      body.schoolYear
+    );
 
   const quarter =
-    normText(body.quarter);
+    normText(
+      body.quarter
+    );
 
   const subject =
-    normText(body.subject);
+    normText(
+      body.subject
+    );
 
   const remarks =
     String(
@@ -282,7 +551,15 @@ export async function onRequestPost({
     ).trim();
 
   const gradeValue =
-    Number(body.grade);
+    Number(
+      body.grade
+    );
+
+  /*
+  |--------------------------------------------------------------------------
+  | VALIDATION
+  |--------------------------------------------------------------------------
+  */
 
   if (!studentId) {
     return json(
@@ -325,7 +602,9 @@ export async function onRequestPost({
   }
 
   if (
-    !Number.isFinite(gradeValue) ||
+    !Number.isFinite(
+      gradeValue
+    ) ||
     gradeValue < 0 ||
     gradeValue > 100
   ) {
@@ -338,11 +617,56 @@ export async function onRequestPost({
     );
   }
 
+  /*
+  |--------------------------------------------------------------------------
+  | FIND STUDENT
+  |--------------------------------------------------------------------------
+  */
+
   const student =
     await getStudent(
       env,
       studentId
     );
+
+  if (!student) {
+    return json(
+      {
+        error:
+          'Student not found.',
+      },
+      404
+    );
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | VERIFY SCHOOL YEAR
+  |--------------------------------------------------------------------------
+  */
+
+  const studentSchoolYear =
+    normText(student[3]);
+
+  if (
+    studentSchoolYear &&
+    studentSchoolYear !==
+      schoolYear
+  ) {
+    return json(
+      {
+        error:
+          'Student does not belong to the selected school year.',
+      },
+      403
+    );
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | VERIFY TEACHER ACCESS
+  |--------------------------------------------------------------------------
+  */
 
   if (
     !teacherCanAccessStudent(
@@ -360,20 +684,39 @@ export async function onRequestPost({
   }
 
   /*
-    IMPORTANT:
-
-    Determine the sheet from the student's
-    actual grade level.
-
-    Example:
-
-    Grade 1 student -> Grade-1
-    Grade 5 student -> Grade-5
-    Grade 6 student -> Grade-6
+  |--------------------------------------------------------------------------
+  | GET STUDENT GRADE LEVEL
+  |--------------------------------------------------------------------------
+  |
+  | Students sheet:
+  |
+  | E = grade_level
+  |
+  | This is important because a teacher
+  | may handle multiple grades.
+  |
   */
 
   const gradeLevel =
-    normText(student[3]);
+    normText(
+      student[4]
+    );
+
+  if (!gradeLevel) {
+    return json(
+      {
+        error:
+          'Student grade level is missing.',
+      },
+      400
+    );
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | FIND EXISTING GRADE
+  |--------------------------------------------------------------------------
+  */
 
   const existing =
     await findGradeRow(
@@ -387,6 +730,23 @@ export async function onRequestPost({
       }
     );
 
+  /*
+  |--------------------------------------------------------------------------
+  | PREPARE GRADE ROW
+  |--------------------------------------------------------------------------
+  |
+  | Grade sheet:
+  |
+  | A = student_id
+  | B = school_year
+  | C = quarter
+  | D = subject
+  | E = grade
+  | F = remarks
+  | G = teacher_id
+  |
+  */
+
   const values = [
     studentId,
     schoolYear,
@@ -399,14 +759,59 @@ export async function onRequestPost({
     ),
   ];
 
+  /*
+  |--------------------------------------------------------------------------
+  | UPDATE EXISTING GRADE
+  |--------------------------------------------------------------------------
+  */
+
   if (existing) {
+    console.log(
+      'UPDATING EXISTING GRADE:',
+      {
+        teacherId:
+          session.teacherId,
+
+        studentId,
+
+        gradeLevel,
+
+        rowNumber:
+          existing.rowNumber,
+
+        values,
+      }
+    );
+
     await updateGradeRow(
       env,
       gradeLevel,
       existing.rowNumber,
       values
     );
-  } else {
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | APPEND NEW GRADE
+  |--------------------------------------------------------------------------
+  */
+
+  else {
+    console.log(
+      'APPENDING NEW GRADE:',
+      {
+        teacherId:
+          session.teacherId,
+
+        studentId,
+
+        gradeLevel,
+
+        values,
+      }
+    );
+
     await appendGrade(
       env,
       gradeLevel,
@@ -414,10 +819,21 @@ export async function onRequestPost({
     );
   }
 
+  /*
+  |--------------------------------------------------------------------------
+  | INVALIDATE CACHE
+  |--------------------------------------------------------------------------
+  */
+
   await invalidateGradeCache(
-    env,
-    gradeLevel
+    env
   );
+
+  /*
+  |--------------------------------------------------------------------------
+  | RESPONSE
+  |--------------------------------------------------------------------------
+  */
 
   return json({
     ok: true,
@@ -426,16 +842,27 @@ export async function onRequestPost({
       'Grade saved successfully.',
 
     student: {
-      id: student[0],
-      name: student[2],
-      gradeLevel: student[3],
-      section: student[4],
+      id:
+        student[0] ?? '',
+
+      name:
+        student[2] ?? '',
+
+      schoolYear:
+        student[3] ?? '',
+
+      gradeLevel:
+        student[4] ?? '',
+
+      section:
+        student[5] ?? '',
     },
 
     grade: {
       quarter,
       subject,
-      grade: gradeValue,
+      grade:
+        gradeValue,
       remarks,
     },
   });
