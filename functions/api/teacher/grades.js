@@ -14,23 +14,71 @@ import {
   invalidateGradeCache,
 } from '../../_lib/sheets.js';
 
+
+function getTeacherGradeLevels(session) {
+  if (Array.isArray(session.gradeLevels)) {
+    return session.gradeLevels;
+  }
+
+  return String(session.gradeLevels ?? '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
+
 function teacherCanAccessStudent(student, session) {
-  if (!student) return false;
-
-  const studentGrade = normText(student[3]);
-  const studentSection = normText(student[4]);
-  const active = normText(student[5]).toUpperCase();
-
-  if (active === 'FALSE') return false;
-
-  if (studentGrade.toLowerCase() !== normText(session.gradeLevel).toLowerCase()) {
+  if (!student) {
     return false;
   }
 
-  // If teacher has a section assigned, enforce it.
+  /*
+    Student sheet:
+
+    A = student_id
+    B = school_year
+    C = name
+    D = grade_level
+    E = section
+    F = active
+  */
+
+  const studentGrade =
+    normText(student[3]);
+
+  const studentSection =
+    normText(student[4]);
+
+  const active =
+    String(student[5] ?? '')
+      .trim()
+      .toUpperCase();
+
+  if (active === 'FALSE') {
+    return false;
+  }
+
+  const assignedGrades =
+    getTeacherGradeLevels(session);
+
+  const hasGradeAccess =
+    assignedGrades.some(
+      (grade) =>
+        normText(grade).toLowerCase() ===
+        studentGrade.toLowerCase()
+    );
+
+  if (!hasGradeAccess) {
+    return false;
+  }
+
+  const teacherSection =
+    normText(session.section);
+
   if (
-    normText(session.section) &&
-    studentSection.toLowerCase() !== normText(session.section).toLowerCase()
+    teacherSection &&
+    studentSection.toLowerCase() !==
+      teacherSection.toLowerCase()
   ) {
     return false;
   }
@@ -38,244 +86,357 @@ function teacherCanAccessStudent(student, session) {
   return true;
 }
 
-export async function onRequestGet({ request, env }) {
-  try {
-    const session = await requireRole(request, env, 'teacher');
 
-    if (!session) {
-      return json({ error: 'Unauthorized' }, 401);
-    }
+async function getStudent(
+  env,
+  studentId
+) {
+  const students =
+    await loadStudents(env);
 
-    const url = new URL(request.url);
-
-    const studentId = normId(url.searchParams.get('studentId'));
-    const schoolYear = normText(url.searchParams.get('schoolYear'));
-
-    console.log('GET grades:', {
-      studentId,
-      schoolYear,
-    });
-
-    if (!studentId) {
-      return json({
-        error: 'GET studentId required',
-      }, 400);
-    }
-
-    if (!schoolYear) {
-      return json({
-        error: 'GET schoolYear required',
-      }, 400);
-    }
-
-    const students = await loadStudents(env);
-
-    const student = students.find(
-      row => normId(row[0]) === studentId
-    );
-
-    if (!student) {
-      return json({
-        error: 'Student not found',
-      }, 404);
-    }
-
-    if (!teacherCanAccessStudent(student, session)) {
-      return json({
-        error: 'You are not authorized to access this student',
-      }, 403);
-    }
-
-    const gradeLevel = normText(session.gradeLevel);
-
-    const rows = await loadGradeSheet(env, gradeLevel);
-
-    const grades = rows
-      .filter(row => {
-        const rowStudentId = normId(row[0]);
-        const rowSchoolYear = normText(row[1]);
-
-        return (
-          rowStudentId === studentId &&
-          rowSchoolYear === schoolYear
-        );
-      })
-      .map(row => ({
-        studentId: normId(row[0]),
-        schoolYear: normText(row[1]),
-        quarter: normText(row[2]).toUpperCase(),
-        subject: normText(row[3]),
-        grade: normText(row[4]),
-        remarks: normText(row[5]),
-        teacherId: normId(row[6]),
-      }));
-
-    return json({
-      ok: true,
-      grades,
-    });
-  } catch (error) {
-    console.error('GET /api/teacher/grades error:', error);
-
-    return json({
-      error: error?.message || 'Failed to load grades',
-    }, 500);
-  }
+  return students.find(
+    (row) =>
+      normId(row[0]) ===
+      normId(studentId)
+  );
 }
 
-export async function onRequestPost({ request, env }) {
-  try {
-    const session = await requireRole(request, env, 'teacher');
 
-    if (!session) {
-      return json({ error: 'Unauthorized' }, 401);
-    }
+// ==============================
+// GET GRADES
+// ==============================
 
-    const body = await request.json();
-
-    console.log('POST grades body:', body);
-
-    const studentId = normId(body?.studentId);
-    const schoolYear = normText(body?.schoolYear);
-    const quarter = normText(body?.quarter).toUpperCase();
-    const subject = normText(body?.subject);
-    const grade = normText(body?.grade);
-    const remarks = normText(body?.remarks);
-
-    console.log('POST grades normalized:', {
-      studentId,
-      schoolYear,
-      quarter,
-      subject,
-      grade,
-      remarks,
-    });
-
-    if (!studentId) {
-      return json({
-        error: 'POST studentId required',
-      }, 400);
-    }
-
-    if (!schoolYear) {
-      return json({
-        error: 'School year required',
-      }, 400);
-    }
-
-    if (!quarter) {
-      return json({
-        error: 'Quarter required',
-      }, 400);
-    }
-
-    if (!subject) {
-      return json({
-        error: 'Subject required',
-      }, 400);
-    }
-
-    if (!grade) {
-      return json({
-        error: 'Grade required',
-      }, 400);
-    }
-
-    const numericGrade = Number(grade);
-
-    if (
-      !Number.isFinite(numericGrade) ||
-      numericGrade < 0 ||
-      numericGrade > 100
-    ) {
-      return json({
-        error: 'Grade must be a number between 0 and 100',
-      }, 400);
-    }
-
-    const students = await loadStudents(env);
-
-    const student = students.find(
-      row => normId(row[0]) === studentId
+export async function onRequestGet({
+  request,
+  env,
+}) {
+  const session =
+    await requireRole(
+      request,
+      env,
+      'teacher'
     );
 
-    if (!student) {
-      return json({
-        error: 'Student not found',
-      }, 404);
-    }
+  if (!session) {
+    return json(
+      { error: 'unauthorized' },
+      401
+    );
+  }
 
-    if (!teacherCanAccessStudent(student, session)) {
-      return json({
-        error: 'You are not authorized to modify this student',
-      }, 403);
-    }
+  const url =
+    new URL(request.url);
 
-    // IMPORTANT:
-    // Teacher's authenticated grade level determines the sheet.
-    const gradeLevel = normText(session.gradeLevel);
+  const studentId =
+    normId(
+      url.searchParams.get(
+        'studentId'
+      )
+    );
 
-    console.log('Saving grade to:', {
+  const schoolYear =
+    normText(
+      url.searchParams.get(
+        'schoolYear'
+      )
+    );
+
+  if (!studentId) {
+    return json(
+      {
+        error:
+          'studentId required',
+      },
+      400
+    );
+  }
+
+  if (!schoolYear) {
+    return json(
+      {
+        error:
+          'schoolYear required',
+      },
+      400
+    );
+  }
+
+  const student =
+    await getStudent(
+      env,
+      studentId
+    );
+
+  if (
+    !teacherCanAccessStudent(
+      student,
+      session
+    )
+  ) {
+    return json(
+      {
+        error:
+          'You are not authorized to access this student.',
+      },
+      403
+    );
+  }
+
+  /*
+    IMPORTANT:
+
+    Use the student's actual grade level,
+    NOT session.gradeLevel.
+
+    This allows:
+
+    Teacher One
+      Grade 1
+      Grade 2
+      Grade 5
+      Grade 6
+  */
+
+  const gradeLevel =
+    normText(student[3]);
+
+  const rows =
+    await loadGradeSheet(
+      env,
+      gradeLevel
+    );
+
+  const grades =
+    rows
+      .filter(
+        (row) =>
+          normId(row[0]) ===
+            studentId &&
+          normText(row[1]) ===
+            schoolYear
+      )
+      .map((row) => ({
+        studentId: row[0],
+        schoolYear: row[1],
+        quarter: row[2],
+        subject: row[3],
+        grade: row[4],
+        remarks: row[5],
+        teacherId: row[6],
+      }));
+
+  return json({
+    student: {
+      id: student[0],
+      name: student[2],
+      gradeLevel: student[3],
+      section: student[4],
+    },
+
+    grades,
+  });
+}
+
+
+// ==============================
+// SAVE GRADE
+// ==============================
+
+export async function onRequestPost({
+  request,
+  env,
+}) {
+  const session =
+    await requireRole(
+      request,
+      env,
+      'teacher'
+    );
+
+  if (!session) {
+    return json(
+      { error: 'unauthorized' },
+      401
+    );
+  }
+
+  const body =
+    await request.json()
+      .catch(() => ({}));
+
+  const studentId =
+    normId(body.studentId);
+
+  const schoolYear =
+    normText(body.schoolYear);
+
+  const quarter =
+    normText(body.quarter);
+
+  const subject =
+    normText(body.subject);
+
+  const remarks =
+    String(
+      body.remarks ?? ''
+    ).trim();
+
+  const gradeValue =
+    Number(body.grade);
+
+  if (!studentId) {
+    return json(
+      {
+        error:
+          'studentId required',
+      },
+      400
+    );
+  }
+
+  if (!schoolYear) {
+    return json(
+      {
+        error:
+          'schoolYear required',
+      },
+      400
+    );
+  }
+
+  if (!quarter) {
+    return json(
+      {
+        error:
+          'quarter required',
+      },
+      400
+    );
+  }
+
+  if (!subject) {
+    return json(
+      {
+        error:
+          'subject required',
+      },
+      400
+    );
+  }
+
+  if (
+    !Number.isFinite(gradeValue) ||
+    gradeValue < 0 ||
+    gradeValue > 100
+  ) {
+    return json(
+      {
+        error:
+          'Grade must be between 0 and 100.',
+      },
+      400
+    );
+  }
+
+  const student =
+    await getStudent(
+      env,
+      studentId
+    );
+
+  if (
+    !teacherCanAccessStudent(
+      student,
+      session
+    )
+  ) {
+    return json(
+      {
+        error:
+          'You are not authorized to edit this student.',
+      },
+      403
+    );
+  }
+
+  /*
+    IMPORTANT:
+
+    Determine the sheet from the student's
+    actual grade level.
+
+    Example:
+
+    Grade 1 student -> Grade-1
+    Grade 5 student -> Grade-5
+    Grade 6 student -> Grade-6
+  */
+
+  const gradeLevel =
+    normText(student[3]);
+
+  const existing =
+    await findGradeRow(
+      env,
       gradeLevel,
-      studentId,
-      schoolYear,
-      quarter,
-      subject,
-    });
+      {
+        studentId,
+        schoolYear,
+        quarter,
+        subject,
+      }
+    );
 
-    const existing = await findGradeRow(env, gradeLevel, {
-      studentId,
-      schoolYear,
-      quarter,
-      subject,
-    });
+  const values = [
+    studentId,
+    schoolYear,
+    quarter,
+    subject,
+    gradeValue,
+    remarks,
+    normId(
+      session.teacherId
+    ),
+  ];
 
-    const values = [
-      studentId,
-      schoolYear,
-      quarter,
-      subject,
-      numericGrade,
-      remarks,
-      normId(session.teacherId),
-    ];
-
-    if (existing) {
-      await updateGradeRow(
-        env,
-        gradeLevel,
-        existing.rowNumber,
-        values
-      );
-
-      await invalidateGradeCache(env);
-
-      return json({
-        ok: true,
-        action: 'updated',
-        message: 'Grade updated successfully',
-      });
-    }
-
+  if (existing) {
+    await updateGradeRow(
+      env,
+      gradeLevel,
+      existing.rowNumber,
+      values
+    );
+  } else {
     await appendGrade(
       env,
       gradeLevel,
       values
     );
-
-    await invalidateGradeCache(env);
-
-    return json({
-      ok: true,
-      action: 'created',
-      message: 'Grade saved successfully',
-    });
-
-  } catch (error) {
-    console.error('POST /api/teacher/grades error:', error);
-
-    return json({
-      error: error?.message || 'Failed to save grade',
-    }, 500);
   }
+
+  await invalidateGradeCache(
+    env,
+    gradeLevel
+  );
+
+  return json({
+    ok: true,
+
+    message:
+      'Grade saved successfully.',
+
+    student: {
+      id: student[0],
+      name: student[2],
+      gradeLevel: student[3],
+      section: student[4],
+    },
+
+    grade: {
+      quarter,
+      subject,
+      grade: gradeValue,
+      remarks,
+    },
+  });
 }
