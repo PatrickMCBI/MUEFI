@@ -973,7 +973,10 @@
           `/api/teacher/students?${params.toString()}`
         );
 
-
+        console.log(
+          'LOAD STUDENTS DATA:',
+          data
+        );
       renderStudents(
         data.students || []
       );

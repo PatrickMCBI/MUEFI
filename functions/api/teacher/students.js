@@ -1,5 +1,6 @@
 import {
   json,
+  normId,
   normText,
   requireRole,
 } from '../../_lib/util.js';
@@ -10,7 +11,9 @@ import {
 
 function getTeacherGradeLevels(session) {
   if (Array.isArray(session.gradeLevels)) {
-    return session.gradeLevels;
+    return session.gradeLevels
+      .map((value) => String(value).trim())
+      .filter(Boolean);
   }
 
   return String(session.gradeLevels ?? '')
@@ -19,55 +22,47 @@ function getTeacherGradeLevels(session) {
     .filter(Boolean);
 }
 
-function gradeMatches(assignedGrade, studentGrade) {
-  return (
-    normText(assignedGrade).toLowerCase() ===
-    normText(studentGrade).toLowerCase()
-  );
+function normalizeGrade(value) {
+  return String(value ?? '')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .toLowerCase();
+}
+
+function gradeMatches(a, b) {
+  return normalizeGrade(a) === normalizeGrade(b);
 }
 
 export async function onRequestGet({ request, env }) {
-  const session = await requireRole(
-    request,
-    env,
-    'teacher'
-  );
+  const session = await requireRole(request, env, 'teacher');
 
   if (!session) {
-    return json(
-      { error: 'unauthorized' },
-      401
-    );
+    return json({ error: 'unauthorized' }, 401);
   }
 
   const url = new URL(request.url);
 
   const requestedGrade =
-    url.searchParams.get('gradeLevel')?.trim() || '';
+    String(url.searchParams.get('gradeLevel') ?? '').trim();
 
   const schoolYear =
-    url.searchParams.get('schoolYear')?.trim() || '';
+    String(url.searchParams.get('schoolYear') ?? '').trim();
 
-  const assignedGrades =
-    getTeacherGradeLevels(session);
+  const assignedGrades = getTeacherGradeLevels(session);
 
-  /*
-    If a grade was requested, make sure
-    the teacher is actually assigned to it.
-  */
-
+  // Teacher must be assigned to the requested grade.
   if (requestedGrade) {
-    const allowed = assignedGrades.some(
-      (grade) =>
-        gradeMatches(grade, requestedGrade)
+    const allowed = assignedGrades.some((grade) =>
+      gradeMatches(grade, requestedGrade)
     );
 
     if (!allowed) {
       return json(
         {
           error: 'forbidden',
-          message:
-            'You are not assigned to this grade level.',
+          message: 'You are not assigned to this grade level.',
+          requestedGrade,
+          assignedGrades,
         },
         403
       );
@@ -76,76 +71,59 @@ export async function onRequestGet({ request, env }) {
 
   const students = await loadStudents(env);
 
-  const section = normText(session.section);
+  const teacherSection = String(session.section ?? '').trim();
 
-  let result = students
+  const result = students
     .filter((row) => {
-      // Student sheet:
-      // A = student_id
-      // B = school_year
-      // C = name
-      // D = grade_level
-      // E = section
-      // F = active
+      const studentId = String(row[0] ?? '').trim();
+      const studentSchoolYear = String(row[1] ?? '').trim();
+      const studentGrade = String(row[3] ?? '').trim();
+      const studentSection = String(row[4] ?? '').trim();
+      const active = String(row[5] ?? '').trim().toUpperCase();
 
-      const studentGrade =
-        normText(row[3]);
+      // Ignore empty rows.
+      if (!studentId) {
+        return false;
+      }
 
-      const studentSection =
-        normText(row[4]);
-
-      const active =
-        String(row[5] ?? '')
-          .trim()
-          .toUpperCase();
-
-      // Ignore inactive students
+      // Ignore inactive students.
       if (active === 'FALSE') {
         return false;
       }
 
-      // If a specific grade was selected,
-      // only return that grade.
+      // Filter selected grade.
       if (
         requestedGrade &&
-        !gradeMatches(
-          requestedGrade,
-          studentGrade
-        )
+        !gradeMatches(studentGrade, requestedGrade)
       ) {
         return false;
       }
 
-      // If no specific grade was selected,
-      // only return assigned grades.
+      // If no grade was explicitly selected,
+      // only show grades assigned to this teacher.
       if (
         !requestedGrade &&
         !assignedGrades.some((grade) =>
-          gradeMatches(
-            grade,
-            studentGrade
-          )
+          gradeMatches(grade, studentGrade)
         )
       ) {
         return false;
       }
 
-      // Teacher section restriction
+      // Filter by teacher section.
       if (
-        section &&
-        studentSection !== section
+        teacherSection &&
+        studentSection.toLowerCase() !==
+          teacherSection.toLowerCase()
       ) {
         return false;
       }
 
-      /*
-        If your Students sheet has school year
-        in column B, filter it when supplied.
-      */
+      // Only filter school year when the student actually has one.
       if (
         schoolYear &&
-        String(row[1] ?? '').trim() &&
-        String(row[1] ?? '').trim() !== schoolYear
+        studentSchoolYear &&
+        studentSchoolYear !== schoolYear
       ) {
         return false;
       }
@@ -153,10 +131,10 @@ export async function onRequestGet({ request, env }) {
       return true;
     })
     .map((row) => ({
-      id: row[0],
-      name: row[2],
-      gradeLevel: row[3],
-      section: row[4],
+      id: String(row[0] ?? '').trim(),
+      name: String(row[2] ?? '').trim(),
+      gradeLevel: String(row[3] ?? '').trim(),
+      section: String(row[4] ?? '').trim(),
     }));
 
   return json({
@@ -166,11 +144,8 @@ export async function onRequestGet({ request, env }) {
       gradeLevels: assignedGrades,
       section: session.section,
     },
-
     selectedGrade: requestedGrade || null,
-
     schoolYear: schoolYear || null,
-
     students: result,
   });
 }
