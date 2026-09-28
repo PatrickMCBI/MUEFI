@@ -8,14 +8,25 @@ import {
   loadStudents,
 } from '../../_lib/sheets.js';
 
+
+/*
+|--------------------------------------------------------------------------
+| GET TEACHER GRADE LEVELS
+|--------------------------------------------------------------------------
+*/
+
 function getTeacherGradeLevels(session) {
+
   if (Array.isArray(session.gradeLevels)) {
+
     return session.gradeLevels
       .map((value) =>
-        String(value).trim()
+        String(value ?? '').trim()
       )
       .filter(Boolean);
+
   }
+
 
   return String(
     session.gradeLevels ?? ''
@@ -27,24 +38,83 @@ function getTeacherGradeLevels(session) {
     .filter(Boolean);
 }
 
+
+/*
+|--------------------------------------------------------------------------
+| NORMALIZE GRADE
+|--------------------------------------------------------------------------
+*/
+
 function normalizeGrade(value) {
-  return String(value ?? '')
+
+  return String(
+    value ?? ''
+  )
     .trim()
-    .replace(/\s+/g, ' ')
+    .replace(
+      /\s+/g,
+      ' '
+    )
     .toLowerCase();
 }
 
-function gradeMatches(a, b) {
+
+/*
+|--------------------------------------------------------------------------
+| GRADE MATCH
+|--------------------------------------------------------------------------
+*/
+
+function gradeMatches(
+  a,
+  b
+) {
+
   return (
     normalizeGrade(a) ===
     normalizeGrade(b)
   );
+
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| NORMALIZE SIMPLE TEXT
+|--------------------------------------------------------------------------
+*/
+
+function normalizeValue(value) {
+
+  return String(
+    value ?? ''
+  )
+    .trim()
+    .replace(
+      /\s+/g,
+      ' '
+    );
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| GET STUDENTS
+|--------------------------------------------------------------------------
+*/
 
 export async function onRequestGet({
   request,
   env,
 }) {
+
+  /*
+  |--------------------------------------------------------------------------
+  | REQUIRE TEACHER LOGIN
+  |--------------------------------------------------------------------------
+  */
+
   const session =
     await requireRole(
       request,
@@ -52,44 +122,92 @@ export async function onRequestGet({
       'teacher'
     );
 
+
   if (!session) {
+
     return json(
       {
-        error: 'unauthorized',
+        error:
+          'unauthorized',
       },
       401
     );
+
   }
 
+
+  /*
+  |--------------------------------------------------------------------------
+  | REQUEST PARAMETERS
+  |--------------------------------------------------------------------------
+  */
+
   const url =
-    new URL(request.url);
+    new URL(
+      request.url
+    );
+
 
   const requestedGrade =
-    String(
+    normalizeValue(
       url.searchParams.get(
         'gradeLevel'
-      ) ?? ''
-    ).trim();
+      )
+    );
 
-  const schoolYear =
-    String(
+
+  const requestedSchoolYear =
+    normalizeValue(
       url.searchParams.get(
         'schoolYear'
-      ) ?? ''
-    ).trim();
+      )
+    );
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | TEACHER ASSIGNMENTS
+  |--------------------------------------------------------------------------
+  */
 
   const assignedGrades =
     getTeacherGradeLevels(
       session
     );
 
+
+  const teacherSection =
+    normalizeValue(
+      session.section
+    );
+
+
+  console.log(
+    'TEACHER STUDENT REQUEST:',
+    {
+      teacherId:
+        session.teacherId,
+
+      requestedGrade,
+
+      requestedSchoolYear,
+
+      assignedGrades,
+
+      teacherSection,
+    }
+  );
+
+
   /*
   |--------------------------------------------------------------------------
-  | SECURITY
+  | SECURITY:
+  | VERIFY REQUESTED GRADE
   |--------------------------------------------------------------------------
   */
 
   if (requestedGrade) {
+
     const allowed =
       assignedGrades.some(
         (grade) =>
@@ -99,208 +217,448 @@ export async function onRequestGet({
           )
       );
 
+
     if (!allowed) {
+
+      console.warn(
+        'TEACHER GRADE ACCESS DENIED:',
+        {
+          requestedGrade,
+          assignedGrades,
+        }
+      );
+
+
       return json(
         {
-          error: 'forbidden',
+          error:
+            'forbidden',
+
           message:
             'You are not assigned to this grade level.',
         },
         403
       );
+
     }
+
   }
 
-  /*
-  |--------------------------------------------------------------------------
-  | LOAD STUDENTS
-  |--------------------------------------------------------------------------
-  */
-
-  const students =
-    await loadStudents(env);
-
-  const teacherSection =
-    String(
-      session.section ?? ''
-    ).trim();
 
   /*
   |--------------------------------------------------------------------------
-  | FILTER
+  | LOAD STUDENTS FROM GOOGLE SHEETS
   |--------------------------------------------------------------------------
   */
 
-  const result =
-    students
-      .filter((row) => {
-        /*
-        Students sheet:
+  let students;
 
-        A = student_id
-        B = pin
-        C = full_name
-        D = school_year
-        E = grade_level
-        F = section
-        G = active
-        */
+  try {
 
-        const studentId =
-          String(
-            row[0] ?? ''
-          ).trim();
+    students =
+      await loadStudents(
+        env
+      );
 
-        const studentSchoolYear =
-          String(
-            row[3] ?? ''
-          ).trim();
+  } catch (error) {
 
-        const studentGrade =
-          String(
-            row[4] ?? ''
-          ).trim();
+    console.error(
+      'LOAD STUDENTS FAILED:',
+      error
+    );
 
-        const studentSection =
-          String(
-            row[5] ?? ''
-          ).trim();
 
-        const active =
-          String(
-            row[6] ?? ''
-          )
-            .trim()
-            .toUpperCase();
+    return json(
+      {
+        error:
+          'students_load_failed',
 
-        // Empty row
-        if (!studentId) {
-          return false;
+        message:
+          error.message ||
+          'Failed to load students.',
+      },
+      500
+    );
+
+  }
+
+
+  console.log(
+    'GOOGLE STUDENTS:',
+    {
+      rowCount:
+        students.length,
+
+      firstRow:
+        students[0] || null,
+    }
+  );
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | FILTER STUDENTS
+  |--------------------------------------------------------------------------
+  */
+
+  const result = [];
+
+
+  for (
+    const row of students
+  ) {
+
+    /*
+    Students sheet:
+
+    A = student_id       row[0]
+    B = pin              row[1]
+    C = full_name        row[2]
+    D = school_year      row[3]
+    E = grade_level      row[4]
+    F = section           row[5]
+    G = active            row[6]
+    */
+
+
+    const studentId =
+      normalizeValue(
+        row[0]
+      );
+
+
+    const studentName =
+      normalizeValue(
+        row[2]
+      );
+
+
+    const studentSchoolYear =
+      normalizeValue(
+        row[3]
+      );
+
+
+    const studentGrade =
+      normalizeValue(
+        row[4]
+      );
+
+
+    const studentSection =
+      normalizeValue(
+        row[5]
+      );
+
+
+    const active =
+      normalizeValue(
+        row[6]
+      ).toUpperCase();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | DEBUG INFORMATION
+    |--------------------------------------------------------------------------
+    */
+
+    console.log(
+      'CHECK STUDENT:',
+      {
+        studentId,
+        studentName,
+        studentSchoolYear,
+        studentGrade,
+        studentSection,
+        active,
+      }
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | EMPTY ROW
+    |--------------------------------------------------------------------------
+    */
+
+    if (!studentId) {
+
+      console.log(
+        'SKIP STUDENT: empty student ID'
+      );
+
+      continue;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ACTIVE
+    |--------------------------------------------------------------------------
+    |
+    | Accept:
+    |
+    | TRUE
+    | true
+    | True
+    | 1
+    | YES
+    |
+    | Reject:
+    |
+    | FALSE
+    | false
+    |
+    */
+
+    if (
+      active === 'FALSE' ||
+      active === '0' ||
+      active === 'NO' ||
+      active === 'INACTIVE'
+    ) {
+
+      console.log(
+        'SKIP STUDENT: inactive',
+        studentId
+      );
+
+      continue;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SCHOOL YEAR
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+      requestedSchoolYear &&
+      studentSchoolYear !==
+        requestedSchoolYear
+    ) {
+
+      console.log(
+        'SKIP STUDENT: school year mismatch',
+        {
+          studentId,
+          sheet:
+            studentSchoolYear,
+          requested:
+            requestedSchoolYear,
         }
+      );
 
-        // Inactive
-        if (active === 'FALSE') {
-          return false;
-        }
+      continue;
 
-        /*
-        |--------------------------------------------------------------------------
-        | SCHOOL YEAR
-        |--------------------------------------------------------------------------
-        */
+    }
 
-        if (
-          schoolYear &&
-          studentSchoolYear !==
-            schoolYear
-        ) {
-          return false;
-        }
 
-        /*
-        |--------------------------------------------------------------------------
-        | GRADE
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | REQUESTED GRADE
+    |--------------------------------------------------------------------------
+    */
 
-        if (
-          requestedGrade &&
-          !gradeMatches(
+    if (
+      requestedGrade &&
+      !gradeMatches(
+        studentGrade,
+        requestedGrade
+      )
+    ) {
+
+      console.log(
+        'SKIP STUDENT: grade mismatch',
+        {
+          studentId,
+          sheet:
             studentGrade,
-            requestedGrade
+          requested:
+            requestedGrade,
+        }
+      );
+
+      continue;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ASSIGNED GRADE
+    |--------------------------------------------------------------------------
+    |
+    | This is an additional backend security
+    | check.
+    |
+    */
+
+    if (
+      !requestedGrade &&
+      !assignedGrades.some(
+        (grade) =>
+          gradeMatches(
+            grade,
+            studentGrade
           )
-        ) {
-          return false;
+      )
+    ) {
+
+      console.log(
+        'SKIP STUDENT: teacher not assigned',
+        {
+          studentId,
+          studentGrade,
+          assignedGrades,
         }
+      );
 
-        /*
-        |--------------------------------------------------------------------------
-        | Assigned grades
-        |--------------------------------------------------------------------------
-        */
+      continue;
 
-        if (
-          !requestedGrade &&
-          !assignedGrades.some(
-            (grade) =>
-              gradeMatches(
-                grade,
-                studentGrade
-              )
-          )
-        ) {
-          return false;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SECTION
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+      teacherSection &&
+      normalizeValue(
+        studentSection
+      ).toLowerCase() !==
+        teacherSection.toLowerCase()
+    ) {
+
+      console.log(
+        'SKIP STUDENT: section mismatch',
+        {
+          studentId,
+          studentSection,
+          teacherSection,
         }
+      );
 
-        /*
-        |--------------------------------------------------------------------------
-        | SECTION
-        |--------------------------------------------------------------------------
-        */
+      continue;
 
-        if (
-          teacherSection &&
-          studentSection.toLowerCase() !==
-            teacherSection.toLowerCase()
-        ) {
-          return false;
-        }
+    }
 
-        return true;
-      })
-      .map((row) => ({
-        id: String(
-          row[0] ?? ''
-        ).trim(),
 
-        name: String(
-          row[2] ?? ''
-        ).trim(),
+    /*
+    |--------------------------------------------------------------------------
+    | STUDENT PASSED ALL FILTERS
+    |--------------------------------------------------------------------------
+    */
 
-        schoolYear: String(
-          row[3] ?? ''
-        ).trim(),
+    console.log(
+      'STUDENT INCLUDED:',
+      {
+        studentId,
+        studentName,
+        studentSchoolYear,
+        studentGrade,
+        studentSection,
+      }
+    );
 
-        gradeLevel: String(
-          row[4] ?? ''
-        ).trim(),
 
-        section: String(
-          row[5] ?? ''
-        ).trim(),
-      }));
+    result.push({
+
+      id:
+        studentId,
+
+      name:
+        studentName,
+
+      schoolYear:
+        studentSchoolYear,
+
+      gradeLevel:
+        studentGrade,
+
+      section:
+        studentSection,
+
+    });
+
+  }
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | FINAL LOG
+  |--------------------------------------------------------------------------
+  */
 
   console.log(
     'LOAD STUDENTS RESULT:',
     {
       requestedGrade,
-      schoolYear,
+
+      schoolYear:
+        requestedSchoolYear,
+
       assignedGrades,
+
       teacherSection,
+
       totalStudents:
         students.length,
+
       returnedStudents:
         result.length,
-      students: result,
+
+      students:
+        result,
     }
   );
 
+
+  /*
+  |--------------------------------------------------------------------------
+  | RESPONSE
+  |--------------------------------------------------------------------------
+  */
+
   return json({
+
     teacher: {
-      id: session.teacherId,
-      name: session.name,
+
+      id:
+        session.teacherId,
+
+      name:
+        session.name,
+
       gradeLevels:
         assignedGrades,
+
       section:
         session.section,
+
     },
 
+
     selectedGrade:
-      requestedGrade || null,
+      requestedGrade ||
+      null,
+
 
     schoolYear:
-      schoolYear || null,
+      requestedSchoolYear ||
+      null,
 
-    students: result,
+
+    students:
+      result,
+
   });
+
 }
