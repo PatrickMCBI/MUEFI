@@ -1,0 +1,961 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Registrar Request | MUEFI</title>
+
+<style>
+:root{
+  --brand:#9b1c1c;
+  --brand-dark:#6f1212;
+  --ink:#1f2933;
+  --muted:#667085;
+  --line:#e4e7ec;
+  --bg:#f6f7f9;
+  --font:system-ui,-apple-system,"Segoe UI","Noto Sans SC",sans-serif;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:var(--font);
+  color:var(--ink);
+  background:var(--bg);
+  line-height:1.5;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+a{
+  color:inherit;
+  text-decoration:none;
+}
+
+header,
+footer{
+  background:#fff;
+}
+
+header{
+  border-bottom:1px solid var(--line);
+}
+
+footer{
+  border-top:1px solid var(--line);
+  padding:20px;
+  text-align:center;
+  color:var(--muted);
+  font-size:.9rem;
+}
+
+.bar{
+  max-width:1100px;
+  margin:auto;
+  padding:14px 20px;
+  display:flex;
+  align-items:center;
+  gap:24px;
+  flex-wrap:wrap;
+}
+
+.logo{
+  font-weight:800;
+  font-size:1.25rem;
+  color:var(--brand);
+  margin-right:auto;
+}
+
+nav{
+  display:flex;
+  gap:18px;
+  flex-wrap:wrap;
+  font-size:.95rem;
+}
+
+nav a:hover{
+  color:var(--brand);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible{
+  outline:2px solid var(--brand);
+  outline-offset:2px;
+}
+
+main{
+  flex:1;
+  width:100%;
+  max-width:1100px;
+  margin:32px auto;
+  padding:0 20px;
+}
+
+.card{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:28px;
+}
+
+.box{
+  max-width:700px;
+  margin:0 auto;
+}
+
+h1{
+  margin:0 0 6px;
+  font-size:1.5rem;
+}
+
+.sub{
+  color:var(--muted);
+  margin:0 0 20px;
+}
+
+label{
+  display:block;
+  font-weight:600;
+  margin:14px 0 6px;
+  font-size:.9rem;
+}
+
+input,
+select,
+textarea{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  font:inherit;
+  background:#fff;
+}
+
+textarea{
+  min-height:120px;
+  resize:vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+  outline:2px solid var(--brand);
+  outline-offset:2px;
+}
+
+button{
+  font:inherit;
+  cursor:pointer;
+}
+
+.btn{
+  background:var(--brand);
+  color:#fff;
+  border:0;
+  border-radius:8px;
+  padding:12px 18px;
+  font-weight:600;
+  width:100%;
+  margin-top:20px;
+}
+
+.btn:hover{
+  background:var(--brand-dark);
+}
+
+.btn:disabled{
+  opacity:.65;
+  cursor:not-allowed;
+}
+
+.link{
+  background:none;
+  border:0;
+  color:var(--brand);
+  font-weight:600;
+  padding:4px;
+}
+
+.err{
+  color:#b42318;
+  margin:12px 0 0;
+  min-height:1.4em;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0 16px;
+}
+
+.hint{
+  color:var(--muted);
+  font-size:.85rem;
+  margin:6px 0 0;
+}
+
+.hp{
+  position:absolute;
+  left:-9999px;
+  height:0;
+  overflow:hidden;
+}
+
+.request-info{
+  background:#fef3f2;
+  border-left:4px solid var(--brand);
+  padding:12px 14px;
+  margin:18px 0;
+  font-size:.9rem;
+}
+
+.request-info strong{
+  color:var(--brand-dark);
+}
+
+[hidden]{
+  display:none!important;
+}
+
+/* -----------------------------------------
+   LOADING SCREEN
+----------------------------------------- */
+
+#loading{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  background:rgba(255,255,255,.94);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:20px;
+}
+
+.loading-box{
+  width:100%;
+  max-width:360px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:30px 24px;
+  box-shadow:0 10px 35px rgba(0,0,0,.12);
+}
+
+.spinner{
+  width:48px;
+  height:48px;
+  margin:0 auto 18px;
+  border:4px solid #eee;
+  border-top-color:var(--brand);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+
+@keyframes spin{
+  to{
+    transform:rotate(360deg);
+  }
+}
+
+.loading-title{
+  margin:0;
+  font-size:1.1rem;
+  font-weight:700;
+}
+
+.loading-text{
+  margin:6px 0 0;
+  color:var(--muted);
+  font-size:.9rem;
+}
+
+body.is-loading{
+  overflow:hidden;
+}
+
+/* -----------------------------------------
+   MOBILE
+----------------------------------------- */
+
+@media(max-width:600px){
+
+  .bar{
+    padding:14px;
+  }
+
+  nav{
+    width:100%;
+    gap:12px;
+  }
+
+  main{
+    margin:20px auto;
+    padding:0 12px;
+  }
+
+  .card{
+    padding:20px;
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  h1{
+    font-size:1.35rem;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+  <div class="bar">
+
+    <a class="logo" href="/">
+      MUEFI
+    </a>
+
+    <nav>
+      <a href="/home">Home</a>
+      <a href="/about">About</a>
+      <a href="/event">Event</a>
+      <a href="/admission">Admission</a>
+      <a href="/ssc">SSC</a>
+      <a href="/alumni">Alumni</a>
+      <a href="/contact">Contact</a>
+    </nav>
+
+  </div>
+
+</header>
+
+
+<main>
+
+  <!-- ======================================
+       REQUEST FORM
+  ======================================= -->
+
+  <form
+    id="f"
+    class="card box"
+    enctype="multipart/form-data"
+  >
+
+    <h1>
+      Registrar Request
+    </h1>
+
+    <p class="sub">
+      Submit a request for student records,
+      certificates, transcripts, or other
+      registrar concerns.
+    </p>
+
+
+    <div class="request-info">
+
+      <strong>
+        Important:
+      </strong>
+
+      Please provide accurate student information
+      so the registrar's office can properly
+      process your request.
+
+    </div>
+
+
+    <!-- Request type -->
+
+    <label for="type">
+      What document or service do you need?
+    </label>
+
+    <select
+      id="type"
+      name="type"
+      required
+    >
+
+      <option value="">
+        Choose a request
+      </option>
+
+      <option value="coe">
+        Certificate of Enrollment
+      </option>
+
+      <option value="report_card">
+        Report Card / Form 138
+      </option>
+
+      <option value="good_moral">
+        Certificate of Good Moral Character
+      </option>
+
+      <option value="transcript">
+        Transcript of Records
+      </option>
+
+      <option value="transfer">
+        Certificate of Transfer
+      </option>
+
+      <option value="diploma">
+        Diploma / Graduation Document
+      </option>
+
+      <option value="correction">
+        Student Record Correction
+      </option>
+
+      <option value="other">
+        Other Registrar Concern
+      </option>
+
+    </select>
+
+
+    <!-- Requester information -->
+
+    <div class="grid">
+
+      <div>
+
+        <label for="requester">
+          Requester name
+        </label>
+
+        <input
+          id="requester"
+          name="requester"
+          required
+          maxlength="80"
+          autocomplete="name"
+        >
+
+      </div>
+
+
+      <div>
+
+        <label for="email">
+          Email
+        </label>
+
+        <input
+          id="email"
+          name="email"
+          type="email"
+          required
+          maxlength="120"
+          autocomplete="email"
+        >
+
+      </div>
+
+
+      <div>
+
+        <label for="phone">
+          Mobile number
+          (optional)
+        </label>
+
+        <input
+          id="phone"
+          name="phone"
+          type="tel"
+          maxlength="30"
+          autocomplete="tel"
+        >
+
+      </div>
+
+
+      <div>
+
+        <label for="relationship">
+          Relationship to student
+        </label>
+
+        <select
+          id="relationship"
+          name="relationship"
+          required
+        >
+
+          <option value="">
+            Choose...
+          </option>
+
+          <option value="parent">
+            Parent / Guardian
+          </option>
+
+          <option value="student">
+            Student
+          </option>
+
+          <option value="authorized">
+            Authorized Representative
+          </option>
+
+          <option value="other">
+            Other
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div>
+
+        <label for="student">
+          Student name
+        </label>
+
+        <input
+          id="student"
+          name="student"
+          required
+          maxlength="80"
+        >
+
+      </div>
+
+
+      <div>
+
+        <label for="studentId">
+          Student ID
+          (optional)
+        </label>
+
+        <input
+          id="studentId"
+          name="studentId"
+          maxlength="30"
+        >
+
+      </div>
+
+
+      <div>
+
+        <label for="level">
+          Grade and section
+        </label>
+
+        <input
+          id="level"
+          name="level"
+          maxlength="40"
+          placeholder="Grade 3-A"
+        >
+
+      </div>
+
+
+      <div>
+
+        <label for="schoolYear">
+          School year
+          (optional)
+        </label>
+
+        <input
+          id="schoolYear"
+          name="schoolYear"
+          maxlength="20"
+          placeholder="2026-2027"
+        >
+
+      </div>
+
+    </div>
+
+
+    <!-- Additional details -->
+
+    <label for="purpose">
+      Purpose of request
+    </label>
+
+    <textarea
+      id="purpose"
+      name="purpose"
+      maxlength="1000"
+      placeholder="Please tell us why you need this document."
+    ></textarea>
+
+
+    <label for="message">
+      Additional message
+    </label>
+
+    <textarea
+      id="message"
+      name="message"
+      maxlength="2000"
+      placeholder="Additional instructions or information..."
+    ></textarea>
+
+
+    <!-- Optional supporting document -->
+
+    <label for="attachment">
+      Supporting document
+      (optional)
+    </label>
+
+    <input
+      id="attachment"
+      name="attachment"
+      type="file"
+      accept="image/jpeg,image/png,image/webp,application/pdf"
+    >
+
+    <p class="hint">
+      Optional: JPG, PNG, WEBP or PDF, up to 5 MB.
+    </p>
+
+
+    <!-- Honeypot -->
+
+    <div
+      class="hp"
+      aria-hidden="true"
+    >
+
+      <label>
+        Website
+
+        <input
+          name="website"
+          tabindex="-1"
+          autocomplete="off"
+        >
+
+      </label>
+
+    </div>
+
+
+    <!-- Error -->
+
+    <p
+      class="err"
+      id="err"
+      role="alert"
+    ></p>
+
+
+    <!-- Submit -->
+
+    <button
+      class="btn"
+      id="go"
+      type="submit"
+    >
+      Submit registrar request
+    </button>
+
+  </form>
+
+
+  <!-- ======================================
+       SUCCESS
+  ======================================= -->
+
+  <section
+    id="done"
+    class="card box"
+    hidden
+  >
+
+    <h1>
+      Request submitted
+    </h1>
+
+    <p>
+      Your registrar request has been submitted
+      successfully.
+    </p>
+
+    <p>
+      Your reference number is
+      <b id="ref"></b>.
+    </p>
+
+    <p>
+      Please keep this reference number.
+      The registrar's office will reply to
+      the email address you provided.
+    </p>
+
+    <button
+      class="link"
+      id="again"
+      type="button"
+    >
+      Submit another request
+    </button>
+
+  </section>
+
+</main>
+
+
+<footer>
+
+  (088) 521 0042<br>
+
+  © MUEFI, All Right Reserved.
+  Designed By
+
+  <a href="https://kodewrk.com">
+    <u>Kodewrk</u>
+  </a>
+
+</footer>
+
+
+<!-- ======================================
+     LOADING SCREEN
+======================================= -->
+
+<div
+  id="loading"
+  hidden
+  aria-live="polite"
+  aria-busy="true"
+>
+
+  <div class="loading-box">
+
+    <div
+      class="spinner"
+      aria-hidden="true"
+    ></div>
+
+    <p class="loading-title">
+      Submitting your request...
+    </p>
+
+    <p class="loading-text">
+      Please wait. Do not close or refresh
+      this page.
+    </p>
+
+  </div>
+
+</div>
+
+
+<script>
+const $ = (id) =>
+  document.getElementById(id);
+
+const MAX =
+  5 * 1024 * 1024;
+
+
+// -----------------------------------------
+// Loading
+// -----------------------------------------
+
+function showLoading(){
+
+  $('loading').hidden = false;
+
+  document.body.classList.add(
+    'is-loading'
+  );
+
+}
+
+function hideLoading(){
+
+  $('loading').hidden = true;
+
+  document.body.classList.remove(
+    'is-loading'
+  );
+
+}
+
+
+// -----------------------------------------
+// Form submit
+// -----------------------------------------
+
+$('f').onsubmit = async (e) => {
+
+  e.preventDefault();
+
+  $('err').textContent = '';
+
+  const file =
+    $('attachment').files[0];
+
+
+  // ---------------------------------------
+  // File validation
+  // ---------------------------------------
+
+  if(
+    file &&
+    file.size > MAX
+  ){
+
+    $('err').textContent =
+      'The file is larger than 5 MB. Please upload a smaller file.';
+
+    return;
+
+  }
+
+
+  // ---------------------------------------
+  // Create FormData
+  // ---------------------------------------
+
+  const fd =
+    new FormData(
+      $('f')
+    );
+
+
+  // ---------------------------------------
+  // Disable button
+  // ---------------------------------------
+
+  $('go').disabled = true;
+
+  $('go').textContent =
+    'Submitting...';
+
+
+  showLoading();
+
+
+  try{
+
+    const response =
+      await fetch(
+        '/api/registrar',
+        {
+          method:'POST',
+          body:fd
+        }
+      );
+
+
+    const data =
+      await response
+        .json()
+        .catch(
+          () => ({})
+        );
+
+
+    // -------------------------------------
+    // Error
+    // -------------------------------------
+
+    if(
+      !response.ok
+    ){
+
+      hideLoading();
+
+      $('err').textContent =
+        data.error ||
+        'Something went wrong. Please try again.';
+
+      return;
+
+    }
+
+
+    // -------------------------------------
+    // Success
+    // -------------------------------------
+
+    $('ref').textContent =
+      data.ref;
+
+    $('f').hidden = true;
+
+    $('done').hidden = false;
+
+    hideLoading();
+
+  }
+  catch(error){
+
+    console.error(
+      'Registrar request error:',
+      error
+    );
+
+    hideLoading();
+
+    $('err').textContent =
+      'Something went wrong. Please check your connection and try again.';
+
+  }
+  finally{
+
+    $('go').disabled = false;
+
+    $('go').textContent =
+      'Submit registrar request';
+
+  }
+
+};
+
+
+// -----------------------------------------
+// Submit another request
+// -----------------------------------------
+
+$('again').onclick = () => {
+
+  $('f').reset();
+
+  $('err').textContent = '';
+
+  $('done').hidden = true;
+
+  $('f').hidden = false;
+
+  $('go').disabled = false;
+
+  $('go').textContent =
+    'Submit registrar request';
+
+  hideLoading();
+
+};
+</script>
+
+</body>
+</html>
