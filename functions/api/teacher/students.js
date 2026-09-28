@@ -70,7 +70,22 @@ export async function onRequestGet({ request, env }) {
   }
 
   const students = await loadStudents(env);
+console.log('STUDENTS FROM SHEET:', students);
 
+console.log('FILTER DEBUG:', {
+  requestedGrade,
+  schoolYear,
+  assignedGrades,
+  teacherSection: session.section,
+  students: students.map(row => ({
+    id: row[0],
+    schoolYear: row[1],
+    name: row[2],
+    grade: row[3],
+    section: row[4],
+    active: row[5],
+  })),
+});
   const teacherSection = String(session.section ?? '').trim();
 
   const result = students
