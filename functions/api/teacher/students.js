@@ -1,6 +1,5 @@
 import {
   json,
-  normId,
   normText,
   requireRole,
 } from '../../_lib/util.js';
@@ -34,123 +33,179 @@ function gradeMatches(a, b) {
 }
 
 export async function onRequestGet({ request, env }) {
-  const session = await requireRole(request, env, 'teacher');
+  const session = await requireRole(
+    request,
+    env,
+    'teacher'
+  );
 
   if (!session) {
-    return json({ error: 'unauthorized' }, 401);
+    return json(
+      { error: 'unauthorized' },
+      401
+    );
   }
 
   const url = new URL(request.url);
 
   const requestedGrade =
-    String(url.searchParams.get('gradeLevel') ?? '').trim();
+    String(
+      url.searchParams.get('gradeLevel') ?? ''
+    ).trim();
 
   const schoolYear =
-    String(url.searchParams.get('schoolYear') ?? '').trim();
+    String(
+      url.searchParams.get('schoolYear') ?? ''
+    ).trim();
 
-  const assignedGrades = getTeacherGradeLevels(session);
+  const assignedGrades =
+    getTeacherGradeLevels(session);
 
-  // Teacher must be assigned to the requested grade.
+  // ---------------------------------------------
+  // SECURITY: verify teacher is assigned
+  // to the selected grade.
+  // ---------------------------------------------
+
   if (requestedGrade) {
-    const allowed = assignedGrades.some((grade) =>
-      gradeMatches(grade, requestedGrade)
-    );
+    const allowed =
+      assignedGrades.some((grade) =>
+        gradeMatches(
+          grade,
+          requestedGrade
+        )
+      );
 
     if (!allowed) {
       return json(
         {
           error: 'forbidden',
-          message: 'You are not assigned to this grade level.',
-          requestedGrade,
-          assignedGrades,
+          message:
+            'You are not assigned to this grade level.',
         },
         403
       );
     }
   }
 
-  const students = await loadStudents(env);
-console.log('STUDENTS FROM SHEET:', students);
+  // ---------------------------------------------
+  // Load Students sheet
+  //
+  // Actual structure:
+  // A = student_id
+  // B = pin
+  // C = full_name
+  // D = grade_level
+  // E = section
+  // F = active
+  // ---------------------------------------------
 
-console.log('FILTER DEBUG:', {
-  requestedGrade,
-  schoolYear,
-  assignedGrades,
-  teacherSection: session.section,
-  students: students.map(row => ({
-    id: row[0],
-    schoolYear: row[1],
-    name: row[2],
-    grade: row[3],
-    section: row[4],
-    active: row[5],
-  })),
-});
-  const teacherSection = String(session.section ?? '').trim();
+  const students =
+    await loadStudents(env);
 
-  const result = students
-    .filter((row) => {
-      const studentId = String(row[0] ?? '').trim();
-      const studentSchoolYear = String(row[1] ?? '').trim();
-      const studentGrade = String(row[3] ?? '').trim();
-      const studentSection = String(row[4] ?? '').trim();
-      const active = String(row[5] ?? '').trim().toUpperCase();
+  const teacherSection =
+    String(session.section ?? '').trim();
 
-      // Ignore empty rows.
-      if (!studentId) {
-        return false;
-      }
+  const result =
+    students
+      .filter((row) => {
+        const studentId =
+          String(row[0] ?? '').trim();
 
-      // Ignore inactive students.
-      if (active === 'FALSE') {
-        return false;
-      }
+        const studentGrade =
+          String(row[3] ?? '').trim();
 
-      // Filter selected grade.
-      if (
-        requestedGrade &&
-        !gradeMatches(studentGrade, requestedGrade)
-      ) {
-        return false;
-      }
+        const studentSection =
+          String(row[4] ?? '').trim();
 
-      // If no grade was explicitly selected,
-      // only show grades assigned to this teacher.
-      if (
-        !requestedGrade &&
-        !assignedGrades.some((grade) =>
-          gradeMatches(grade, studentGrade)
-        )
-      ) {
-        return false;
-      }
+        const active =
+          String(row[5] ?? '')
+            .trim()
+            .toUpperCase();
 
-      // Filter by teacher section.
-      if (
-        teacherSection &&
-        studentSection.toLowerCase() !==
-          teacherSection.toLowerCase()
-      ) {
-        return false;
-      }
+        // Ignore empty rows
+        if (!studentId) {
+          return false;
+        }
 
-      // Only filter school year when the student actually has one.
-      if (
-        schoolYear &&
-        studentSchoolYear &&
-        studentSchoolYear !== schoolYear
-      ) {
-        return false;
-      }
+        // Ignore inactive students
+        if (active === 'FALSE') {
+          return false;
+        }
 
-      return true;
-    })
-    .map((row) => ({
-      id: String(row[0] ?? '').trim(),
-      name: String(row[2] ?? '').trim(),
-      gradeLevel: String(row[3] ?? '').trim(),
-      section: String(row[4] ?? '').trim(),
-    }));
+        // -----------------------------------------
+        // Grade filter
+        // -----------------------------------------
+
+        if (
+          requestedGrade &&
+          !gradeMatches(
+            studentGrade,
+            requestedGrade
+          )
+        ) {
+          return false;
+        }
+
+        // If no grade selected, only show
+        // teacher's assigned grades.
+        if (
+          !requestedGrade &&
+          !assignedGrades.some(
+            (grade) =>
+              gradeMatches(
+                grade,
+                studentGrade
+              )
+          )
+        ) {
+          return false;
+        }
+
+        // -----------------------------------------
+        // Section restriction
+        // -----------------------------------------
+
+        if (
+          teacherSection &&
+          studentSection.toLowerCase() !==
+            teacherSection.toLowerCase()
+        ) {
+          return false;
+        }
+
+        // -----------------------------------------
+        // IMPORTANT:
+        // DO NOT filter school year here.
+        //
+        // Students sheet does not have school_year.
+        // School year belongs to the Grade sheets.
+        // -----------------------------------------
+
+        return true;
+      })
+      .map((row) => ({
+        id: String(row[0] ?? '').trim(),
+        name: String(row[2] ?? '').trim(),
+        gradeLevel:
+          String(row[3] ?? '').trim(),
+        section:
+          String(row[4] ?? '').trim(),
+      }));
+
+  console.log(
+    'LOAD STUDENTS RESULT:',
+    {
+      requestedGrade,
+      schoolYear,
+      assignedGrades,
+      teacherSection,
+      totalStudents:
+        students.length,
+      returnedStudents:
+        result.length,
+      students: result,
+    }
+  );
 
   return json({
     teacher: {
@@ -159,8 +214,13 @@ console.log('FILTER DEBUG:', {
       gradeLevels: assignedGrades,
       section: session.section,
     },
-    selectedGrade: requestedGrade || null,
-    schoolYear: schoolYear || null,
+
+    selectedGrade:
+      requestedGrade || null,
+
+    schoolYear:
+      schoolYear || null,
+
     students: result,
   });
 }
