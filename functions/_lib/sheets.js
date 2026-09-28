@@ -439,3 +439,30 @@ export async function invalidateGradeCache(
     'sheet-cache'
   );
 }
+
+// --------------------------------------------------
+// GENERIC SHEETS AUTH HEADER
+// Used by other API functions such as inquiry.js
+// --------------------------------------------------
+
+export async function authHeader(env) {
+  const token = await getToken(env);
+
+  return {
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  };
+}
+
+// --------------------------------------------------
+// GOOGLE SHEETS BASE URL
+// Used by other API functions such as inquiry.js
+// --------------------------------------------------
+
+export function sheetBase(env) {
+  return (
+    `https://sheets.googleapis.com/v4/spreadsheets/` +
+    `${env.SHEET_ID}`
+  );
+}
