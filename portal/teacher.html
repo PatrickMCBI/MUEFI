@@ -140,7 +140,8 @@
     select:focus {
       outline: none;
       border-color: var(--brand);
-      box-shadow: 0 0 0 3px rgba(155, 28, 28, .08);
+      box-shadow:
+        0 0 0 3px rgba(155, 28, 28, .08);
     }
 
     button {
@@ -179,6 +180,11 @@
 
     .btn.secondary:hover:not(:disabled) {
       background: #fff7f7;
+    }
+
+    .btn.small {
+      padding: 8px 12px;
+      font-size: .875rem;
     }
 
     .err {
@@ -231,6 +237,7 @@
       border-radius: 8px;
       padding: 12px;
       margin-bottom: 8px;
+      transition: .15s ease;
     }
 
     .student:hover,
@@ -241,6 +248,7 @@
 
     .student strong {
       display: block;
+      margin-bottom: 3px;
     }
 
     .student small {
@@ -254,7 +262,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 760px;
+      min-width: 650px;
     }
 
     th,
@@ -287,6 +295,10 @@
       color: var(--muted);
     }
 
+    .text-danger {
+      color: var(--danger);
+    }
+
     .loading {
       opacity: .6;
       pointer-events: none;
@@ -297,6 +309,7 @@
     }
 
     @media (max-width: 800px) {
+
       main {
         margin: 16px auto;
         padding: 0 12px;
@@ -315,7 +328,7 @@
       }
 
       .students {
-        max-height: 280px;
+        max-height: 300px;
       }
 
       .top {
@@ -331,741 +344,1059 @@
 
 <body>
 
-<header>
-  <div class="bar">
-    <a class="logo" href="/">
-      MUEFI
-    </a>
+  <!-- HEADER -->
 
-    <strong>
-      Teacher Portal
-    </strong>
-  </div>
-</header>
+  <header>
+    <div class="bar">
+
+      <a
+        class="logo"
+        href="/"
+      >
+        MUEFI
+      </a>
+
+      <strong>
+        Teacher Portal
+      </strong>
+
+    </div>
+  </header>
 
 
-<main>
+  <!-- MAIN -->
 
-  <!-- LOGIN -->
+  <main>
 
-  <form
-    id="login"
-    class="card"
-  >
+    <!-- =========================================
+         LOGIN
+    ========================================== -->
 
-    <h1>
-      Teacher Login
-    </h1>
-
-    <p class="sub">
-      Sign in to manage student grades.
-    </p>
-
-    <label for="teacherId">
-      Teacher ID
-    </label>
-
-    <input
-      id="teacherId"
-      autocomplete="username"
-      required
+    <form
+      id="login"
+      class="card"
     >
 
-    <label for="pin">
-      PIN
-    </label>
+      <h1>
+        Teacher Login
+      </h1>
 
-    <input
-      id="pin"
-      type="password"
-      inputmode="numeric"
-      autocomplete="current-password"
-      required
-    >
+      <p class="sub">
+        Sign in to manage student grades.
+      </p>
 
-    <p
-      id="loginError"
-      class="err"
-      role="alert"
-    ></p>
+      <label for="teacherId">
+        Teacher ID
+      </label>
 
-    <button
-      id="loginButton"
-      class="btn full"
-      type="submit"
-    >
-      Login
-    </button>
+      <input
+        id="teacherId"
+        autocomplete="username"
+        required
+      >
 
-  </form>
+      <label for="pin">
+        PIN
+      </label>
 
+      <input
+        id="pin"
+        type="password"
+        inputmode="numeric"
+        autocomplete="current-password"
+        required
+      >
 
-  <!-- DASHBOARD -->
-
-  <section
-    id="dashboard"
-    hidden
-  >
-
-    <div class="top">
-
-      <div>
-        <h1>
-          Teacher Dashboard
-        </h1>
-
-        <p
-          id="teacherInfo"
-          class="teacher-info"
-        ></p>
-      </div>
+      <p
+        id="loginError"
+        class="err"
+        role="alert"
+      ></p>
 
       <button
-        id="logout"
-        class="btn secondary"
-        type="button"
+        id="loginButton"
+        class="btn full"
+        type="submit"
       >
-        Log out
+        Login
       </button>
 
-    </div>
+    </form>
 
 
-    <!-- FILTERS -->
+    <!-- =========================================
+         DASHBOARD
+    ========================================== -->
 
-    <div class="card">
-
-      <div class="filters">
-
-        <div>
-          <label for="schoolYear">
-            School Year
-          </label>
-
-          <select id="schoolYear">
-            <option value="2026-2027">
-              2026-2027
-            </option>
-
-            <option value="2027-2028">
-              2027-2028
-            </option>
-          </select>
-        </div>
-
-
-        <div>
-          <label for="quarter">
-            Quarter
-          </label>
-
-          <select id="quarter">
-            <option value="Q1">Q1</option>
-            <option value="Q2">Q2</option>
-            <option value="Q3">Q3</option>
-            <option value="Q4">Q4</option>
-          </select>
-        </div>
-
-
-        <div>
-          <label for="gradeLevel">
-            Grade Level
-          </label>
-
-          <select
-            id="gradeLevel"
-            required
-          >
-            <option value="">
-              Select Grade Level
-            </option>
-          </select>
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- STUDENTS + GRADES -->
-
-    <div
-      class="layout"
-      style="margin-top:20px;"
+    <section
+      id="dashboard"
+      hidden
     >
 
-      <!-- STUDENTS -->
+      <!-- TOP -->
 
-      <div class="card">
+      <div class="top">
 
-        <h2>
-          Students
-        </h2>
+        <div>
 
-        <p class="sub">
-          Select a student.
-        </p>
+          <h1>
+            Teacher Dashboard
+          </h1>
 
-        <div
-          id="students"
-          class="students"
-        ></div>
+          <p
+            id="teacherInfo"
+            class="teacher-info"
+          ></p>
+
+        </div>
+
+        <button
+          id="logout"
+          class="btn secondary"
+          type="button"
+        >
+          Log out
+        </button>
 
       </div>
 
 
-      <!-- GRADES -->
+      <!-- =======================================
+           FILTERS
+      ======================================== -->
 
       <div class="card">
 
-        <h2 id="studentName">
-          Select a student
-        </h2>
+        <div class="filters">
 
-        <p
-          id="studentMeta"
-          class="sub"
-        ></p>
+          <!-- SCHOOL YEAR -->
 
-        <p
-          id="saveMessage"
-          class="success"
-        ></p>
+          <div>
 
-        <div class="grade-grid">
+            <label for="schoolYear">
+              School Year
+            </label>
 
-          <table>
+            <select
+              id="schoolYear"
+              required
+            >
 
-            <thead>
-              <tr>
-                <th>Quarter</th>
-                <th>Subject</th>
-                <th>Grade</th>
-                <th>Remarks</th>
-                <th></th>
-              </tr>
-            </thead>
+              <option value="2026-2027">
+                2026-2027
+              </option>
 
-            <tbody id="gradeBody"></tbody>
+            </select>
 
-          </table>
+          </div>
+
+
+          <!-- QUARTER -->
+
+          <div>
+
+            <label for="quarter">
+              Quarter
+            </label>
+
+            <select id="quarter">
+
+              <option value="Q1">
+                Q1
+              </option>
+
+              <option value="Q2">
+                Q2
+              </option>
+
+              <option value="Q3">
+                Q3
+              </option>
+
+              <option value="Q4">
+                Q4
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <!-- GRADE LEVEL -->
+
+          <div>
+
+            <label for="gradeLevel">
+              Grade Level
+            </label>
+
+            <select
+              id="gradeLevel"
+              required
+            >
+
+              <option value="">
+                Select Grade Level
+              </option>
+
+            </select>
+
+          </div>
 
         </div>
 
-        <div class="actions">
+      </div>
 
-          <button
-            id="addGrade"
-            class="btn secondary"
-            type="button"
+
+      <!-- =======================================
+           STUDENTS + GRADES
+      ======================================== -->
+
+      <div
+        class="layout"
+        style="margin-top:20px;"
+      >
+
+        <!-- =====================================
+             STUDENTS
+        ====================================== -->
+
+        <div class="card">
+
+          <h2>
+            Students
+          </h2>
+
+          <p class="sub">
+            Select a student.
+          </p>
+
+          <div
+            id="students"
+            class="students"
           >
-            + Add Subject
-          </button>
+
+            <div class="empty">
+              Select a grade level.
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- =====================================
+             GRADES
+        ====================================== -->
+
+        <div class="card">
+
+          <h2 id="studentName">
+            Select a student
+          </h2>
+
+          <p
+            id="studentMeta"
+            class="sub"
+          ></p>
+
+          <p
+            id="saveMessage"
+            class="success"
+          ></p>
+
+          <div class="grade-grid">
+
+            <table>
+
+              <thead>
+
+                <tr>
+                  <th>Quarter</th>
+                  <th>Subject</th>
+                  <th>Grade</th>
+                  <th>Remarks</th>
+                  <th>Action</th>
+                </tr>
+
+              </thead>
+
+              <tbody id="gradeBody">
+
+                <tr>
+
+                  <td
+                    colspan="5"
+                    class="empty"
+                  >
+                    Select a student.
+                  </td>
+
+                </tr>
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+
+          <div class="actions">
+
+            <button
+              id="addGrade"
+              class="btn secondary"
+              type="button"
+            >
+              + Add Subject
+            </button>
+
+          </div>
 
         </div>
 
       </div>
 
-    </div>
+    </section>
 
-  </section>
-
-</main>
+  </main>
 
 
-<footer>
-  © MUEFI, All Rights Reserved.
-  Designed By
-  <a
-    href="https://kodewrk.com"
-    target="_blank"
-    rel="noopener"
-  >
-    <u>Kodewrk</u>
-  </a>
-</footer>
+  <!-- FOOTER -->
+
+  <footer>
+
+    © MUEFI, All Rights Reserved.
+    Designed By
+
+    <a
+      href="https://kodewrk.com"
+      target="_blank"
+      rel="noopener"
+    >
+      <u>Kodewrk</u>
+    </a>
+
+  </footer>
 
 
-<script>
-  const $ = (id) =>
-    document.getElementById(id);
+  <script>
+
+    // ==========================================
+    // HELPERS
+    // ==========================================
+
+    const $ = (id) =>
+      document.getElementById(id);
 
 
-  let teacher = null;
-  let selectedStudent = null;
-  let grades = [];
+    let teacher = null;
+
+    let selectedStudent = null;
+
+    let grades = [];
 
 
-  const subjects = [
-    'Chinese',
-    'English',
-    'Filipino',
-    'Mathematics',
-    'Science',
-    'Araling Panlipunan',
-    'MAPEH',
-    'TLE',
-    'ESP',
-  ];
+    const subjects = [
+      'Chinese',
+      'English',
+      'Filipino',
+      'Mathematics',
+      'Science',
+      'Araling Panlipunan',
+      'MAPEH',
+      'TLE',
+      'ESP'
+    ];
 
 
-  // ==========================================
-  // API HELPER
-  // ==========================================
+    // ==========================================
+    // API HELPER
+    // ==========================================
 
-  async function api(
-    url,
-    options = {}
-  ) {
-    const response =
-      await fetch(
-        url,
-        {
-          ...options,
-          credentials: 'same-origin',
-        }
-      );
+    async function api(
+      url,
+      options = {}
+    ) {
 
-    let data = {};
-
-    try {
-      data =
-        await response.json();
-    } catch {
-      data = {};
-    }
-
-    if (!response.ok) {
-      throw new Error(
-        data.error ||
-        data.message ||
-        `Request failed (${response.status})`
-      );
-    }
-
-    return data;
-  }
-
-
-  // ==========================================
-  // LOGIN
-  // ==========================================
-
-  async function login(event) {
-    event.preventDefault();
-
-    $('loginError').textContent = '';
-
-    const teacherId =
-      $('teacherId').value.trim();
-
-    const pin =
-      $('pin').value.trim();
-
-    if (!teacherId || !pin) {
-      $('loginError').textContent =
-        'Please enter your Teacher ID and PIN.';
-
-      return;
-    }
-
-    const button =
-      $('loginButton');
-
-    button.disabled = true;
-    button.textContent = 'Signing in...';
-
-    try {
-
-      const data =
-        await api(
-          '/api/teacher/login',
+      const response =
+        await fetch(
+          url,
           {
-            method: 'POST',
-
-            headers: {
-              'Content-Type':
-                'application/json',
-
-              'Accept':
-                'application/json',
-            },
-
-            body: JSON.stringify({
-              teacherId,
-              pin,
-            }),
+            ...options,
+            credentials: 'same-origin'
           }
         );
 
 
-      teacher =
-        data.teacher;
+      let data = {};
 
 
-      if (!teacher) {
-        throw new Error(
-          'Invalid teacher response.'
-        );
+      try {
+
+        data =
+          await response.json();
+
+      } catch {
+
+        data = {};
+
       }
 
 
-      // Populate the assigned grades
-      populateGradeLevels(
-        teacher
-      );
+      if (!response.ok) {
+
+        throw new Error(
+          data.error ||
+          data.message ||
+          `Request failed (${response.status})`
+        );
+
+      }
 
 
-      $('pin').value = '';
+      return data;
+    }
 
 
-      $('login').hidden = true;
+    // ==========================================
+    // LOGIN
+    // ==========================================
 
-      $('dashboard').hidden = false;
+    async function login(event) {
+
+      event.preventDefault();
 
 
-      const gradeCount =
-        Array.isArray(
-          teacher.gradeLevels
+      $('loginError')
+        .textContent = '';
+
+
+      const teacherId =
+        $('teacherId')
+          .value
+          .trim();
+
+
+      const pin =
+        $('pin')
+          .value
+          .trim();
+
+
+      if (!teacherId || !pin) {
+
+        $('loginError')
+          .textContent =
+            'Please enter your Teacher ID and PIN.';
+
+        return;
+      }
+
+
+      const button =
+        $('loginButton');
+
+
+      button.disabled = true;
+
+      button.textContent =
+        'Signing in...';
+
+
+      try {
+
+        const data =
+          await api(
+            '/api/teacher/login',
+            {
+              method: 'POST',
+
+              headers: {
+                'Content-Type':
+                  'application/json',
+
+                'Accept':
+                  'application/json'
+              },
+
+              body:
+                JSON.stringify({
+                  teacherId,
+                  pin
+                })
+            }
+          );
+
+
+        teacher =
+          data.teacher;
+
+
+        if (!teacher) {
+
+          throw new Error(
+            'Invalid teacher response.'
+          );
+
+        }
+
+
+        // Populate assigned grade levels
+
+        populateGradeLevels(
+          teacher
+        );
+
+
+        // Clear PIN
+
+        $('pin').value = '';
+
+
+        // Switch screen
+
+        $('login').hidden =
+          true;
+
+        $('dashboard').hidden =
+          false;
+
+
+        // Teacher information
+
+        const gradeCount =
+          Array.isArray(
+            teacher.gradeLevels
+          )
+            ? teacher.gradeLevels.length
+            : 0;
+
+
+        $('teacherInfo')
+          .textContent =
+            `${teacher.name}` +
+            (
+              teacher.section
+                ? ` · Section ${teacher.section}`
+                : ''
+            ) +
+            ` · ${gradeCount} grade level${gradeCount === 1 ? '' : 's'}`;
+
+
+        // Load first grade
+
+        await loadStudents();
+
+      } catch (error) {
+
+        console.error(
+          'LOGIN ERROR:',
+          error
+        );
+
+
+        if (
+          error.message ===
+          'locked'
+        ) {
+
+          $('loginError')
+            .textContent =
+              'Too many attempts. Try again later.';
+
+        } else if (
+          error.message ===
+          'no_grade_assignment'
+        ) {
+
+          $('loginError')
+            .textContent =
+              'This teacher has no assigned grade level.';
+
+        } else {
+
+          $('loginError')
+            .textContent =
+              error.message ||
+              'Teacher ID or PIN is incorrect.';
+
+        }
+
+      } finally {
+
+        button.disabled =
+          false;
+
+        button.textContent =
+          'Login';
+
+      }
+    }
+
+
+    // ==========================================
+    // POPULATE GRADE LEVELS
+    // ==========================================
+
+    function populateGradeLevels(
+      teacher
+    ) {
+
+      const select =
+        $('gradeLevel');
+
+
+      select.innerHTML = '';
+
+
+      let gradeLevels =
+        teacher.gradeLevels ||
+        teacher.grade_level ||
+        [];
+
+
+      // Support comma-separated value
+
+      if (
+        typeof gradeLevels ===
+        'string'
+      ) {
+
+        gradeLevels =
+          gradeLevels
+            .split(',')
+            .map(
+              value =>
+                value.trim()
+            )
+            .filter(Boolean);
+
+      }
+
+
+      if (
+        !Array.isArray(
+          gradeLevels
         )
-          ? teacher.gradeLevels.length
-          : 0;
+      ) {
+
+        gradeLevels = [];
+
+      }
 
 
-      $('teacherInfo')
-        .textContent =
-          `${teacher.name}` +
-          (
-            teacher.section
-              ? ` · Section ${teacher.section}`
-              : ''
-          ) +
-          ` · ${gradeCount} grade level${gradeCount === 1 ? '' : 's'}`;
+      // Remove duplicates
+
+      gradeLevels = [
+        ...new Set(
+          gradeLevels
+        )
+      ];
 
 
-      await loadStudents();
+      // Sort numerically
 
-    } catch (error) {
+      gradeLevels.sort(
+        (a, b) => {
 
-      console.error(
-        'LOGIN ERROR:',
-        error
+          const numA =
+            parseInt(
+              String(a)
+                .replace(
+                  /\D/g,
+                  ''
+                ),
+              10
+            ) || 999;
+
+
+          const numB =
+            parseInt(
+              String(b)
+                .replace(
+                  /\D/g,
+                  ''
+                ),
+              10
+            ) || 999;
+
+
+          return numA - numB;
+        }
       );
 
 
       if (
-        error.message === 'locked'
+        gradeLevels.length === 0
       ) {
-        $('loginError')
-          .textContent =
-            'Too many attempts. Try again later.';
-      } else if (
-        error.message ===
-        'no_grade_assignment'
-      ) {
-        $('loginError')
-          .textContent =
-            'This teacher has no assigned grade level.';
-      } else {
-        $('loginError')
-          .textContent =
-            'Teacher ID or PIN is incorrect.';
-      }
-
-    } finally {
-
-      button.disabled = false;
-      button.textContent = 'Login';
-
-    }
-  }
-
-
-  // ==========================================
-  // POPULATE GRADE LEVEL DROPDOWN
-  // ==========================================
-
-  function populateGradeLevels(
-    teacher
-  ) {
-    const select =
-      $('gradeLevel');
-
-
-    select.innerHTML = '';
-
-
-    let gradeLevels =
-      teacher.gradeLevels ||
-      teacher.grade_level ||
-      [];
-
-
-    // Support comma-separated string
-    if (
-      typeof gradeLevels ===
-      'string'
-    ) {
-      gradeLevels =
-        gradeLevels
-          .split(',')
-          .map(
-            value =>
-              value.trim()
-          )
-          .filter(Boolean);
-    }
-
-
-    if (
-      !Array.isArray(
-        gradeLevels
-      )
-    ) {
-      gradeLevels = [];
-    }
-
-
-    // Remove duplicates
-    gradeLevels = [
-      ...new Set(
-        gradeLevels
-      ),
-    ];
-
-
-    // Sort Grade 1, Grade 2, Grade 5...
-    gradeLevels.sort(
-      (a, b) => {
-
-        const numA =
-          parseInt(
-            String(a)
-              .replace(
-                /\D/g,
-                ''
-              ),
-            10
-          ) || 999;
-
-
-        const numB =
-          parseInt(
-            String(b)
-              .replace(
-                /\D/g,
-                ''
-              ),
-            10
-          ) || 999;
-
-
-        return numA - numB;
-      }
-    );
-
-
-    if (
-      gradeLevels.length === 0
-    ) {
-
-      select.innerHTML =
-        '<option value="">No grade assigned</option>';
-
-      select.disabled = true;
-
-      return;
-    }
-
-
-    select.disabled = false;
-
-
-    gradeLevels.forEach(
-      grade => {
 
         const option =
           document.createElement(
             'option'
           );
 
-
-        option.value =
-          grade;
-
+        option.value = '';
 
         option.textContent =
-          grade;
-
+          'No grade assigned';
 
         select.appendChild(
           option
         );
 
+        select.disabled =
+          true;
+
+        return;
       }
-    );
 
 
-    select.value =
-      gradeLevels[0];
-  }
+      select.disabled =
+        false;
 
 
-  // ==========================================
-  // LOAD STUDENTS
-  // ==========================================
+      gradeLevels.forEach(
+        grade => {
 
-  async function loadStudents() {
-
-    const gradeLevel =
-      $('gradeLevel').value;
-
-    const schoolYear =
-      $('schoolYear').value;
+          const option =
+            document.createElement(
+              'option'
+            );
 
 
-    selectedStudent = null;
-    grades = [];
+          option.value =
+            grade;
 
 
-    $('studentName')
-      .textContent =
-        'Select a student';
+          option.textContent =
+            grade;
 
 
-    $('studentMeta')
-      .textContent = '';
+          select.appendChild(
+            option
+          );
+
+        }
+      );
 
 
-    $('saveMessage')
-      .textContent = '';
-
-
-    $('gradeBody')
-      .replaceChildren();
-
-
-    if (!gradeLevel) {
-
-      $('students').innerHTML =
-        '<div class="empty">Select a grade level.</div>';
-
-      return;
+      select.value =
+        gradeLevels[0];
     }
 
 
-    $('students').innerHTML =
-      '<div class="empty">Loading students...</div>';
+    // ==========================================
+    // LOAD STUDENTS
+    // ==========================================
+
+    async function loadStudents() {
+
+      const gradeLevel =
+        $('gradeLevel')
+          .value
+          .trim();
 
 
-    try {
+      const schoolYear =
+        $('schoolYear')
+          .value
+          .trim();
 
-      const params =
-        new URLSearchParams({
+
+      const container =
+        $('students');
+
+
+      // Reset selected student
+
+      selectedStudent =
+        null;
+
+      grades = [];
+
+
+      $('studentName')
+        .textContent =
+          'Select a student';
+
+
+      $('studentMeta')
+        .textContent = '';
+
+
+      $('saveMessage')
+        .textContent = '';
+
+
+      $('gradeBody')
+        .innerHTML = `
+          <tr>
+            <td
+              colspan="5"
+              class="empty"
+            >
+              Select a student.
+            </td>
+          </tr>
+        `;
+
+
+      if (!gradeLevel) {
+
+        container.innerHTML = `
+          <div class="empty">
+            Select a grade level.
+          </div>
+        `;
+
+        return;
+      }
+
+
+      if (!schoolYear) {
+
+        container.innerHTML = `
+          <div class="empty text-danger">
+            Please select a school year.
+          </div>
+        `;
+
+        return;
+      }
+
+
+      container.innerHTML = `
+        <div class="empty">
+          Loading students...
+        </div>
+      `;
+
+
+      console.log(
+        'LOAD STUDENTS REQUEST:',
+        {
           gradeLevel,
-          schoolYear,
-        });
+          schoolYear
+        }
+      );
 
 
-      const data =
-        await api(
-          `/api/teacher/students?${params.toString()}`
+      try {
+
+        const params =
+          new URLSearchParams({
+            gradeLevel,
+            schoolYear
+          });
+
+
+        const url =
+          `/api/teacher/students?${params.toString()}`;
+
+
+        console.log(
+          'LOAD STUDENTS URL:',
+          url
         );
+
+
+        const response =
+          await fetch(
+            url,
+            {
+              method: 'GET',
+
+              credentials:
+                'same-origin',
+
+              headers: {
+                Accept:
+                  'application/json'
+              }
+            }
+          );
+
+
+        const data =
+          await response.json();
+
+
+        console.log(
+          'LOAD STUDENTS STATUS:',
+          response.status
+        );
+
 
         console.log(
           'LOAD STUDENTS DATA:',
           data
         );
-      renderStudents(
-        data.students || []
-      );
-
-    } catch (error) {
-
-      console.error(
-        'LOAD STUDENTS ERROR:',
-        error
-      );
 
 
-      $('students').innerHTML =
-        `<div class="empty">
-          ${escapeHtml(
-            error.message ||
-            'Failed to load students.'
-          )}
-        </div>`;
+        if (!response.ok) {
+
+          throw new Error(
+            data.message ||
+            data.error ||
+            `Failed to load students (${response.status})`
+          );
+
+        }
+
+
+        renderStudents(
+          data.students || []
+        );
+
+      } catch (error) {
+
+        console.error(
+          'LOAD STUDENTS ERROR:',
+          error
+        );
+
+
+        container.innerHTML = `
+          <div class="empty text-danger">
+            ${escapeHtml(
+              error.message
+            )}
+          </div>
+        `;
+
+      }
     }
-  }
 
 
-  // ==========================================
-  // RENDER STUDENTS
-  // ==========================================
+    // ==========================================
+    // RENDER STUDENTS
+    // ==========================================
 
-  function renderStudents(
-    students
-  ) {
-
-    const container =
-      $('students');
-
-
-    container.replaceChildren();
-
-
-    if (
-      !students.length
+    function renderStudents(
+      students
     ) {
 
-      container.innerHTML =
-        '<div class="empty">No students found.</div>';
+      const container =
+        $('students');
 
-      return;
+
+      container.innerHTML = '';
+
+
+      if (!students.length) {
+
+        container.innerHTML = `
+          <div class="empty">
+            No students found.
+          </div>
+        `;
+
+        return;
+      }
+
+
+      students.forEach(
+        student => {
+
+          const button =
+            document.createElement(
+              'button'
+            );
+
+
+          button.type =
+            'button';
+
+
+          button.className =
+            'student';
+
+
+          button.dataset.id =
+            student.id;
+
+
+          button.innerHTML = `
+            <strong>
+              ${escapeHtml(
+                student.name
+              )}
+            </strong>
+
+            <small>
+              ${escapeHtml(
+                student.id
+              )}
+              ·
+              ${escapeHtml(
+                student.gradeLevel
+              )}
+              ${
+                student.section
+                  ? ` · Section ${escapeHtml(student.section)}`
+                  : ''
+              }
+            </small>
+          `;
+
+
+          button.addEventListener(
+            'click',
+            () =>
+              selectStudent(
+                student
+              )
+          );
+
+
+          container.appendChild(
+            button
+          );
+
+        }
+      );
     }
 
 
-    students.forEach(
-      student => {
+    // ==========================================
+    // SELECT STUDENT
+    // ==========================================
 
-        const button =
-          document.createElement(
-            'button'
-          );
+    async function selectStudent(
+      student
+    ) {
 
-
-        button.type =
-          'button';
-
-
-        button.className =
-          'student';
+      selectedStudent =
+        student;
 
 
-        button.dataset.id =
-          String(
-            student.id
-          );
+      document
+        .querySelectorAll(
+          '.student'
+        )
+        .forEach(
+          button => {
+
+            button.classList.toggle(
+              'active',
+              button.dataset.id ===
+                String(student.id)
+            );
+
+          }
+        );
 
 
-        const name =
-          document.createElement(
-            'strong'
-          );
-
-        name.textContent =
-          student.name ||
-          'Unnamed Student';
+      $('studentName')
+        .textContent =
+          student.name;
 
 
-        const meta =
-          document.createElement(
-            'small'
-          );
-
-        meta.textContent =
-          `${student.id}` +
+      $('studentMeta')
+        .textContent =
+          `${student.id} · ` +
+          `${student.gradeLevel}` +
           (
             student.section
               ? ` · Section ${student.section}`
@@ -1073,840 +1404,800 @@
           );
 
 
-        button.append(
-          name,
-          meta
-        );
-
-
-        button.addEventListener(
-          'click',
-          () =>
-            selectStudent(
-              student
-            )
-        );
-
-
-        container.appendChild(
-          button
-        );
-
-      }
-    );
-  }
-
-
-  // ==========================================
-  // SELECT STUDENT
-  // ==========================================
-
-  async function selectStudent(
-    student
-  ) {
-
-    selectedStudent =
-      student;
-
-
-    document
-      .querySelectorAll(
-        '.student'
-      )
-      .forEach(
-        button => {
-
-          button.classList.toggle(
-            'active',
-            button.dataset.id ===
-              String(student.id)
-          );
-
-        }
-      );
-
-
-    $('studentName')
-      .textContent =
-        student.name;
-
-
-    $('studentMeta')
-      .textContent =
-        `${student.id} · ` +
-        `${student.gradeLevel}` +
-        (
-          student.section
-            ? ` · Section ${student.section}`
-            : ''
-        );
-
-
-    $('saveMessage')
-      .textContent = '';
-
-
-    await loadGrades();
-  }
-
-
-  // ==========================================
-  // LOAD GRADES
-  // ==========================================
-
-  async function loadGrades() {
-
-    if (
-      !selectedStudent ||
-      !selectedStudent.id
-    ) {
-
-      console.log(
-        'LOAD GRADES: no student selected'
-      );
-
-      $('gradeBody')
-        .replaceChildren();
-
-      return;
-    }
-
-
-    const studentId =
-      String(
-        selectedStudent.id
-      ).trim();
-
-
-    const schoolYear =
-      String(
-        $('schoolYear').value
-      ).trim();
-
-
-    const params =
-      new URLSearchParams();
-
-
-    params.set(
-      'studentId',
-      studentId
-    );
-
-
-    params.set(
-      'schoolYear',
-      schoolYear
-    );
-
-
-    const url =
-      `/api/teacher/grades?${params.toString()}`;
-
-
-    console.log(
-      'LOAD GRADES URL:',
-      url
-    );
-
-
-    try {
-
-      $('gradeBody')
-        .innerHTML =
-          '<tr><td colspan="5" class="empty">Loading grades...</td></tr>';
-
-
-      const response =
-        await fetch(
-          url,
-          {
-            method: 'GET',
-
-            headers: {
-              'Accept':
-                'application/json',
-            },
-
-            credentials:
-              'same-origin',
-          }
-        );
-
-
-      const raw =
-        await response.text();
-
-
-      console.log(
-        'LOAD GRADES STATUS:',
-        response.status
-      );
-
-
-      console.log(
-        'LOAD GRADES RAW:',
-        raw
-      );
-
-
-      let data;
-
-
-      try {
-
-        data =
-          JSON.parse(raw);
-
-      } catch {
-
-        throw new Error(
-          `Server returned invalid response: ${raw.substring(0, 200)}`
-        );
-
-      }
-
-
-      if (!response.ok) {
-
-        throw new Error(
-          data.error ||
-          `Failed to load grades (${response.status})`
-        );
-
-      }
-
-
-      grades =
-        (data.grades || [])
-          .filter(
-            grade =>
-              String(
-                grade.quarter
-              ).trim() ===
-              String(
-                $('quarter').value
-              ).trim()
-          );
-
-
-      renderGrades();
-
-    } catch (error) {
-
-      console.error(
-        'LOAD GRADES ERROR:',
-        error
-      );
-
-
-      $('gradeBody')
-        .innerHTML =
-          `<tr>
-            <td colspan="5" class="empty">
-              ${escapeHtml(
-                error.message ||
-                'Failed to load grades.'
-              )}
-            </td>
-          </tr>`;
-
-
       $('saveMessage')
-        .textContent =
-          error.message ||
-          'Failed to load grades.';
-    }
-  }
+        .textContent = '';
 
 
-  // ==========================================
-  // RENDER GRADES
-  // ==========================================
-
-  function renderGrades() {
-
-    const body =
-      $('gradeBody');
-
-
-    body.replaceChildren();
-
-
-    if (!selectedStudent) {
-      return;
+      await loadGrades();
     }
 
 
-    if (!grades.length) {
-
-      body.innerHTML =
-        `<tr>
-          <td
-            colspan="5"
-            class="empty"
-          >
-            No grades recorded for
-            ${escapeHtml($('quarter').value)}.
-          </td>
-        </tr>`;
-
-      return;
-    }
-
-
-    grades.forEach(
-      (grade, index) => {
-
-        const tr =
-          document.createElement(
-            'tr'
-          );
-
-
-        // Quarter
-
-        const quarter =
-          document.createElement(
-            'td'
-          );
-
-        quarter.textContent =
-          grade.quarter ||
-          $('quarter').value;
-
-
-        // Subject
-
-        const subject =
-          document.createElement(
-            'td'
-          );
-
-
-        const select =
-          document.createElement(
-            'select'
-          );
-
-
-        subjects.forEach(
-          name => {
-
-            const option =
-              document.createElement(
-                'option'
-              );
-
-
-            option.value =
-              name;
-
-
-            option.textContent =
-              name;
-
-
-            if (
-              name.toLowerCase() ===
-              String(
-                grade.subject || ''
-              ).toLowerCase()
-            ) {
-
-              option.selected =
-                true;
-            }
-
-
-            select.append(
-              option
-            );
-
-          }
-        );
-
-
-        subject.append(
-          select
-        );
-
-
-        // Grade
-
-        const gradeCell =
-          document.createElement(
-            'td'
-          );
-
-
-        const gradeInput =
-          document.createElement(
-            'input'
-          );
-
-
-        gradeInput.type =
-          'number';
-
-
-        gradeInput.min = 0;
-        gradeInput.max = 100;
-        gradeInput.step = '0.01';
-
-
-        gradeInput.value =
-          grade.grade ??
-          '';
-
-
-        gradeCell.append(
-          gradeInput
-        );
-
-
-        // Remarks
-
-        const remarksCell =
-          document.createElement(
-            'td'
-          );
-
-
-        const remarksInput =
-          document.createElement(
-            'input'
-          );
-
-
-        remarksInput.value =
-          grade.remarks ??
-          '';
-
-
-        remarksCell.append(
-          remarksInput
-        );
-
-
-        // Action
-
-        const actionCell =
-          document.createElement(
-            'td'
-          );
-
-
-        const saveButton =
-          document.createElement(
-            'button'
-          );
-
-
-        saveButton.type =
-          'button';
-
-
-        saveButton.className =
-          'btn';
-
-
-        saveButton.textContent =
-          'Save';
-
-
-        saveButton.onclick =
-          async () => {
-
-            await saveGrade({
-              subject:
-                select.value,
-
-              grade:
-                gradeInput.value,
-
-              remarks:
-                remarksInput.value,
-            });
-
-          };
-
-
-        actionCell.append(
-          saveButton
-        );
-
-
-        tr.append(
-          quarter,
-          subject,
-          gradeCell,
-          remarksCell,
-          actionCell
-        );
-
-
-        body.append(
-          tr
-        );
-
-      }
-    );
-  }
-
-
-  // ==========================================
-  // ADD SUBJECT
-  // ==========================================
-
-  $('addGrade').onclick =
-    () => {
-
-      if (!selectedStudent) {
-
-        alert(
-          'Please select a student first.'
-        );
+    // ==========================================
+    // LOAD GRADES
+    // ==========================================
+
+    async function loadGrades() {
+
+      if (
+        !selectedStudent ||
+        !selectedStudent.id
+      ) {
+
+        $('gradeBody')
+          .innerHTML = `
+            <tr>
+              <td
+                colspan="5"
+                class="empty"
+              >
+                Select a student.
+              </td>
+            </tr>
+          `;
 
         return;
       }
 
 
-      const quarter =
-        $('quarter').value;
+      const studentId =
+        String(
+          selectedStudent.id
+        ).trim();
 
 
-      grades.push({
-        quarter,
+      const schoolYear =
+        String(
+          $('schoolYear').value
+        ).trim();
+
+
+      const params =
+        new URLSearchParams();
+
+
+      params.set(
+        'studentId',
+        studentId
+      );
+
+
+      params.set(
+        'schoolYear',
+        schoolYear
+      );
+
+
+      const url =
+        `/api/teacher/grades?${params.toString()}`;
+
+
+      console.log(
+        'LOAD GRADES URL:',
+        url
+      );
+
+
+      try {
+
+        $('gradeBody')
+          .innerHTML = `
+            <tr>
+              <td
+                colspan="5"
+                class="empty"
+              >
+                Loading grades...
+              </td>
+            </tr>
+          `;
+
+
+        const response =
+          await fetch(
+            url,
+            {
+              method: 'GET',
+
+              headers: {
+                Accept:
+                  'application/json'
+              },
+
+              credentials:
+                'same-origin'
+            }
+          );
+
+
+        const raw =
+          await response.text();
+
+
+        console.log(
+          'LOAD GRADES STATUS:',
+          response.status
+        );
+
+
+        console.log(
+          'LOAD GRADES RAW:',
+          raw
+        );
+
+
+        let data;
+
+
+        try {
+
+          data =
+            JSON.parse(raw);
+
+        } catch {
+
+          throw new Error(
+            `Server returned invalid response: ${raw.substring(0, 200)}`
+          );
+
+        }
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            data.error ||
+            data.message ||
+            `Failed to load grades (${response.status})`
+          );
+
+        }
+
+
+        grades =
+          (data.grades || [])
+            .filter(
+              grade =>
+                String(
+                  grade.quarter
+                ).trim() ===
+                String(
+                  $('quarter').value
+                ).trim()
+            );
+
+
+        renderGrades();
+
+      } catch (error) {
+
+        console.error(
+          'LOAD GRADES ERROR:',
+          error
+        );
+
+
+        $('gradeBody')
+          .innerHTML = `
+            <tr>
+              <td
+                colspan="5"
+                class="empty text-danger"
+              >
+                ${escapeHtml(
+                  error.message ||
+                  'Failed to load grades.'
+                )}
+              </td>
+            </tr>
+          `;
+
+
+        $('saveMessage')
+          .textContent =
+            error.message ||
+            'Failed to load grades.';
+      }
+    }
+
+
+    // ==========================================
+    // RENDER GRADES
+    // ==========================================
+
+    function renderGrades() {
+
+      const body =
+        $('gradeBody');
+
+
+      body.replaceChildren();
+
+
+      if (!selectedStudent) {
+
+        body.innerHTML = `
+          <tr>
+            <td
+              colspan="5"
+              class="empty"
+            >
+              Select a student.
+            </td>
+          </tr>
+        `;
+
+        return;
+      }
+
+
+      if (!grades.length) {
+
+        body.innerHTML = `
+          <tr>
+            <td
+              colspan="5"
+              class="empty"
+            >
+              No grades recorded for
+              ${escapeHtml(
+                $('quarter').value
+              )}.
+            </td>
+          </tr>
+        `;
+
+        return;
+      }
+
+
+      grades.forEach(
+        (grade) => {
+
+          const tr =
+            document.createElement(
+              'tr'
+            );
+
+
+          // QUARTER
+
+          const quarter =
+            document.createElement(
+              'td'
+            );
+
+
+          quarter.textContent =
+            grade.quarter ||
+            $('quarter').value;
+
+
+          // SUBJECT
+
+          const subject =
+            document.createElement(
+              'td'
+            );
+
+
+          const subjectSelect =
+            document.createElement(
+              'select'
+            );
+
+
+          subjects.forEach(
+            name => {
+
+              const option =
+                document.createElement(
+                  'option'
+                );
+
+
+              option.value =
+                name;
+
+
+              option.textContent =
+                name;
+
+
+              if (
+                name.toLowerCase() ===
+                String(
+                  grade.subject || ''
+                ).toLowerCase()
+              ) {
+
+                option.selected =
+                  true;
+
+              }
+
+
+              subjectSelect.appendChild(
+                option
+              );
+
+            }
+          );
+
+
+          subject.appendChild(
+            subjectSelect
+          );
+
+
+          // GRADE
+
+          const gradeCell =
+            document.createElement(
+              'td'
+            );
+
+
+          const gradeInput =
+            document.createElement(
+              'input'
+            );
+
+
+          gradeInput.type =
+            'number';
+
+
+          gradeInput.min =
+            '0';
+
+
+          gradeInput.max =
+            '100';
+
+
+          gradeInput.step =
+            '0.01';
+
+
+          gradeInput.value =
+            grade.grade ?? '';
+
+
+          gradeCell.appendChild(
+            gradeInput
+          );
+
+
+          // REMARKS
+
+          const remarksCell =
+            document.createElement(
+              'td'
+            );
+
+
+          const remarksInput =
+            document.createElement(
+              'input'
+            );
+
+
+          remarksInput.value =
+            grade.remarks ?? '';
+
+
+          remarksCell.appendChild(
+            remarksInput
+          );
+
+
+          // ACTION
+
+          const actionCell =
+            document.createElement(
+              'td'
+            );
+
+
+          const saveButton =
+            document.createElement(
+              'button'
+            );
+
+
+          saveButton.type =
+            'button';
+
+
+          saveButton.className =
+            'btn small';
+
+
+          saveButton.textContent =
+            'Save';
+
+
+          saveButton.addEventListener(
+            'click',
+            async () => {
+
+              await saveGrade({
+                subject:
+                  subjectSelect.value,
+
+                grade:
+                  gradeInput.value,
+
+                remarks:
+                  remarksInput.value
+              });
+
+            }
+          );
+
+
+          actionCell.appendChild(
+            saveButton
+          );
+
+
+          tr.append(
+            quarter,
+            subject,
+            gradeCell,
+            remarksCell,
+            actionCell
+          );
+
+
+          body.appendChild(
+            tr
+          );
+
+        }
+      );
+    }
+
+
+    // ==========================================
+    // ADD SUBJECT
+    // ==========================================
+
+    $('addGrade')
+      .addEventListener(
+        'click',
+        () => {
+
+          if (!selectedStudent) {
+
+            alert(
+              'Please select a student first.'
+            );
+
+            return;
+          }
+
+
+          const quarter =
+            $('quarter').value;
+
+
+          grades.push({
+
+            quarter,
+
+            subject:
+              subjects[0],
+
+            grade: '',
+
+            remarks: ''
+
+          });
+
+
+          renderGrades();
+        }
+      );
+
+
+    // ==========================================
+    // SAVE GRADE
+    // ==========================================
+
+    async function saveGrade(
+      grade
+    ) {
+
+      if (
+        !selectedStudent ||
+        !selectedStudent.id
+      ) {
+
+        $('saveMessage')
+          .textContent =
+            'Please select a student first.';
+
+        return;
+      }
+
+
+      const numericGrade =
+        Number(
+          grade.grade
+        );
+
+
+      if (
+        grade.grade === '' ||
+        !Number.isFinite(
+          numericGrade
+        ) ||
+        numericGrade < 0 ||
+        numericGrade > 100
+      ) {
+
+        $('saveMessage')
+          .textContent =
+            'Grade must be between 0 and 100.';
+
+        return;
+      }
+
+
+      $('saveMessage')
+        .textContent =
+          'Saving...';
+
+
+      const payload = {
+
+        studentId:
+          selectedStudent.id,
+
+        schoolYear:
+          $('schoolYear').value,
+
+        quarter:
+          $('quarter').value,
+
         subject:
-          subjects[0],
-        grade: '',
-        remarks: '',
-      });
+          grade.subject,
 
+        grade:
+          numericGrade,
 
-      renderGrades();
-    };
+        remarks:
+          grade.remarks
 
-
-  // ==========================================
-  // SAVE GRADE
-  // ==========================================
-
-  async function saveGrade(
-    grade
-  ) {
-
-    if (
-      !selectedStudent ||
-      !selectedStudent.id
-    ) {
-
-      $('saveMessage')
-        .textContent =
-          'Please select a student first.';
-
-      return;
-    }
-
-
-    const numericGrade =
-      Number(
-        grade.grade
-      );
-
-
-    if (
-      grade.grade === '' ||
-      !Number.isFinite(
-        numericGrade
-      ) ||
-      numericGrade < 0 ||
-      numericGrade > 100
-    ) {
-
-      $('saveMessage')
-        .textContent =
-          'Grade must be between 0 and 100.';
-
-      return;
-    }
-
-
-    $('saveMessage')
-      .textContent =
-        'Saving...';
-
-
-    const payload = {
-
-      studentId:
-        selectedStudent.id,
-
-      schoolYear:
-        $('schoolYear').value,
-
-      quarter:
-        $('quarter').value,
-
-      subject:
-        grade.subject,
-
-      grade:
-        grade.grade,
-
-      remarks:
-        grade.remarks,
-
-    };
-
-
-    console.log(
-      'SAVE PAYLOAD:',
-      payload
-    );
-
-
-    try {
-
-      const response =
-        await fetch(
-          '/api/teacher/grades',
-          {
-            method: 'POST',
-
-            headers: {
-              'Content-Type':
-                'application/json',
-
-              'Accept':
-                'application/json',
-            },
-
-            credentials:
-              'same-origin',
-
-            body:
-              JSON.stringify(
-                payload
-              ),
-          }
-        );
-
-
-      const raw =
-        await response.text();
+      };
 
 
       console.log(
-        'SAVE STATUS:',
-        response.status
+        'SAVE PAYLOAD:',
+        payload
       );
-
-
-      console.log(
-        'SAVE RAW RESPONSE:',
-        raw
-      );
-
-
-      let data;
 
 
       try {
 
-        data =
-          JSON.parse(raw);
+        const response =
+          await fetch(
+            '/api/teacher/grades',
+            {
+              method: 'POST',
 
-      } catch {
+              headers: {
+                'Content-Type':
+                  'application/json',
 
-        throw new Error(
-          `Server returned invalid response: ${raw.substring(0, 200)}`
+                Accept:
+                  'application/json'
+              },
+
+              credentials:
+                'same-origin',
+
+              body:
+                JSON.stringify(
+                  payload
+                )
+            }
+          );
+
+
+        const raw =
+          await response.text();
+
+
+        console.log(
+          'SAVE STATUS:',
+          response.status
         );
 
-      }
 
-
-      if (!response.ok) {
-
-        throw new Error(
-          data.error ||
-          `Save failed (${response.status})`
+        console.log(
+          'SAVE RAW RESPONSE:',
+          raw
         );
 
+
+        let data;
+
+
+        try {
+
+          data =
+            JSON.parse(raw);
+
+        } catch {
+
+          throw new Error(
+            `Server returned invalid response: ${raw.substring(0, 200)}`
+          );
+
+        }
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            data.error ||
+            data.message ||
+            `Save failed (${response.status})`
+          );
+
+        }
+
+
+        $('saveMessage')
+          .textContent =
+            data.message ||
+            'Grade saved successfully.';
+
+
+        await loadGrades();
+
+      } catch (error) {
+
+        console.error(
+          'SAVE ERROR:',
+          error
+        );
+
+
+        $('saveMessage')
+          .textContent =
+            error.message ||
+            'Failed to save grade.';
       }
-
-
-      $('saveMessage')
-        .textContent =
-          data.message ||
-          'Grade saved successfully.';
-
-
-      await loadGrades();
-
-    } catch (error) {
-
-      console.error(
-        'SAVE ERROR:',
-        error
-      );
-
-
-      $('saveMessage')
-        .textContent =
-          error.message ||
-          'Failed to save grade.';
     }
-  }
 
 
-  // ==========================================
-  // GRADE LEVEL CHANGE
-  // ==========================================
+    // ==========================================
+    // GRADE LEVEL CHANGE
+    // ==========================================
 
-  $('gradeLevel')
-    .addEventListener(
-      'change',
-      async () => {
-
-        try {
+    $('gradeLevel')
+      .addEventListener(
+        'change',
+        async () => {
 
           await loadStudents();
 
-        } catch (error) {
-
-          console.error(
-            'GRADE LEVEL CHANGE ERROR:',
-            error
-          );
-
         }
-
-      }
-    );
-
-
-  // ==========================================
-  // SCHOOL YEAR CHANGE
-  // ==========================================
-
-  $('schoolYear')
-    .addEventListener(
-      'change',
-      async () => {
-
-        try {
-
-          await loadStudents();
-
-        } catch (error) {
-
-          console.error(
-            'SCHOOL YEAR CHANGE ERROR:',
-            error
-          );
-
-        }
-
-      }
-    );
-
-
-  // ==========================================
-  // QUARTER CHANGE
-  // ==========================================
-
-  $('quarter')
-    .addEventListener(
-      'change',
-      async () => {
-
-        try {
-
-          await loadGrades();
-
-        } catch (error) {
-
-          console.error(
-            'QUARTER CHANGE ERROR:',
-            error
-          );
-
-        }
-
-      }
-    );
-
-
-  // ==========================================
-  // LOGOUT
-  // ==========================================
-
-  $('logout').onclick =
-    async () => {
-
-      try {
-
-        await fetch(
-          '/api/logout',
-          {
-            method: 'POST',
-            credentials:
-              'same-origin',
-          }
-        );
-
-      } finally {
-
-        location.reload();
-
-      }
-    };
-
-
-  // ==========================================
-  // LOGIN SUBMIT
-  // ==========================================
-
-  $('login')
-    .addEventListener(
-      'submit',
-      login
-    );
-
-
-  // ==========================================
-  // HTML ESCAPE
-  // ==========================================
-
-  function escapeHtml(
-    value
-  ) {
-
-    return String(value ?? '')
-      .replace(
-        /&/g,
-        '&amp;'
-      )
-      .replace(
-        /</g,
-        '&lt;'
-      )
-      .replace(
-        />/g,
-        '&gt;'
-      )
-      .replace(
-        /"/g,
-        '&quot;'
-      )
-      .replace(
-        /'/g,
-        '&#039;'
       );
-  }
-</script>
+
+
+    // ==========================================
+    // SCHOOL YEAR CHANGE
+    // ==========================================
+
+    $('schoolYear')
+      .addEventListener(
+        'change',
+        async () => {
+
+          await loadStudents();
+
+        }
+      );
+
+
+    // ==========================================
+    // QUARTER CHANGE
+    // ==========================================
+
+    $('quarter')
+      .addEventListener(
+        'change',
+        async () => {
+
+          if (selectedStudent) {
+
+            await loadGrades();
+
+          }
+
+        }
+      );
+
+
+    // ==========================================
+    // LOGOUT
+    // ==========================================
+
+    $('logout')
+      .addEventListener(
+        'click',
+        async () => {
+
+          try {
+
+            await fetch(
+              '/api/logout',
+              {
+                method: 'POST',
+                credentials:
+                  'same-origin'
+              }
+            );
+
+          } finally {
+
+            location.reload();
+
+          }
+        }
+      );
+
+
+    // ==========================================
+    // LOGIN SUBMIT
+    // ==========================================
+
+    $('login')
+      .addEventListener(
+        'submit',
+        login
+      );
+
+
+    // ==========================================
+    // HTML ESCAPE
+    // ==========================================
+
+    function escapeHtml(
+      value
+    ) {
+
+      return String(
+        value ?? ''
+      )
+        .replace(
+          /&/g,
+          '&amp;'
+        )
+        .replace(
+          /</g,
+          '&lt;'
+        )
+        .replace(
+          />/g,
+          '&gt;'
+        )
+        .replace(
+          /"/g,
+          '&quot;'
+        )
+        .replace(
+          /'/g,
+          '&#039;'
+        );
+    }
+
+  </script>
 
 </body>
+
 </html>

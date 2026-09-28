@@ -11,13 +11,19 @@ import {
 function getTeacherGradeLevels(session) {
   if (Array.isArray(session.gradeLevels)) {
     return session.gradeLevels
-      .map((value) => String(value).trim())
+      .map((value) =>
+        String(value).trim()
+      )
       .filter(Boolean);
   }
 
-  return String(session.gradeLevels ?? '')
+  return String(
+    session.gradeLevels ?? ''
+  )
     .split(',')
-    .map((value) => value.trim())
+    .map((value) =>
+      value.trim()
+    )
     .filter(Boolean);
 }
 
@@ -29,50 +35,68 @@ function normalizeGrade(value) {
 }
 
 function gradeMatches(a, b) {
-  return normalizeGrade(a) === normalizeGrade(b);
+  return (
+    normalizeGrade(a) ===
+    normalizeGrade(b)
+  );
 }
 
-export async function onRequestGet({ request, env }) {
-  const session = await requireRole(
-    request,
-    env,
-    'teacher'
-  );
+export async function onRequestGet({
+  request,
+  env,
+}) {
+  const session =
+    await requireRole(
+      request,
+      env,
+      'teacher'
+    );
 
   if (!session) {
     return json(
-      { error: 'unauthorized' },
+      {
+        error: 'unauthorized',
+      },
       401
     );
   }
 
-  const url = new URL(request.url);
+  const url =
+    new URL(request.url);
 
   const requestedGrade =
     String(
-      url.searchParams.get('gradeLevel') ?? ''
+      url.searchParams.get(
+        'gradeLevel'
+      ) ?? ''
     ).trim();
 
   const schoolYear =
     String(
-      url.searchParams.get('schoolYear') ?? ''
+      url.searchParams.get(
+        'schoolYear'
+      ) ?? ''
     ).trim();
 
   const assignedGrades =
-    getTeacherGradeLevels(session);
+    getTeacherGradeLevels(
+      session
+    );
 
-  // ---------------------------------------------
-  // SECURITY: verify teacher is assigned
-  // to the selected grade.
-  // ---------------------------------------------
+  /*
+  |--------------------------------------------------------------------------
+  | SECURITY
+  |--------------------------------------------------------------------------
+  */
 
   if (requestedGrade) {
     const allowed =
-      assignedGrades.some((grade) =>
-        gradeMatches(
-          grade,
-          requestedGrade
-        )
+      assignedGrades.some(
+        (grade) =>
+          gradeMatches(
+            grade,
+            requestedGrade
+          )
       );
 
     if (!allowed) {
@@ -87,54 +111,97 @@ export async function onRequestGet({ request, env }) {
     }
   }
 
-  // ---------------------------------------------
-  // Load Students sheet
-  //
-  // Actual structure:
-  // A = student_id
-  // B = pin
-  // C = full_name
-  // D = grade_level
-  // E = section
-  // F = active
-  // ---------------------------------------------
+  /*
+  |--------------------------------------------------------------------------
+  | LOAD STUDENTS
+  |--------------------------------------------------------------------------
+  */
 
   const students =
     await loadStudents(env);
 
   const teacherSection =
-    String(session.section ?? '').trim();
+    String(
+      session.section ?? ''
+    ).trim();
+
+  /*
+  |--------------------------------------------------------------------------
+  | FILTER
+  |--------------------------------------------------------------------------
+  */
 
   const result =
     students
       .filter((row) => {
+        /*
+        Students sheet:
+
+        A = student_id
+        B = pin
+        C = full_name
+        D = school_year
+        E = grade_level
+        F = section
+        G = active
+        */
+
         const studentId =
-          String(row[0] ?? '').trim();
+          String(
+            row[0] ?? ''
+          ).trim();
+
+        const studentSchoolYear =
+          String(
+            row[3] ?? ''
+          ).trim();
 
         const studentGrade =
-          String(row[3] ?? '').trim();
+          String(
+            row[4] ?? ''
+          ).trim();
 
         const studentSection =
-          String(row[4] ?? '').trim();
+          String(
+            row[5] ?? ''
+          ).trim();
 
         const active =
-          String(row[5] ?? '')
+          String(
+            row[6] ?? ''
+          )
             .trim()
             .toUpperCase();
 
-        // Ignore empty rows
+        // Empty row
         if (!studentId) {
           return false;
         }
 
-        // Ignore inactive students
+        // Inactive
         if (active === 'FALSE') {
           return false;
         }
 
-        // -----------------------------------------
-        // Grade filter
-        // -----------------------------------------
+        /*
+        |--------------------------------------------------------------------------
+        | SCHOOL YEAR
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+          schoolYear &&
+          studentSchoolYear !==
+            schoolYear
+        ) {
+          return false;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | GRADE
+        |--------------------------------------------------------------------------
+        */
 
         if (
           requestedGrade &&
@@ -146,8 +213,12 @@ export async function onRequestGet({ request, env }) {
           return false;
         }
 
-        // If no grade selected, only show
-        // teacher's assigned grades.
+        /*
+        |--------------------------------------------------------------------------
+        | Assigned grades
+        |--------------------------------------------------------------------------
+        */
+
         if (
           !requestedGrade &&
           !assignedGrades.some(
@@ -161,9 +232,11 @@ export async function onRequestGet({ request, env }) {
           return false;
         }
 
-        // -----------------------------------------
-        // Section restriction
-        // -----------------------------------------
+        /*
+        |--------------------------------------------------------------------------
+        | SECTION
+        |--------------------------------------------------------------------------
+        */
 
         if (
           teacherSection &&
@@ -173,23 +246,28 @@ export async function onRequestGet({ request, env }) {
           return false;
         }
 
-        // -----------------------------------------
-        // IMPORTANT:
-        // DO NOT filter school year here.
-        //
-        // Students sheet does not have school_year.
-        // School year belongs to the Grade sheets.
-        // -----------------------------------------
-
         return true;
       })
       .map((row) => ({
-        id: String(row[0] ?? '').trim(),
-        name: String(row[2] ?? '').trim(),
-        gradeLevel:
-          String(row[3] ?? '').trim(),
-        section:
-          String(row[4] ?? '').trim(),
+        id: String(
+          row[0] ?? ''
+        ).trim(),
+
+        name: String(
+          row[2] ?? ''
+        ).trim(),
+
+        schoolYear: String(
+          row[3] ?? ''
+        ).trim(),
+
+        gradeLevel: String(
+          row[4] ?? ''
+        ).trim(),
+
+        section: String(
+          row[5] ?? ''
+        ).trim(),
       }));
 
   console.log(
@@ -211,8 +289,10 @@ export async function onRequestGet({ request, env }) {
     teacher: {
       id: session.teacherId,
       name: session.name,
-      gradeLevels: assignedGrades,
-      section: session.section,
+      gradeLevels:
+        assignedGrades,
+      section:
+        session.section,
     },
 
     selectedGrade:

@@ -18,12 +18,11 @@ async function googleToken(env) {
   const claim = b64json({
     iss: env.GOOGLE_CLIENT_EMAIL,
 
-    // IMPORTANT:
-    // Teacher needs write access.
     scope:
       'https://www.googleapis.com/auth/spreadsheets',
 
-    aud: 'https://oauth2.googleapis.com/token',
+    aud:
+      'https://oauth2.googleapis.com/token',
 
     iat: now,
     exp: now + 3600,
@@ -59,7 +58,8 @@ async function googleToken(env) {
       enc.encode(unsigned)
     );
 
-  const jwt = `${unsigned}.${b64uEncode(signature)}`;
+  const jwt =
+    `${unsigned}.${b64uEncode(signature)}`;
 
   const response = await fetch(
     'https://oauth2.googleapis.com/token',
@@ -78,7 +78,16 @@ async function googleToken(env) {
   );
 
   if (!response.ok) {
-    throw new Error('Google authentication failed');
+    const errorText = await response.text();
+
+    console.error(
+      'GOOGLE AUTH ERROR:',
+      errorText
+    );
+
+    throw new Error(
+      'Google authentication failed'
+    );
   }
 
   const data = await response.json();
@@ -87,7 +96,14 @@ async function googleToken(env) {
 }
 
 async function getToken(env) {
-  let token = await env.KV.get('gtoken');
+  if (!env.KV) {
+    throw new Error(
+      'KV binding is missing'
+    );
+  }
+
+  let token =
+    await env.KV.get('gtoken');
 
   if (token) {
     return token;
@@ -111,24 +127,27 @@ async function sheetsRequest(
   url,
   options = {}
 ) {
-  const token = await getToken(env);
+  const token =
+    await getToken(env);
 
   let response = await fetch(
     url,
     {
       ...options,
       headers: {
-        authorization: `Bearer ${token}`,
+        authorization:
+          `Bearer ${token}`,
         ...(options.headers || {}),
       },
     }
   );
 
-  // Token expired. Refresh once.
+  // Token expired.
   if (response.status === 401) {
     await env.KV.delete('gtoken');
 
-    const newToken = await googleToken(env);
+    const newToken =
+      await googleToken(env);
 
     await env.KV.put(
       'gtoken',
@@ -143,7 +162,8 @@ async function sheetsRequest(
       {
         ...options,
         headers: {
-          authorization: `Bearer ${newToken}`,
+          authorization:
+            `Bearer ${newToken}`,
           ...(options.headers || {}),
         },
       }
@@ -157,23 +177,62 @@ async function sheetsRequest(
 |--------------------------------------------------------------------------
 | READ STUDENTS
 |--------------------------------------------------------------------------
+|
+| Students sheet:
+|
+| A = student_id
+| B = pin
+| C = full_name
+| D = school_year
+| E = grade_level
+| F = section
+| G = active
+|
 */
 
 export async function loadStudents(env) {
   const url =
     `https://sheets.googleapis.com/v4/spreadsheets/` +
-    `${env.SHEET_ID}/values/Students!A2:F`;
+    `${env.SHEET_ID}/values/Students!A2:G`;
+
+  console.log(
+    'LOAD STUDENTS URL:',
+    url
+  );
 
   const response =
-    await sheetsRequest(env, url);
+    await sheetsRequest(
+      env,
+      url
+    );
 
   if (!response.ok) {
+    const errorText =
+      await response.text();
+
+    console.error(
+      'STUDENTS SHEET ERROR:',
+      response.status,
+      errorText
+    );
+
     throw new Error(
-      'Students sheet read failed'
+      `Students sheet read failed (${response.status})`
     );
   }
 
-  const data = await response.json();
+  const data =
+    await response.json();
+
+  console.log(
+    'STUDENTS ROW COUNT:',
+    data.values?.length || 0
+  );
+
+  console.log(
+    'FIRST STUDENT ROW:',
+    data.values?.[0] || null
+  );
 
   return data.values || [];
 }
@@ -190,15 +249,28 @@ export async function loadTeachers(env) {
     `${env.SHEET_ID}/values/Teachers!A2:F`;
 
   const response =
-    await sheetsRequest(env, url);
+    await sheetsRequest(
+      env,
+      url
+    );
 
   if (!response.ok) {
+    const errorText =
+      await response.text();
+
+    console.error(
+      'TEACHERS SHEET ERROR:',
+      response.status,
+      errorText
+    );
+
     throw new Error(
       'Teachers sheet read failed'
     );
   }
 
-  const data = await response.json();
+  const data =
+    await response.json();
 
   return data.values || [];
 }
@@ -214,7 +286,9 @@ export async function loadGradeSheet(
   gradeLevel
 ) {
   const sheetName =
-    getGradeSheetName(gradeLevel);
+    getGradeSheetName(
+      gradeLevel
+    );
 
   if (!sheetName) {
     throw new Error(
@@ -228,15 +302,28 @@ export async function loadGradeSheet(
     `${encodeURIComponent(sheetName)}!A2:G`;
 
   const response =
-    await sheetsRequest(env, url);
+    await sheetsRequest(
+      env,
+      url
+    );
 
   if (!response.ok) {
+    const errorText =
+      await response.text();
+
+    console.error(
+      `${sheetName} READ ERROR:`,
+      response.status,
+      errorText
+    );
+
     throw new Error(
       `${sheetName} read failed`
     );
   }
 
-  const data = await response.json();
+  const data =
+    await response.json();
 
   return data.values || [];
 }
@@ -247,51 +334,86 @@ export async function loadGradeSheet(
 |--------------------------------------------------------------------------
 */
 
-export async function appendGrade(env, gradeLevel, values) {
-  const sheetName = getGradeSheetName(gradeLevel);
+export async function appendGrade(
+  env,
+  gradeLevel,
+  values
+) {
+  const sheetName =
+    getGradeSheetName(
+      gradeLevel
+    );
 
   if (!sheetName) {
-    throw new Error(`Invalid grade level: ${gradeLevel}`);
+    throw new Error(
+      `Invalid grade level: ${gradeLevel}`
+    );
   }
 
-  const range = `${sheetName}!A:G`;
+  const range =
+    `${sheetName}!A:G`;
 
   const url =
-    `https://sheets.googleapis.com/v4/spreadsheets/${env.SHEET_ID}/values/` +
+    `https://sheets.googleapis.com/v4/spreadsheets/` +
+    `${env.SHEET_ID}/values/` +
     `${encodeURIComponent(range)}:append` +
-    `?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`;
+    `?valueInputOption=USER_ENTERED` +
+    `&insertDataOption=INSERT_ROWS`;
 
-  console.log('APPEND GRADE:', {
-    sheetName,
-    range,
-    values,
-  });
+  console.log(
+    'APPEND GRADE:',
+    {
+      sheetName,
+      range,
+      values,
+    }
+  );
 
-  const response = await sheetsRequest(env, url, {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      values: [values],
-    }),
-  });
+  const response =
+    await sheetsRequest(
+      env,
+      url,
+      {
+        method: 'POST',
+        headers: {
+          'content-type':
+            'application/json',
+        },
+        body: JSON.stringify({
+          values: [values],
+        }),
+      }
+    );
 
-  const responseText = await response.text();
+  const responseText =
+    await response.text();
 
-  console.log('GOOGLE APPEND STATUS:', response.status);
-  console.log('GOOGLE APPEND RESPONSE:', responseText);
+  console.log(
+    'GOOGLE APPEND STATUS:',
+    response.status
+  );
+
+  console.log(
+    'GOOGLE APPEND RESPONSE:',
+    responseText
+  );
 
   if (!response.ok) {
     throw new Error(
-      `Google Sheets append failed (${response.status}): ${responseText}`
+      `Google Sheets append failed ` +
+      `(${response.status}): ${responseText}`
     );
   }
 
   try {
-    return JSON.parse(responseText);
+    return JSON.parse(
+      responseText
+    );
   } catch {
-    return { ok: true, raw: responseText };
+    return {
+      ok: true,
+      raw: responseText,
+    };
   }
 }
 
@@ -301,53 +423,89 @@ export async function appendGrade(env, gradeLevel, values) {
 |--------------------------------------------------------------------------
 */
 
-export async function updateGradeRow(env, gradeLevel, rowNumber, values) {
-  const sheetName = getGradeSheetName(gradeLevel);
+export async function updateGradeRow(
+  env,
+  gradeLevel,
+  rowNumber,
+  values
+) {
+  const sheetName =
+    getGradeSheetName(
+      gradeLevel
+    );
 
   if (!sheetName) {
-    throw new Error(`Invalid grade level: ${gradeLevel}`);
+    throw new Error(
+      `Invalid grade level: ${gradeLevel}`
+    );
   }
 
-  const range = `${sheetName}!A${rowNumber}:G${rowNumber}`;
+  const range =
+    `${sheetName}!A${rowNumber}:G${rowNumber}`;
 
   const url =
-    `https://sheets.googleapis.com/v4/spreadsheets/${env.SHEET_ID}/values/` +
-    `${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`;
+    `https://sheets.googleapis.com/v4/spreadsheets/` +
+    `${env.SHEET_ID}/values/` +
+    `${encodeURIComponent(range)}` +
+    `?valueInputOption=USER_ENTERED`;
 
-  console.log('UPDATE GRADE:', {
-    sheetName,
-    rowNumber,
-    range,
-    values,
-  });
-
-  const response = await sheetsRequest(env, url, {
-    method: 'PUT',
-    headers: {
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
+  console.log(
+    'UPDATE GRADE:',
+    {
+      sheetName,
+      rowNumber,
       range,
-      majorDimension: 'ROWS',
-      values: [values],
-    }),
-  });
+      values,
+    }
+  );
 
-  const responseText = await response.text();
+  const response =
+    await sheetsRequest(
+      env,
+      url,
+      {
+        method: 'PUT',
+        headers: {
+          'content-type':
+            'application/json',
+        },
+        body: JSON.stringify({
+          range,
+          majorDimension: 'ROWS',
+          values: [values],
+        }),
+      }
+    );
 
-  console.log('GOOGLE UPDATE STATUS:', response.status);
-  console.log('GOOGLE UPDATE RESPONSE:', responseText);
+  const responseText =
+    await response.text();
+
+  console.log(
+    'GOOGLE UPDATE STATUS:',
+    response.status
+  );
+
+  console.log(
+    'GOOGLE UPDATE RESPONSE:',
+    responseText
+  );
 
   if (!response.ok) {
     throw new Error(
-      `Google Sheets update failed (${response.status}): ${responseText}`
+      `Google Sheets update failed ` +
+      `(${response.status}): ${responseText}`
     );
   }
 
   try {
-    return JSON.parse(responseText);
+    return JSON.parse(
+      responseText
+    );
   } catch {
-    return { ok: true, raw: responseText };
+    return {
+      ok: true,
+      raw: responseText,
+    };
   }
 }
 
@@ -373,32 +531,38 @@ export async function findGradeRow(
       gradeLevel
     );
 
-  const index = rows.findIndex(
-    (row) =>
-      String(row[0] ?? '')
-        .trim()
-        .toUpperCase() ===
+  const index =
+    rows.findIndex(
+      (row) =>
+        String(row[0] ?? '')
+          .trim()
+          .toUpperCase() ===
         String(studentId)
           .trim()
           .toUpperCase() &&
 
-      String(row[1] ?? '').trim() ===
-        String(schoolYear).trim() &&
+        String(row[1] ?? '')
+          .trim() ===
+        String(schoolYear)
+          .trim() &&
 
-      String(row[2] ?? '').trim() ===
-        String(quarter).trim() &&
+        String(row[2] ?? '')
+          .trim() ===
+        String(quarter)
+          .trim() &&
 
-      String(row[3] ?? '').trim()
-        .toLowerCase() ===
-        String(subject).trim()
+        String(row[3] ?? '')
+          .trim()
+          .toLowerCase() ===
+        String(subject)
+          .trim()
           .toLowerCase()
-  );
+    );
 
   if (index === -1) {
     return null;
   }
 
-  // API starts at row 2 because A2:G was loaded.
   return {
     rowNumber: index + 2,
     values: rows[index],
@@ -417,7 +581,9 @@ export function getGradeSheetName(
   const match =
     String(gradeLevel ?? '')
       .trim()
-      .match(/^Grade[- ]?(10|[1-9])$/i);
+      .match(
+        /^Grade[- ]?(10|[1-9])$/i
+      );
 
   if (!match) {
     return null;
@@ -435,30 +601,36 @@ export function getGradeSheetName(
 export async function invalidateGradeCache(
   env
 ) {
-  await env.KV.delete(
-    'sheet-cache'
-  );
+  if (env.KV) {
+    await env.KV.delete(
+      'sheet-cache'
+    );
+  }
 }
 
-// --------------------------------------------------
-// GENERIC SHEETS AUTH HEADER
-// Used by other API functions such as inquiry.js
-// --------------------------------------------------
+/*
+|--------------------------------------------------------------------------
+| GENERIC SHEETS AUTH HEADER
+|--------------------------------------------------------------------------
+*/
 
 export async function authHeader(env) {
-  const token = await getToken(env);
+  const token =
+    await getToken(env);
 
   return {
     headers: {
-      authorization: `Bearer ${token}`,
+      authorization:
+        `Bearer ${token}`,
     },
   };
 }
 
-// --------------------------------------------------
-// GOOGLE SHEETS BASE URL
-// Used by other API functions such as inquiry.js
-// --------------------------------------------------
+/*
+|--------------------------------------------------------------------------
+| GOOGLE SHEETS BASE URL
+|--------------------------------------------------------------------------
+*/
 
 export function sheetBase(env) {
   return (
