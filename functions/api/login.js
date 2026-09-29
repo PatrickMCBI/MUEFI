@@ -69,7 +69,7 @@ export async function onRequestPost({
     students.find(
       (row) =>
         normId(row[0]) === id &&
-        String(row[5] ?? '')
+        String(row[6] ?? '')
           .trim()
           .toUpperCase() !==
           'FALSE'

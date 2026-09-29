@@ -45,7 +45,7 @@ export async function onRequestGet({
   }
 
   const gradeLevel =
-    student[3];
+    student[4];
 
   const rows =
     await loadGradeSheet(
@@ -82,8 +82,8 @@ export async function onRequestGet({
     student: {
       id: session.sid,
       name: student[2],
-      level: student[3],
-      section: student[4],
+      level: student[4],
+      section: student[5],
     },
     grades,
   });
