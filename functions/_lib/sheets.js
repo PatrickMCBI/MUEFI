@@ -683,8 +683,3 @@ export async function loadData(env) {
   await env.KV.put('sheet-cache', JSON.stringify(data), { expirationTtl: 120 });
   return data;
 }
-
-export async function loadAdmins(env) {
-  const rows = await getValues(env, "Admins", "A:D");
-  return rows.slice(1);
-}

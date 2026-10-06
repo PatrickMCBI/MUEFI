@@ -140,9 +140,29 @@ const cell = (tag, text, cls) => { const c = document.createElement(tag); c.text
 const btn = (text, on) => { const b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = text; b.onclick = on; return b; };
 
 async function api(url, body) {
-  const r = await fetch(url, body ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) } : undefined);
+  const options = {
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json'
+    }
+  };
+
+  if (body !== undefined) {
+    options.method = 'POST';
+    options.headers['Content-Type'] = 'application/json';
+    options.body = JSON.stringify(body);
+  }
+
+  const r = await fetch(url, options);
+
   const d = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(d.error || 'Something went wrong. Please try again.');
+
+  if (!r.ok) {
+    throw new Error(
+      d.error || `Request failed (${r.status})`
+    );
+  }
+
   return d;
 }
 
@@ -239,7 +259,17 @@ $('login').onsubmit = async (e) => {
   } catch (err) { $('err').textContent = err.message; }
 };
 
-$('out').onclick = async () => { await fetch('/api/admin/logout', { method: 'POST' }); $('work').hidden = true; $('login').hidden = false; };
+$('out').onclick = async () => {
+  try {
+    await fetch('/api/admin/logout', {
+      method: 'POST',
+      credentials: 'include'
+    });
+  } finally {
+    $('work').hidden = true;
+    $('login').hidden = false;
+  }
+};
 start();
 </script>
 </body>
