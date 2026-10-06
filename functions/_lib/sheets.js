@@ -94,7 +94,7 @@ async function googleToken(env) {
 
   return data.access_token;
 }
-
+export const quoteTab = (n) => `'${n.replace(/'/g, "''")}'`;
 async function getToken(env) {
   if (!env.KV) {
     throw new Error(
@@ -637,4 +637,49 @@ export function sheetBase(env) {
     `https://sheets.googleapis.com/v4/spreadsheets/` +
     `${env.SHEET_ID}`
   );
+}
+
+// Cached in KV for 2 minutes so busy release days don't hit Google's read quota.
+export async function loadData(env) {
+  const cached = await env.KV.get('sheet-cache', 'json');
+  if (cached?.tabs) return cached;
+
+  const auth = await authHeader(env), base = sheetBase(env);
+  const meta = await fetch(`${base}?fields=sheets.properties.title`, auth);
+  if (!meta.ok) throw new Error('Sheet read failed');
+  const titles = (await meta.json()).sheets.map((s) => s.properties.title);
+  const tabs = titles.filter((n) => TAB.test(n));
+  const extra = ['Teachers', 'Admins'].filter((n) => titles.includes(n));
+  const names = ['Students', ...extra, ...tabs];
+  const RANGE = { Students: 'Students!A2:F', Teachers: 'Teachers!A2:E', Admins: 'Admins!A2:C' };
+
+  const url = new URL(`${base}/values:batchGet`);
+  names.forEach((n) => url.searchParams.append('ranges', RANGE[n] || quoteTab(n)));
+  const res = await fetch(url, auth);
+  if (!res.ok) throw new Error('Sheet read failed');
+  const got = {};
+  (await res.json()).valueRanges.forEach((r, i) => (got[names[i]] = r.values || []));
+
+  const records = {}; // student id -> [{ year, name, level, section, rows: [[subject, quarter, grade]] }]
+  tabs.forEach((tab) => {
+    const values = got[tab], m = TAB.exec(tab);
+    const year = String(values[0]?.[0] ?? '').trim();
+    const headers = values[1] || [];
+    for (const row of values.slice(2)) {
+      const id = normId(row[0]);
+      if (!id) continue;
+      const rows = [];
+      headers.forEach((h, c) => {
+        const v = String(row[c] ?? '').trim();
+        if (c < 2 || !v || !String(h).trim()) return;
+        const { subject, quarter } = parseHeader(h);
+        rows.push([subject, quarter, v]);
+      });
+      (records[id] ||= []).push({ year, name: String(row[1] ?? '').trim(), level: `Grade ${m[1]}`, section: m[2], rows });
+    }
+  });
+
+  const data = { students: got.Students, teachers: got.Teachers || [], admins: got.Admins || [], tabs, records };
+  await env.KV.put('sheet-cache', JSON.stringify(data), { expirationTtl: 120 });
+  return data;
 }
