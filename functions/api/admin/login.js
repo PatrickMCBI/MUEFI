@@ -1,25 +1,74 @@
-import { json, normId, safeEqual, signSession } from '../../_lib/util.js';
-import { loadData } from '../../_lib/sheets.js';
+import {
+  json,
+  getClientIp,
+  findAdmin,
+  createAdminSession,
+  adminCookie,
+  safeEqual,
+  rateLimitLogin,
+  recordLoginFailure,
+  clearLoginFailures
+} from "./_lib.js";
 
 export async function onRequestPost({ request, env }) {
-  const { adminId, pin } = await request.json().catch(() => ({}));
-  const id = normId(adminId);
-  if (!id || !pin) return json({ error: 'invalid' }, 400);
+  try {
+    const body = await request.json();
 
-  const ip = request.headers.get('cf-connecting-ip') || 'unknown';
-  const keys = [`afail:id:${id}`, `afail:ip:${ip}`];
-  const counts = (await Promise.all(keys.map((k) => env.KV.get(k)))).map(Number);
-  if (counts[0] >= 5 || counts[1] >= 20) return json({ error: 'locked' }, 429);
+    const adminId = String(body.adminId || "").trim();
+    const pin = String(body.pin || "").trim();
 
-  const { admins = [] } = await loadData(env);
-  const row = admins.find((r) => normId(r[0]) === id);
-  if (!row || !safeEqual(row[1], String(pin).trim())) {
-    await Promise.all(keys.map((k, i) => env.KV.put(k, String(counts[i] + 1), { expirationTtl: 900 })));
-    return json({ error: 'invalid' }, 401);
+    if (!adminId || !pin) {
+      return json({ error: "Admin ID and PIN are required." }, 400);
+    }
+
+    const ip = getClientIp(request);
+
+    const ipLimit = await rateLimitLogin(env, `ip:${ip}`);
+    const idLimit = await rateLimitLogin(env, `id:${adminId.toLowerCase()}`);
+
+    if (!ipLimit.allowed || !idLimit.allowed) {
+      return json(
+        { error: "Too many failed login attempts. Please try again later." },
+        429
+      );
+    }
+
+    const admin = await findAdmin(env, adminId);
+
+    if (
+      !admin ||
+      !admin.active ||
+      !safeEqual(admin.pin, pin)
+    ) {
+      await recordLoginFailure(env, `ip:${ip}`);
+      await recordLoginFailure(env, `id:${adminId.toLowerCase()}`);
+
+      return json({ error: "Invalid admin ID or PIN." }, 401);
+    }
+
+    await clearLoginFailures(env, `ip:${ip}`);
+    await clearLoginFailures(env, `id:${adminId.toLowerCase()}`);
+
+    const token = await createAdminSession(env, {
+      adminId: admin.adminId,
+      name: admin.name
+    });
+
+    return json(
+      {
+        ok: true,
+        admin: {
+          id: admin.adminId,
+          name: admin.name
+        }
+      },
+      200,
+      {
+        "Set-Cookie": adminCookie(token)
+      }
+    );
+  } catch (error) {
+    console.error("[ADMIN LOGIN]", error);
+    return json({ error: "Unable to process login." }, 500);
   }
-  await env.KV.delete(keys[0]);
-  const token = await signSession(env.SESSION_SECRET, { aid: id }, 3600);
-  return json({ ok: true, name: row[2] || id }, 200, {
-    'set-cookie': `asession=${token}; HttpOnly; Secure; SameSite=Strict; Path=/api/admin; Max-Age=3600`,
-  });
 }

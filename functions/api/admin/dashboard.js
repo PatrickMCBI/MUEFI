@@ -1,26 +1,62 @@
-import { json } from '../../_lib/util.js';
-import { getAdmin } from '../../_lib/admin.js';
-import { loadData, authHeader, sheetBase } from '../../_lib/sheets.js';
+import {
+  json,
+  requireAdmin
+} from "./_lib.js";
+
+import {
+  loadStudents,
+  loadTeachers,
+  isActive
+} from "../../_lib/admin.js";
 
 export async function onRequestGet({ request, env }) {
-  const admin = await getAdmin(request, env);
-  if (!admin) return json({ error: 'unauthorized' }, 401);
-
-  const { students, teachers, tabs } = await loadData(env);
-  let newInquiries = null;
   try {
-    const res = await fetch(`${sheetBase(env)}/values/Inquiries!A:O`, await authHeader(env));
-    if (res.ok) {
-      const rows = (await res.json()).values || [];
-      newInquiries = rows.slice(1).filter((r) => (r[14] || 'New') === 'New').length;
-    }
-  } catch {}
+    const session = await requireAdmin(request, env);
 
-  return json({
-    admin: admin.name,
-    students: { total: students.length, active: students.filter((r) => String(r[5] ?? '').toUpperCase() !== 'FALSE').length },
-    teachers: { total: teachers.length },
-    classes: tabs.length,
-    newInquiries,
-  });
+    if (!session) {
+      return json({ error: "Unauthorized." }, 401);
+    }
+
+    const [students, teachers] = await Promise.all([
+      loadStudents(env),
+      loadTeachers(env)
+    ]);
+
+    const activeStudents = students.filter(row => isActive(row[6]));
+    const activeTeachers = teachers.filter(row => isActive(row[5]));
+
+    const gradeBreakdown = {};
+
+    for (let i = 1; i <= 10; i++) {
+      gradeBreakdown[`Grade ${i}`] = 0;
+    }
+
+    for (const row of students) {
+      const grade = String(row[4] || "").trim();
+
+      if (Object.prototype.hasOwnProperty.call(gradeBreakdown, grade)) {
+        gradeBreakdown[grade]++;
+      }
+    }
+
+    return json({
+      ok: true,
+      admin: {
+        id: session.adminId,
+        name: session.name
+      },
+      stats: {
+        totalStudents: students.length,
+        activeStudents: activeStudents.length,
+        inactiveStudents: students.length - activeStudents.length,
+        totalTeachers: teachers.length,
+        activeTeachers: activeTeachers.length,
+        inactiveTeachers: teachers.length - activeTeachers.length
+      },
+      gradeBreakdown
+    });
+  } catch (error) {
+    console.error("[ADMIN DASHBOARD]", error);
+    return json({ error: "Unable to load dashboard." }, 500);
+  }
 }
