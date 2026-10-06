@@ -10,158 +10,279 @@ import {
   loadTeachers,
   appendTeacher,
   updateTeacher,
-  normalizeActive,
-  findRowIndex
+  findRowIndex,
+  normalizeActive
 } from "../../_lib/admin.js";
 
-function publicTeacher(row) {
-  const gradeLevels = normalizeGradeLevels(row[3]);
-
-  return {
-    teacherId: String(row[0] || ""),
-    fullName: String(row[2] || ""),
-    gradeLevels,
-    section: String(row[4] || ""),
-    active: String(row[5] || "").toUpperCase() !== "FALSE"
-  };
-}
-
-function validateTeacherBody(body, isUpdate = false) {
-  const teacherId = cleanText(body.teacherId, 50);
-  const fullName = cleanText(body.fullName, 150);
-  const section = cleanText(body.section, 50);
-  const gradeLevels = normalizeGradeLevels(body.gradeLevels);
-  const active = normalizeActive(body.active);
-  const pin = String(body.pin || "").trim();
-
-  if (!teacherId) return { error: "Teacher ID is required." };
-  if (!fullName) return { error: "Full name is required." };
-
-  if (!gradeLevels.length) {
-    return { error: "Select at least one grade level." };
-  }
-
-  if (!section) {
-    return { error: "Section is required." };
-  }
-
-  if (!isUpdate && !validatePin(pin)) {
-    return { error: "PIN must contain 4-12 digits." };
-  }
-
-  if (isUpdate && pin && !validatePin(pin)) {
-    return { error: "PIN must contain 4-12 digits." };
-  }
-
-  return {
-    teacherId,
-    fullName,
-    gradeLevels: gradeLevels.join(","),
-    section,
-    active,
-    pin
-  };
-}
-
-export async function onRequestGet({ request, env }) {
+export async function onRequestGet({
+  request,
+  env
+}) {
   try {
-    const session = await requireAdmin(request, env);
+    const session =
+      await requireAdmin(
+        request,
+        env
+      );
 
     if (!session) {
-      return json({ error: "Unauthorized." }, 401);
+      return json(
+        {
+          error:
+            "Unauthorized."
+        },
+        401
+      );
     }
 
-    const rows = await loadTeachers(env);
+    const rows =
+      await loadTeachers(env);
+
+    const teachers =
+      rows.map(row => ({
+        id:
+          String(
+            row[0] || ""
+          ).trim(),
+
+        pin:
+          row[1]
+            ? "••••"
+            : "",
+
+        name:
+          String(
+            row[2] || ""
+          ).trim(),
+
+        gradeLevels:
+          String(
+            row[3] || ""
+          ).trim(),
+
+        section:
+          String(
+            row[4] || ""
+          ).trim(),
+
+        active:
+          String(
+            row[5] ?? ""
+          )
+            .trim()
+            .toUpperCase() !==
+          "FALSE"
+      }));
 
     return json({
       ok: true,
-      teachers: rows
-        .filter(row => row[0])
-        .map(publicTeacher)
+      teachers
     });
   } catch (error) {
-    console.error("[ADMIN TEACHERS GET]", error);
-    return json({ error: "Unable to load teachers." }, 500);
+    console.error(
+      "[ADMIN TEACHERS GET]",
+      error
+    );
+
+    return json(
+      {
+        error:
+          "Unable to load teachers."
+      },
+      500
+    );
   }
 }
 
-export async function onRequestPost({ request, env }) {
+export async function onRequestPost({
+  request,
+  env
+}) {
   try {
-    const session = await requireAdmin(request, env);
+    const session =
+      await requireAdmin(
+        request,
+        env
+      );
 
     if (!session) {
-      return json({ error: "Unauthorized." }, 401);
+      return json(
+        {
+          error:
+            "Unauthorized."
+        },
+        401
+      );
     }
 
-    const body = await request.json();
-    const data = validateTeacherBody(body, false);
+    const body =
+      await request.json();
 
-    if (data.error) {
-      return json({ error: data.error }, 400);
+    const id =
+      cleanText(
+        body.id,
+        50
+      );
+
+    const name =
+      cleanText(
+        body.name,
+        150
+      );
+
+    const section =
+      cleanText(
+        body.section,
+        100
+      );
+
+    const active =
+      normalizeActive(
+        body.active
+      );
+
+    const pin =
+      String(
+        body.pin ?? ""
+      ).trim();
+
+    if (!id) {
+      return json(
+        {
+          error:
+            "Teacher ID is required."
+        },
+        400
+      );
     }
 
-    const rows = await loadTeachers(env);
-
-    if (findRowIndex(rows, data.teacherId) !== -1) {
-      return json({ error: "Teacher ID already exists." }, 409);
+    if (!name) {
+      return json(
+        {
+          error:
+            "Teacher name is required."
+        },
+        400
+      );
     }
 
-    await appendTeacher(env, data);
-
-    return json({
-      ok: true,
-      message: "Teacher added successfully."
-    }, 201);
-  } catch (error) {
-    console.error("[ADMIN TEACHERS POST]", error);
-    return json({ error: "Unable to add teacher." }, 500);
-  }
-}
-
-export async function onRequestPut({ request, env }) {
-  try {
-    const session = await requireAdmin(request, env);
-
-    if (!session) {
-      return json({ error: "Unauthorized." }, 401);
+    if (
+      pin &&
+      !validatePin(pin)
+    ) {
+      return json(
+        {
+          error:
+            "PIN must contain 4 to 12 digits."
+        },
+        400
+      );
     }
 
-    const body = await request.json();
-    const data = validateTeacherBody(body, true);
+    const gradeInput =
+      body.gradeLevels ??
+      body.classes ??
+      "";
 
-    if (data.error) {
-      return json({ error: data.error }, 400);
+    const grades =
+      normalizeGradeLevels(
+        gradeInput
+      );
+
+    if (!grades.length) {
+      return json(
+        {
+          error:
+            "Enter at least one valid grade level, such as Grade 1 or Grade 3."
+        },
+        400
+      );
     }
 
-    const rows = await loadTeachers(env);
-    const index = findRowIndex(rows, data.teacherId);
+    const gradeLevels =
+      grades.join(", ");
 
-    if (index === -1) {
-      return json({ error: "Teacher not found." }, 404);
+    const rows =
+      await loadTeachers(env);
+
+    const index =
+      findRowIndex(
+        rows,
+        id
+      );
+
+    /* Existing teacher */
+
+    if (index !== -1) {
+      const existing =
+        rows[index];
+
+      const finalPin =
+        pin ||
+        String(
+          existing[1] || ""
+        ).trim();
+
+      await updateTeacher(
+        env,
+        index + 2,
+        {
+          teacherId: id,
+          pin: finalPin,
+          fullName: name,
+          gradeLevels,
+          section,
+          active
+        }
+      );
+
+      return json({
+        ok: true,
+        action: "updated"
+      });
     }
 
-    const existing = rows[index];
-    const pin = data.pin || String(existing[1] || "").trim();
+    /* New teacher */
 
     if (!pin) {
-      return json({ error: "Teacher PIN is missing." }, 400);
+      return json(
+        {
+          error:
+            "PIN is required when adding a new teacher."
+        },
+        400
+      );
     }
 
-    await updateTeacher(env, index + 2, {
-      teacherId: data.teacherId,
-      pin,
-      fullName: data.fullName,
-      gradeLevels: data.gradeLevels,
-      section: data.section,
-      active: data.active
-    });
+    await appendTeacher(
+      env,
+      {
+        teacherId: id,
+        pin,
+        fullName: name,
+        gradeLevels,
+        section,
+        active
+      }
+    );
 
     return json({
       ok: true,
-      message: "Teacher updated successfully."
+      action: "created"
     });
   } catch (error) {
-    console.error("[ADMIN TEACHERS PUT]", error);
-    return json({ error: "Unable to update teacher." }, 500);
+    console.error(
+      "[ADMIN TEACHERS POST]",
+      error
+    );
+
+    return json(
+      {
+        error:
+          error.message ||
+          "Unable to save teacher."
+      },
+      500
+    );
   }
 }

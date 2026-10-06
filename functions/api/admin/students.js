@@ -2,191 +2,290 @@ import {
   json,
   requireAdmin,
   cleanText,
-  validatePin,
-  validateSchoolYear
+  validatePin
 } from "./_lib.js";
 
 import {
   loadStudents,
   appendStudent,
   updateStudent,
-  normalizeGradeLevel,
-  normalizeActive,
-  normalizeId,
-  findRowIndex
+  findRowIndex,
+  normalizeActive
 } from "../../_lib/admin.js";
 
-function publicStudent(row) {
-  return {
-    studentId: String(row[0] || ""),
-    fullName: String(row[2] || ""),
-    schoolYear: String(row[3] || ""),
-    gradeLevel: String(row[4] || ""),
-    section: String(row[5] || ""),
-    active: String(row[6] || "").toUpperCase() !== "FALSE"
-  };
-}
-
-function validateStudentBody(body, isUpdate = false) {
-  const studentId = cleanText(body.studentId, 50);
-  const fullName = cleanText(body.fullName, 150);
-  const schoolYear = cleanText(body.schoolYear, 20);
-  const gradeLevel = normalizeGradeLevel(body.gradeLevel);
-  const section = cleanText(body.section, 50);
-  const active = normalizeActive(body.active);
-
-  if (!studentId) return { error: "Student ID is required." };
-  if (!fullName) return { error: "Full name is required." };
-
-  if (!validateSchoolYear(schoolYear)) {
-    return { error: "School year must use YYYY-YYYY format." };
-  }
-
-  if (!gradeLevel) {
-    return { error: "Grade level must be Grade 1 through Grade 10." };
-  }
-
-  if (!section) {
-    return { error: "Section is required." };
-  }
-
-  const pin = String(body.pin || "").trim();
-
-  if (!isUpdate && !validatePin(pin)) {
-    return { error: "PIN must contain 4-12 digits." };
-  }
-
-  if (isUpdate && pin && !validatePin(pin)) {
-    return { error: "PIN must contain 4-12 digits." };
-  }
-
-  return {
-    studentId,
-    fullName,
-    schoolYear,
-    gradeLevel,
-    section,
-    active,
-    pin
-  };
-}
-
-export async function onRequestGet({ request, env }) {
+export async function onRequestGet({
+  request,
+  env
+}) {
   try {
-    const session = await requireAdmin(request, env);
+    const session =
+      await requireAdmin(
+        request,
+        env
+      );
 
     if (!session) {
-      return json({ error: "Unauthorized." }, 401);
+      return json(
+        {
+          error:
+            "Unauthorized."
+        },
+        401
+      );
     }
 
-    const rows = await loadStudents(env);
+    const rows =
+      await loadStudents(env);
+
+    const students =
+      rows.map(row => ({
+        id:
+          String(
+            row[0] || ""
+          ).trim(),
+
+        pin:
+          row[1]
+            ? "••••"
+            : "",
+
+        name:
+          String(
+            row[2] || ""
+          ).trim(),
+
+        schoolYear:
+          String(
+            row[3] || ""
+          ).trim(),
+
+        level:
+          String(
+            row[4] || ""
+          ).trim(),
+
+        section:
+          String(
+            row[5] || ""
+          ).trim(),
+
+        active:
+          String(
+            row[6] ?? ""
+          )
+            .trim()
+            .toUpperCase() !==
+          "FALSE"
+      }));
 
     return json({
       ok: true,
-      students: rows
-        .filter(row => row[0])
-        .map(publicStudent)
+      students
     });
   } catch (error) {
-    console.error("[ADMIN STUDENTS GET]", error);
-    return json({ error: "Unable to load students." }, 500);
+    console.error(
+      "[ADMIN STUDENTS GET]",
+      error
+    );
+
+    return json(
+      {
+        error:
+          "Unable to load students."
+      },
+      500
+    );
   }
 }
 
-export async function onRequestPost({ request, env }) {
+export async function onRequestPost({
+  request,
+  env
+}) {
   try {
-    const session = await requireAdmin(request, env);
+    const session =
+      await requireAdmin(
+        request,
+        env
+      );
 
     if (!session) {
-      return json({ error: "Unauthorized." }, 401);
+      return json(
+        {
+          error:
+            "Unauthorized."
+        },
+        401
+      );
     }
 
-    const body = await request.json();
-    const data = validateStudentBody(body, false);
+    const body =
+      await request.json();
 
-    if (data.error) {
-      return json({ error: data.error }, 400);
+    const id =
+      cleanText(
+        body.id,
+        50
+      );
+
+    const name =
+      cleanText(
+        body.name,
+        150
+      );
+
+    const schoolYear =
+      cleanText(
+        body.schoolYear ||
+          "2026-2027",
+        20
+      );
+
+    const level =
+      cleanText(
+        body.level,
+        30
+      );
+
+    const section =
+      cleanText(
+        body.section,
+        50
+      );
+
+    const active =
+      normalizeActive(
+        body.active
+      );
+
+    const pin =
+      String(
+        body.pin ?? ""
+      ).trim();
+
+    if (!id) {
+      return json(
+        {
+          error:
+            "Student ID is required."
+        },
+        400
+      );
     }
 
-    const rows = await loadStudents(env);
-
-    if (findRowIndex(rows, data.studentId) !== -1) {
-      return json({ error: "Student ID already exists." }, 409);
+    if (!name) {
+      return json(
+        {
+          error:
+            "Student name is required."
+        },
+        400
+      );
     }
 
-    await appendStudent(env, data);
-
-    return json({
-      ok: true,
-      message: "Student added successfully.",
-      student: {
-        studentId: data.studentId,
-        fullName: data.fullName,
-        schoolYear: data.schoolYear,
-        gradeLevel: data.gradeLevel,
-        section: data.section,
-        active: data.active === "TRUE"
-      }
-    }, 201);
-  } catch (error) {
-    console.error("[ADMIN STUDENTS POST]", error);
-    return json({ error: "Unable to add student." }, 500);
-  }
-}
-
-export async function onRequestPut({ request, env }) {
-  try {
-    const session = await requireAdmin(request, env);
-
-    if (!session) {
-      return json({ error: "Unauthorized." }, 401);
+    if (
+      pin &&
+      !validatePin(pin)
+    ) {
+      return json(
+        {
+          error:
+            "PIN must contain 4 to 12 digits."
+        },
+        400
+      );
     }
 
-    const body = await request.json();
-    const data = validateStudentBody(body, true);
+    const rows =
+      await loadStudents(env);
 
-    if (data.error) {
-      return json({ error: data.error }, 400);
+    const index =
+      findRowIndex(
+        rows,
+        id
+      );
+
+    /* Existing student */
+
+    if (index !== -1) {
+      const existing =
+        rows[index];
+
+      const finalPin =
+        pin ||
+        String(
+          existing[1] || ""
+        ).trim();
+
+      const finalSchoolYear =
+        schoolYear ||
+        String(
+          existing[3] || ""
+        ).trim();
+
+      await updateStudent(
+        env,
+        index + 2,
+        {
+          studentId: id,
+          pin: finalPin,
+          fullName: name,
+          schoolYear:
+            finalSchoolYear,
+          gradeLevel: level,
+          section,
+          active
+        }
+      );
+
+      return json({
+        ok: true,
+        action: "updated"
+      });
     }
 
-    const rows = await loadStudents(env);
-    const index = findRowIndex(rows, data.studentId);
-
-    if (index === -1) {
-      return json({ error: "Student not found." }, 404);
-    }
-
-    const existing = rows[index];
-    const pin = data.pin || String(existing[1] || "").trim();
+    /* New student */
 
     if (!pin) {
-      return json({ error: "Student PIN is missing." }, 400);
+      return json(
+        {
+          error:
+            "PIN is required when adding a new student."
+        },
+        400
+      );
     }
 
-    await updateStudent(env, index + 2, {
-      studentId: data.studentId,
-      pin,
-      fullName: data.fullName,
-      schoolYear: data.schoolYear,
-      gradeLevel: data.gradeLevel,
-      section: data.section,
-      active: data.active
-    });
+    await appendStudent(
+      env,
+      {
+        studentId: id,
+        pin,
+        fullName: name,
+        schoolYear,
+        gradeLevel: level,
+        section,
+        active
+      }
+    );
 
     return json({
       ok: true,
-      message: "Student updated successfully.",
-      student: {
-        studentId: data.studentId,
-        fullName: data.fullName,
-        schoolYear: data.schoolYear,
-        gradeLevel: data.gradeLevel,
-        section: data.section,
-        active: data.active === "TRUE"
-      }
+      action: "created"
     });
   } catch (error) {
-    console.error("[ADMIN STUDENTS PUT]", error);
-    return json({ error: "Unable to update student." }, 500);
+    console.error(
+      "[ADMIN STUDENTS POST]",
+      error
+    );
+
+    return json(
+      {
+        error:
+          error.message ||
+          "Unable to save student."
+      },
+      500
+    );
   }
 }
