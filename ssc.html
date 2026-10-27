@@ -127,6 +127,173 @@
         .pagination button {
             margin: 0 3px;
         }
+
+        #sscEventGallery {
+            background: #f8f9fa;
+        }
+
+        #sscEventGallery .gallery-card {
+            border: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform .25s ease, box-shadow .25s ease;
+        }
+
+        #sscEventGallery .gallery-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, .12);
+        }
+
+        #sscEventGallery .gallery-cover {
+            width: 100%;
+            height: 245px;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform .3s ease;
+        }
+
+        #sscEventGallery .gallery-cover:hover {
+            transform: scale(1.04);
+        }
+
+        #sscEventGallery .gallery-cover-link {
+            display: block;
+            overflow: hidden;
+        }
+
+        #sscEventGallery .event-description {
+            font-size: .92rem;
+            line-height: 1.6;
+        }
+
+        #sscGalleryModal .modal-content {
+            background: #111;
+            color: #fff;
+            border: 0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        #sscGalleryModal .modal-header {
+            border-bottom: 1px solid #333;
+        }
+
+        #sscGalleryModal .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+
+        #sscGalleryModal .gallery-stage {
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: #080808;
+        }
+
+        #sscGalleryModal .gallery-main-image {
+            display: block;
+            max-width: 100%;
+            width: auto;
+            height: auto;
+            max-height: 68vh;
+            object-fit: contain;
+            margin: auto;
+        }
+
+        #sscGalleryModal .gallery-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 2;
+            width: 42px;
+            height: 48px;
+            padding: 0;
+            border: 0;
+            border-radius: 6px;
+            background: rgba(0, 0, 0, .7);
+            color: white;
+            font-size: 30px;
+            line-height: 1;
+        }
+
+        #sscGalleryModal .gallery-prev {
+            left: 12px;
+        }
+
+        #sscGalleryModal .gallery-next {
+            right: 12px;
+        }
+
+        #sscGalleryModal .gallery-nav:hover {
+            background: #0d6efd;
+        }
+
+        #sscGalleryModal .gallery-nav:disabled {
+            opacity: .3;
+            cursor: not-allowed;
+        }
+
+        #sscGalleryModal .gallery-caption {
+            background: #111;
+            color: #fff;
+        }
+
+        #sscGalleryModal .gallery-counter {
+            font-size: .85rem;
+            color: #adb5bd;
+        }
+
+        #sscGalleryModal .gallery-thumbnails {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 12px 0 4px;
+        }
+
+        #sscGalleryModal .gallery-thumbnail {
+            flex: 0 0 76px;
+            height: 58px;
+            padding: 0;
+            border: 2px solid transparent;
+            border-radius: 5px;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        #sscGalleryModal .gallery-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #sscGalleryModal .gallery-thumbnail.active {
+            border-color: #0d6efd;
+        }
+
+        @media (max-width: 575.98px) {
+            #sscEventGallery .gallery-cover {
+                height: 220px;
+            }
+
+            #sscGalleryModal .gallery-main-image {
+                max-height: 55vh;
+            }
+
+            #sscGalleryModal .gallery-nav {
+                width: 34px;
+                height: 42px;
+                font-size: 24px;
+            }
+
+            #sscGalleryModal .gallery-prev {
+                left: 5px;
+            }
+
+            #sscGalleryModal .gallery-next {
+                right: 5px;
+            }
+        }
     </style>
 </head>
 
@@ -196,7 +363,10 @@
                 <div class="col-lg-12 text-center">
                     <h1 class="display-3 text-white animated slideInDown">Supreme Student Council</h1>
                     <p class="lead mb-4" style="color: #e3af3b;">The Voice of the Student Body
-                        The Supreme Student Council (SSC) is the highest governing body for students at Misamis Union Educational Foundation INC. (MUEFI). We are a team of elected student leaders dedicated to representing your interests, protecting your rights, and serving as the vital bridge between the studentry and the school administration.</p>
+                        The Supreme Student Council (SSC) is the highest governing body for students at Misamis Union
+                        Educational Foundation INC. (MUEFI). We are a team of elected student leaders dedicated to
+                        representing your interests, protecting your rights, and serving as the vital bridge between the
+                        studentry and the school administration.</p>
                 </div>
             </div>
         </div>
@@ -236,6 +406,217 @@
                 </div>
             </div>
 
+            <!-- ======================= EVENT GALLERY SECTION ======================== -->
+            <section id="sscEventGallery" class="py-5">
+                <div class="container">
+
+                    <!-- Heading -->
+                    <div class="text-center mb-5">
+                        <h6 class="text-primary text-uppercase fw-bold">
+                            Supreme Student Council
+                        </h6>
+
+                        <h2 class="mb-3">Division Schools Press Conference</h2>
+
+                        <p class="text-muted mx-auto" style="max-width: 700px;">
+                            Celebrating the dedication, creativity, and achievements
+                            of our student journalists in campus journalism.
+                            Explore the memorable moments from the competition.
+                        </p>
+                    </div>
+
+                    <!-- Event Gallery Cards -->
+                    <div class="row g-4" id="sscGallerySection">
+
+                        <!-- EVENT CARD 1 -->
+                        <div class="col-12 col-sm-6 col-lg-4">
+                            <div class="card gallery-card h-100 shadow-sm">
+
+                                <a href="img/2026/90th-aniversary/press-conference/Division-School-Press-Conference-2026.jpg"
+                                    class="gallery-cover-link" data-ssc-event="dspc-2026"
+                                    aria-label="View all Division Schools Press Conference photos">
+
+                                    <img src="img/2026/90th-aniversary/press-conference/Division-School-Press-Conference-2026.jpg"
+                                        class="gallery-cover"
+                                        alt="MUEFI delegation at the Division Schools Press Conference" loading="lazy">
+                                </a>
+
+                                <div class="card-body p-4">
+                                    <span class="badge bg-primary mb-2">
+                                        Campus Journalism
+                                    </span>
+
+                                    <h5 class="card-title">
+                                        Division Schools Press Conference
+                                    </h5>
+
+                                    <p class="text-muted small mb-3">
+                                        Highlights from the student journalism competition,
+                                        activities, and delegation.
+                                    </p>
+
+                                    <button type="button" class="btn btn-outline-primary btn-sm"
+                                        data-ssc-event="dspc-2026">
+                                        <i class="bi bi-images me-1"></i>
+                                        View All Photos
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- EVENT CARD 2 -->
+                        <!-- <div class="col-12 col-sm-6 col-lg-4">
+                            <div class="card gallery-card h-100 shadow-sm">
+
+                                <a href="img/2026/90th-aniversary/press-conference/Division-School-Press-Conference-2026.jpg"
+                                    class="gallery-cover-link" data-ssc-event="dspc-2026"
+                                    aria-label="View all press conference competition photos">
+
+                                    <img src="img/2026/90th-aniversary/press-conference/Division-School-Press-Conference-2026.jpg"
+                                        class="gallery-cover"
+                                        alt="Student journalists participating in the press conference" loading="lazy">
+                                </a>
+
+                                <div class="card-body p-4">
+                                    <span class="badge bg-success mb-2">
+                                        Student Activities
+                                    </span>
+
+                                    <h5 class="card-title">
+                                        Journalism in Action
+                                    </h5>
+
+                                    <p class="text-muted small mb-3">
+                                        Capturing the preparation, teamwork, and
+                                        dedication of our student journalists.
+                                    </p>
+
+                                    <button type="button" class="btn btn-outline-primary btn-sm"
+                                        data-ssc-event="dspc-2026">
+                                        <i class="bi bi-images me-1"></i>
+                                        View All Photos
+                                    </button>
+                                </div>
+                            </div>
+                        </div> -->
+
+                        <!-- EVENT CARD 3 -->
+                        <!-- <div class="col-12 col-sm-6 col-lg-4">
+                            <div class="card gallery-card h-100 shadow-sm">
+
+                                <a href="img/2026/90th-aniversary/press-conference/Division-School-Press-Conference-2026.jpg"
+                                    class="gallery-cover-link" data-ssc-event="dspc-2026"
+                                    aria-label="View all press conference memories">
+
+                                    <img src="img/2026/90th-aniversary/press-conference/Division-School-Press-Conference-2026.jpg"
+                                        class="gallery-cover"
+                                        alt="Memorable moments from the Division Schools Press Conference"
+                                        loading="lazy">
+                                </a>
+
+                                <div class="card-body p-4">
+                                    <span class="badge bg-warning text-dark mb-2">
+                                        Event Highlights
+                                    </span>
+
+                                    <h5 class="card-title">
+                                        Memorable Moments
+                                    </h5>
+
+                                    <p class="text-muted small mb-3">
+                                        Remembering the experiences and achievements
+                                        shared by our school delegation.
+                                    </p>
+
+                                    <button type="button" class="btn btn-outline-primary btn-sm"
+                                        data-ssc-event="dspc-2026">
+                                        <i class="bi bi-images me-1"></i>
+                                        View All Photos
+                                    </button>
+                                </div>
+                            </div>
+                        </div> -->
+
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ======================= FULL GALLERY MODAL ======================== -->
+            <div class="modal fade" id="sscGalleryModal" tabindex="-1" aria-labelledby="sscGalleryModalTitle"
+                aria-hidden="true">
+
+                <div class="modal-dialog modal-dialog-centered modal-xl">
+                    <div class="modal-content">
+
+                        <!-- Modal Header -->
+                        <div class="modal-header px-3 px-md-4">
+                            <div>
+                                <h5 class="modal-title" id="sscGalleryModalTitle">
+                                    Division Schools Press Conference
+                                </h5>
+
+                                <div class="gallery-counter" id="sscGalleryCounter">
+                                    Photo 1 of 1
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                            </button>
+                        </div>
+
+                        <!-- Main Image -->
+                        <div class="modal-body p-0">
+
+                            <div class="gallery-stage">
+
+                                <button type="button" class="gallery-nav gallery-prev" id="sscGalleryPrev"
+                                    aria-label="Previous photo">
+                                    &#8249;
+                                </button>
+
+                                <img src="" id="sscGalleryMainImage" class="gallery-main-image"
+                                    alt="Division Schools Press Conference photo">
+
+                                <button type="button" class="gallery-nav gallery-next" id="sscGalleryNext"
+                                    aria-label="Next photo">
+                                    &#8250;
+                                </button>
+
+                            </div>
+
+                            <!-- Caption and Date -->
+                            <div class="gallery-caption text-center px-3 py-3">
+                                <h6 id="sscGalleryPhotoTitle" class="mb-1"></h6>
+
+                                <p id="sscGalleryPhotoDescription" class="text-white-50 small mb-1"></p>
+
+                                <div id="sscGalleryPhotoDate" class="gallery-counter"></div>
+                            </div>
+
+                            <!-- Clickable Thumbnails -->
+                            <div class="px-3 px-md-4 pb-3">
+                                <div class="gallery-thumbnails" id="sscGalleryThumbnails">
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Modal Footer -->
+                        <div class="modal-footer border-secondary">
+                            <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">
+                                Close Gallery
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
             <!-- OFFICERS SECTION -->
             <div class="row g-4">
                 <!-- <div class="col-12 text-center">
@@ -244,22 +625,23 @@
                 </div> -->
 
                 <!-- Oganizational Chart Start -->
-  
-    <div class="container-xxl py-5">
-        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-            <h6 class="section-title bg-white text-center text-primary px-3">Organizational Chart</h6>
-            <h1 class="mb-5">Student Council Officers</h1>
-        </div>
-        <div class="row">
-            <div class="col-md-12 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="position-relative">
-                    <img src="img/organizational_chart/muefi-student-council-officers.webp" alt="MUEFI Student Council Officers" class="img-fluid rounded" />
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Organizational Chart End -->
+                <div class="container-xxl py-5">
+                    <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                        <h6 class="section-title bg-white text-center text-primary px-3">Organizational Chart</h6>
+                        <h1 class="mb-5">Student Council Officers</h1>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="position-relative">
+                                <img src="img/organizational_chart/muefi-student-council-officers.webp"
+                                    alt="MUEFI Student Council Officers" class="img-fluid rounded" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Organizational Chart End -->
             </div>
 
         </div>
@@ -291,8 +673,7 @@
                     <button class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body text-center">
-                    <img id="lostModalPhoto" class="img-fluid rounded mb-3"
-                        style="max-height:200px; object-fit:cover;">
+                    <img id="lostModalPhoto" class="img-fluid rounded mb-3" style="max-height:200px; object-fit:cover;">
                     <p class="mb-1"><strong>Found at:</strong> <span id="lostModalLocation"></span></p>
                     <p class="mb-2"><strong>Date Found:</strong> <span id="lostModalDate"></span></p>
                     <div class="alert alert-info mt-3">
@@ -329,8 +710,8 @@
                     <h4 class="text-yellow mb-3">Newsletter</h4>
                     <p>Subscribe to get the latest updates, events, and announcements from MUEFI.</p>
                     <div class="position-relative mx-auto" style="max-width: 400px;">
-                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="coming soon..."
-                            disabled>
+                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text"
+                            placeholder="coming soon..." disabled>
                     </div>
                 </div>
             </div>
@@ -556,7 +937,7 @@
         }
 
         /* ---------------------------- SEARCH ---------------------------- */
-  
+
         document.getElementById("lostFoundSearch").addEventListener("input", function () {
             const query = this.value.toLowerCase();
             let anyVisible = false;
@@ -689,7 +1070,192 @@
     </script>
 
     <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <!-- ======================= GALLERY JAVASCRIPT ======================== -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
 
+            const gallery = document.getElementById("sscGallerySection");
+            const modalElement = document.getElementById("sscGalleryModal");
+
+            // Requires Bootstrap 5 JavaScript bundle.
+            const galleryModal = new bootstrap.Modal(modalElement);
+
+            const mainImage = document.getElementById("sscGalleryMainImage");
+            const modalTitle = document.getElementById("sscGalleryModalTitle");
+            const counter = document.getElementById("sscGalleryCounter");
+            const photoTitle = document.getElementById("sscGalleryPhotoTitle");
+            const photoDescription = document.getElementById("sscGalleryPhotoDescription");
+            const photoDate = document.getElementById("sscGalleryPhotoDate");
+            const thumbnails = document.getElementById("sscGalleryThumbnails");
+            const prevButton = document.getElementById("sscGalleryPrev");
+            const nextButton = document.getElementById("sscGalleryNext");
+
+            /*
+             * ADD YOUR EVENT PHOTOS HERE.
+             *
+             * Every card using data-ssc-event="dspc-2026"
+             * opens this entire collection of photos.
+             */
+            const eventGalleries = {
+
+                "dspc-2026": {
+                    title: "Division Schools Press Conference",
+
+                    photos: [
+                        {
+                            src: "img/2026/90th-aniversary/press-conference/Division-School-Press-Conference-2026.jpg",
+                            title: "Opening and Delegation",
+                            description: "Our school delegation at the event.",
+                            date: "2026"
+                        },
+                        {
+                            src: "img/2026/90th-aniversary/press-conference/meufi-Division-School-Press-Conference-2026.jpg",
+                            title: "Campus Journalism",
+                            description: "Students showcasing their journalism skills.",
+                            date: "2026"
+                        },
+                    ]
+                }
+
+            };
+
+            let currentPhotos = [];
+            let currentIndex = 0;
+
+            // Open the gallery when any image or button is clicked.
+            gallery.addEventListener("click", function (event) {
+
+                const trigger = event.target.closest("[data-ssc-event]");
+
+                if (!trigger) return;
+
+                event.preventDefault();
+
+                const eventId = trigger.dataset.sscEvent;
+                const eventData = eventGalleries[eventId];
+
+                if (!eventData || !eventData.photos.length) {
+                    console.error("No photos configured for event:", eventId);
+                    return;
+                }
+
+                currentPhotos = eventData.photos;
+                currentIndex = 0;
+
+                modalTitle.textContent = eventData.title;
+
+                renderThumbnails();
+                showPhoto(currentIndex);
+
+                galleryModal.show();
+            });
+
+            // Display one photo and its information.
+            function showPhoto(index) {
+
+                if (!currentPhotos.length) return;
+
+                // Wrap around at the beginning and end.
+                currentIndex =
+                    (index + currentPhotos.length) % currentPhotos.length;
+
+                const photo = currentPhotos[currentIndex];
+
+                mainImage.src = photo.src;
+                mainImage.alt = photo.title;
+                photoTitle.textContent = photo.title || "";
+                photoDescription.textContent = photo.description || "";
+                photoDate.textContent = photo.date || "";
+
+                counter.textContent =
+                    "Photo " + (currentIndex + 1) +
+                    " of " + currentPhotos.length;
+
+                // Keep navigation available for the full collection.
+                prevButton.disabled = currentPhotos.length < 2;
+                nextButton.disabled = currentPhotos.length < 2;
+
+                // Highlight the active thumbnail.
+                thumbnails.querySelectorAll(".gallery-thumbnail")
+                    .forEach(function (thumbnail, index) {
+
+                        const active = index === currentIndex;
+
+                        thumbnail.classList.toggle("active", active);
+                        thumbnail.setAttribute(
+                            "aria-pressed",
+                            active ? "true" : "false"
+                        );
+
+                        if (active) {
+                            thumbnail.scrollIntoView({
+                                behavior: "smooth",
+                                block: "nearest",
+                                inline: "nearest"
+                            });
+                        }
+                    });
+            }
+
+            // Build the thumbnail strip for every photo in the event.
+            function renderThumbnails() {
+
+                thumbnails.replaceChildren();
+
+                currentPhotos.forEach(function (photo, index) {
+
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "gallery-thumbnail";
+                    button.setAttribute(
+                        "aria-label",
+                        "View photo " + (index + 1) + ": " + photo.title
+                    );
+
+                    const image = document.createElement("img");
+                    image.src = photo.src;
+                    image.alt = "";
+
+                    button.appendChild(image);
+
+                    button.addEventListener("click", function () {
+                        showPhoto(index);
+                    });
+
+                    thumbnails.appendChild(button);
+                });
+            }
+
+            // Previous and next controls.
+            prevButton.addEventListener("click", function () {
+                showPhoto(currentIndex - 1);
+            });
+
+            nextButton.addEventListener("click", function () {
+                showPhoto(currentIndex + 1);
+            });
+
+            // Keyboard navigation while the modal is open.
+            document.addEventListener("keydown", function (event) {
+
+                if (!modalElement.classList.contains("show")) return;
+
+                if (event.key === "ArrowLeft") {
+                    showPhoto(currentIndex - 1);
+                }
+
+                if (event.key === "ArrowRight") {
+                    showPhoto(currentIndex + 1);
+                }
+            });
+
+            // Clear the main image when the modal closes.
+            modalElement.addEventListener("hidden.bs.modal", function () {
+                mainImage.removeAttribute("src");
+            });
+
+        });
+    </script>
 </body>
 
 </html>
